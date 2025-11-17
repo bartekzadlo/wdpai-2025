@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="public/styles/login.css">
 
     <title>Login</title>
 </head>
 <body>
-    <h1>LOGIN</h1>
+    <form>
+        <h1>LOGIN</h1>
+        <?php if(isset($messages)): ?>
+
+            <p class="messages">
+                <?= $messages ?>
+            </p>
+
+        <?php endif; ?>
+        <input type="email" placeholder="Twój email">
+        <input type="password" placeholder="Twój hasło">
+        <button type="submit"> LOGIN</button>
+    </form>
 </body>
 </html>
