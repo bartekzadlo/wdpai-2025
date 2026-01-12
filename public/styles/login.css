@@ -1,15 +1,31 @@
+/* RESET & BOX SIZING */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 /* Ustawienia ogólne i Czarne Tło */
 body {
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
-    margin: 0;
-    
-    /* Zmiana na czarne tło bez zdjęcia */
-    background-color: black;
-    background-image: none;
-    
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-family: sans-serif;
     position: relative;
+    overflow: hidden;
+
+    /* Tło z przyciemnieniem */
+    background-image: linear-gradient(
+            rgba(0,0,0,0.6),  /* przyciemnienie */
+            rgba(0,0,0,0.6)
+        ),
+        url('https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* Stylizacja formularza - prawy dolny róg */
