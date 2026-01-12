@@ -20,11 +20,14 @@ class Routing
   //TODO na podstawie sciezki sprawdzamy jaki HTML zwrocic
     switch ($path) {
       case 'dashboard':
+        // TODO connect with database
+        // get elements to present on dashboard
         include 'public/views/dashboard.html';
         break;
       case 'login':
         $controller = new SecurityController();
         $controller->login();
+        break;
         // include 'public/views/login.html';
       case 'register':
 

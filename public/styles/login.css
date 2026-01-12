@@ -6,29 +6,59 @@
     margin: 0;
     padding: 0;
 }
-/* Ustawienia ogólne i Czarne Tło */
+
+/* BODY – Zdjęcie tła z przyciemnieniem */
 body {
     width: 100vw;
     height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    font-family: sans-serif;
-    position: relative;
-    overflow: hidden;
-
-    /* Tło z przyciemnieniem */
+    overflow: hidden; /* Blokuje przewijanie */
+    
+    /* Zdjęcie z Pexels + przyciemnienie (gradient), żeby biały napis był czytelny */
     background-image: linear-gradient(
-            rgba(0,0,0,0.6),  /* przyciemnienie */
-            rgba(0,0,0,0.6)
+            rgba(0, 0, 0, 0.4), 
+            rgba(0, 0, 0, 0.4)
         ),
         url('https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg');
+    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    
+    position: relative;
+    font-family: sans-serif;
 }
 
-/* Stylizacja formularza - prawy dolny róg */
+/* LOGO - Skalowalne, lewy górny róg */
+#title {
+    position: fixed;
+    top: 5vh;
+    left: 5vw;
+    
+    margin: 0;
+    color: white;
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    
+    /* Skalowanie czcionki: min 3rem, max 8rem */
+    font-size: clamp(3rem, 8vw, 8rem);
+    
+    /* Cień podstawowy dla czytelności */
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+    
+    /* Ustawienia interakcji */
+    cursor: pointer;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* EFEKT PODŚWIETLENIA (HOVER) */
+#title:hover {
+    color: #ff9800; /* Pomarańczowy kolor */
+    /* Dodatkowa poświata (glow effect) */
+    text-shadow: 0 0 20px rgba(255, 152, 0, 0.8), 2px 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* FORMULARZ - Prawy dolny róg */
 form {
     position: absolute;
     bottom: 10%;
@@ -37,34 +67,15 @@ form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 350px;
+    
+    /* Szerokość: 350px, ale na telefonie max 90% szerokości ekranu */
+    width: min(350px, 90vw);
     
     background-color: transparent;
-    box-shadow: none;
     padding: 0;
-    border-radius: 0;
 }
 
-/* Stylizacja H1 (LOGO) - font Jersey 10 */
-#title {
-    position: fixed; /* Wyciągamy napis do lewego górnego rogu */
-    top: 30px;
-    left: 40px;
-    
-    margin: 0;
-    color: white;
-    
-    /* Nowa czcionka */
-    font-family: "Jersey 10", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    
-    /* Jersey 10 jest dość wąska, więc dajemy większy rozmiar */
-    font-size: 6rem; 
-    text-transform: uppercase;
-}
-
-/* Stylizacja pól input */
+/* INPUTY - Szare, kanciaste (styl z pierwszego pliku) */
 input {
     width: 100%;
     padding: 15px;
@@ -72,42 +83,68 @@ input {
     border-radius: 0;
     
     background-color: #dcdcdc;
-    font-size: 1.2rem;
     color: #333;
+    
+    font-family: sans-serif;
+    font-size: 1.2rem;
     outline: none;
-    font-family: sans-serif; /* W polach zostawiamy czytelną czcionkę */
+    
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 input::placeholder {
     color: #666;
+    text-transform: uppercase;
 }
 
 input:focus {
-    background-color: #fff;
+    background-color: #ffffff;
+    transform: scale(1.02);
 }
 
-/* Stylizacja przycisku - font Jersey 10 */
+/* PRZYCISK - Jersey 10, szary (styl z pierwszego pliku) */
 button {
     width: 100%;
-    padding: 10px; /* Nieco mniejszy padding, bo font jest wysoki */
+    padding: 10px;
+    margin-top: 10px;
+    
     border: none;
     border-radius: 0;
     
     background-color: #dcdcdc;
     color: black;
     
-    /* Nowa czcionka na przycisku */
     font-family: "Jersey 10", sans-serif;
-    font-size: 2.5rem; /* Powiększone dla lepszego efektu */
+    /* Skalowanie czcionki przycisku */
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    text-transform: uppercase;
     
     cursor: pointer;
-    transition: background 0.2s;
-    text-transform: uppercase;
-    margin-top: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 button:hover {
     background-color: #ffffff;
-    transform: none;
-    box-shadow: none;
+    transform: translateY(-2px);
+}
+
+/* Zabezpieczenie na bardzo małe ekrany (poziome telefony) */
+@media screen and (max-height: 500px) {
+    #title {
+        font-size: 3rem;
+        top: 20px;
+        left: 20px;
+    }
+    
+    form {
+        bottom: 5%;
+        right: 5%;
+        gap: 10px;
+    }
+    
+    input, button {
+        padding: 10px; 
+    }
 }
