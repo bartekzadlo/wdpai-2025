@@ -1,51 +1,97 @@
+/* Ustawienia ogólne i Czarne Tło */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    
+    /* Zmiana na czarne tło bez zdjęcia */
+    background-color: black;
+    background-image: none;
+    
+    position: relative;
 }
 
+/* Stylizacja formularza - prawy dolny róg */
 form {
-    background-color: bisque;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    width: 45vw;
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
+    
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    gap: 1.5rem
+    gap: 15px;
+    width: 350px;
+    
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
 }
 
-/* Styl dla pól input */
+/* Stylizacja H1 (LOGO) - font Jersey 10 */
+#title {
+    position: fixed; /* Wyciągamy napis do lewego górnego rogu */
+    top: 30px;
+    left: 40px;
+    
+    margin: 0;
+    color: white;
+    
+    /* Nowa czcionka */
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    
+    /* Jersey 10 jest dość wąska, więc dajemy większy rozmiar */
+    font-size: 6rem; 
+    text-transform: uppercase;
+}
+
+/* Stylizacja pól input */
 input {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.3s ease;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 0;
+    
+    background-color: #dcdcdc;
+    font-size: 1.2rem;
+    color: #333;
+    outline: none;
+    font-family: sans-serif; /* W polach zostawiamy czytelną czcionkę */
 }
 
-/* Zmiana koloru ramki po focusie */
+input::placeholder {
+    color: #666;
+}
+
 input:focus {
-  border-color: #ff9900;
+    background-color: #fff;
 }
 
-/* Styl dla przycisku */
+/* Stylizacja przycisku - font Jersey 10 */
 button {
-  padding: 1rem;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(45deg, #ff9900, #ff6600);
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+    width: 100%;
+    padding: 10px; /* Nieco mniejszy padding, bo font jest wysoki */
+    border: none;
+    border-radius: 0;
+    
+    background-color: #dcdcdc;
+    color: black;
+    
+    /* Nowa czcionka na przycisku */
+    font-family: "Jersey 10", sans-serif;
+    font-size: 2.5rem; /* Powiększone dla lepszego efektu */
+    
+    cursor: pointer;
+    transition: background 0.2s;
+    text-transform: uppercase;
+    margin-top: 10px;
 }
 
-/* Efekt po najechaniu */
 button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(255, 102, 0, 0.5);
+    background-color: #ffffff;
+    transform: none;
+    box-shadow: none;
 }

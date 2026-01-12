@@ -7,11 +7,16 @@ class SecurityController extends AppController
 
   public function login()
   {
-    return $this->render('login', ["message" => "Błędne hasło lub login"]);
+        // TODO get data from database
+        //  $this->render("login", ["name"=> "Bartek"]);
+    return $this->render('login', ["messages" => "Błędne hasło lub login"]);
   }
 
   public function register()
   {
-    return $this->render('register');
+        // TODO pobranie z formularza email i hasła
+        // TODO insert do bazy danych
+        // TODO zwrocenie informajci o pomyslnym zarejstrowaniu
+            return $this->render("login", ["messages" => "Zarejestrowano uytkownika"]);
   }
 }

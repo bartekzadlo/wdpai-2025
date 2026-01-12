@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Zmieniony import czcionki na JERSEY 10 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="public/styles/login.css">
-
-    <title>Login</title>
 </head>
 <body>
     <form>
-        <h1>LOGIN</h1>
-        <?php if(isset($messages)): ?>
+        <h1 id="title">EVENT.IO</h1> 
 
-            <p class="messages">
-                <?= $messages ?>
-            </p>
-
-        <?php endif; ?>
-        <input type="email" placeholder="Twój email">
-        <input type="password" placeholder="Twój hasło">
-        <button type="submit"> LOGIN</button>
+        <input type="email" placeholder="Podaj email">
+        <input type="password" placeholder="Podaj hasło">
+        <button type="submit">LOGIN</button>
     </form>
 </body>
 </html>
