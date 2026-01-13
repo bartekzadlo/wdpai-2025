@@ -10,7 +10,11 @@ class AppController
     $output = "";
 
     if (file_exists($templatePath)) {
+      // ["messages" => "Błędne hasło!"]
       extract($variables);
+      // $messages = "Błędne hasło!"
+      // echo $messages
+            
 
       ob_start();
       include $templatePath;

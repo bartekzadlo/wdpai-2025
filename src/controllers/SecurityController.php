@@ -8,6 +8,7 @@ class SecurityController extends AppController
   public function login()
   {
         // TODO get data from database
+        // TODO zwroc HTML logowania, przetworz dane
         //  $this->render("login", ["name"=> "Bartek"]);
     return $this->render('login', ["messages" => "Błędne hasło lub login"]);
   }
