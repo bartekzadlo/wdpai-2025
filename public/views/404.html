@@ -1,13 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
-    <script src="public/scripts/main.js" defer></script>
+    <title>EVENT.IO - 404</title>
+    <!-- Import czcionki Jersey 10 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    
+    <!-- Możesz podpiąć tu swój główny plik stylów, poniżej daję style dedykowane dla 404 -->
+    <link rel="stylesheet" href="public/styles/404.css">
 </head>
 <body>
-    <h1 id="title">DASHBOARD</h1>
+
+    <div class="container">
+        <!-- Logo nawiązujące do ekranu logowania -->
+        <div class="logo">EVENT.IO</div>
+
+        <!-- Główny błąd -->
+        <h1 class="error-code">404</h1>
+        
+        <!-- Tematyczny komunikat -->
+        <h2 class="error-message">IMPREZA ODWOŁANA</h2>
+        <p class="error-description">
+            Wygląda na to, że scena, której szukasz, jest pusta.<br>
+            Wydarzenie nie istnieje lub zostało przeniesione.
+        </p>
+
+        <!-- Przycisk powrotu w stylu Twojego formularza -->
+        <a href="index.html" class="btn-back">WRÓĆ NA GŁÓWNĄ SCENĘ</a>
+    </div>
+
 </body>
 </html>

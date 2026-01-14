@@ -1,0 +1,122 @@
+/* RESET */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #050505; /* Bardzo ciemne tło, pasuje do listy wydarzeń */
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 600px;
+}
+
+/* LOGO - mniejsze, nawiązujące do marki */
+.logo {
+    font-family: "Jersey 10", sans-serif;
+    font-size: 2rem;
+    color: #666; /* Zgaszony kolor, żeby nie odwracał uwagi */
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+/* WIELKIE 404 Z EFEKTEM "NEONU/GLITCHA" */
+.error-code {
+    font-family: "Jersey 10", sans-serif;
+    font-size: clamp(8rem, 20vw, 15rem); /* Bardzo duże */
+    line-height: 1;
+    color: white;
+    
+    /* Fioletowy cień nawiązujący do nagłówka dashboardu */
+    text-shadow: 
+        4px 4px 0px #b000b0, 
+        -2px -2px 0px #333;
+    
+    position: relative;
+    animation: pulse 2s infinite alternate;
+}
+
+/* KOMUNIKAT */
+.error-message {
+    font-family: "Jersey 10", sans-serif;
+    font-size: 2.5rem;
+    color: #b000b0; /* Kolor z nagłówka dashboardu */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* PRZYCISK - Styl skopiowany i dostosowany z Twojego formularza logowania */
+.btn-back {
+    display: inline-block;
+    text-decoration: none;
+    
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 20px;
+    
+    border: none;
+    border-radius: 0; /* Kanciaste krawędzie */
+    
+    background-color: #dcdcdc; /* Szary z Twojego inputa */
+    color: black;
+    
+    font-family: "Jersey 10", sans-serif;
+    font-size: 2rem;
+    text-transform: uppercase;
+    
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-back:hover {
+    background-color: #ffffff;
+    transform: translateY(-2px);
+    /* Dodatkowy fioletowy glow przy hoverze */
+    box-shadow: 0 0 20px rgba(176, 0, 176, 0.6);
+}
+
+/* Prosta animacja pulsowania dla 404 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        text-shadow: 4px 4px 0px #b000b0;
+    }
+    100% {
+        transform: scale(1.02);
+        text-shadow: 6px 6px 0px #ff00ff; /* Jaśniejszy fiolet */
+    }
+}
+
+/* Responsywność */
+@media screen and (max-width: 600px) {
+    .error-code {
+        font-size: 8rem;
+    }
+    .error-message {
+        font-size: 2rem;
+    }
+}
