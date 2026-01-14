@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVENT.IO</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
+</head>
+<body>
+
+    <div class="app-layout">
+
+        <!-- NAGŁÓWEK (Sztywny - suwak go nie zasłania) -->
+        <header class="fixed-header-container" id="app-header">
+            
+            <div class="top-icons">
+                <i class="fa-regular fa-circle-user"></i>
+                <i class="fa-solid fa-gear"></i>
+            </div>
+
+            <!-- LOGO (Będzie zwijane przez JS) -->
+            <div class="logo-section" id="logo-section">
+                <h1 class="main-logo">EVENT.IO</h1>
+            </div>
+
+            <div class="search-section">
+                <div class="search-filter-wrapper">
+                    <div class="search-box">
+                        <i class="fa-solid fa-bars"></i>
+                        <input type="text" placeholder="Hinted search text">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    </div>
+
+                    <div class="filter-box">
+                        <div class="filter-option">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Lokalizacja</span>
+                        </div>
+                        <div class="filter-option">
+                            <i class="fa-regular fa-bookmark"></i>
+                            <span>Zapisane</span>
+                        </div>
+                        <div class="filter-option">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>Data</span>
+                        </div>
+                        <div class="filter-option">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <span>Więcej opcji</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- TREŚĆ (Tutaj jest suwak) -->
+        <main class="scrollable-content" id="scroll-container">
+            <div class="content-padding">
+                
+                <!-- KARTA 1 -->
+                <article class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
+                    </div>
+                    <div class="event-details">
+                        <div class="event-header">
+                            <h2>PITBULL – PARTY AFTER PARTY</h2>
+                            <i class="fa-solid fa-ellipsis options-icon"></i>
+                        </div>
+                        <div class="event-info">
+                            <p><i class="fa-solid fa-location-dot"></i> KRAKÓW, TAURON ARENA</p>
+                            <p><i class="fa-regular fa-clock"></i> 23.06.2024</p>
+                        </div>
+                        <div class="event-footer">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="ev1">
+                                <label for="ev1">JESTEM ZAINTERESOWANY</label>
+                            </div>
+                            <span class="interest-count">LICZBA ZAINTERESOWANYCH: 2137</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- KARTA 2 -->
+                <article class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
+                    </div>
+                    <div class="event-details">
+                        <div class="event-header">
+                            <h2>TECHNO RAVE NIGHT</h2>
+                            <i class="fa-solid fa-ellipsis options-icon"></i>
+                        </div>
+                        <div class="event-info">
+                            <p><i class="fa-solid fa-location-dot"></i> KATOWICE, SPODEK</p>
+                            <p><i class="fa-regular fa-clock"></i> 24.06.2024</p>
+                        </div>
+                        <div class="event-footer">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="ev2" checked>
+                                <label for="ev2">JESTEM ZAINTERESOWANY</label>
+                            </div>
+                            <span class="interest-count">LICZBA ZAINTERESOWANYCH: 2138</span>
+                            <div class="card-icons">
+                                <i class="fa-regular fa-heart"></i>
+                                <i class="fa-regular fa-bell"></i>
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- KARTA 3 -->
+                <article class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
+                    </div>
+                    <div class="event-details">
+                        <div class="event-header">
+                            <h2>ROCK LEGENDS</h2>
+                             <i class="fa-solid fa-ellipsis options-icon"></i>
+                        </div>
+                        <div class="event-info">
+                             <p><i class="fa-solid fa-location-dot"></i> WARSZAWA</p>
+                             <p><i class="fa-regular fa-clock"></i> 15.08.2024</p>
+                        </div>
+                        <div class="event-footer">
+                             <div class="checkbox-wrapper">
+                                <input type="checkbox" id="ev3">
+                                <label for="ev3">JESTEM ZAINTERESOWANY</label>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                 <!-- KARTA 4 (Zapychacz) -->
+                <article class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
+                    </div>
+                    <div class="event-details">
+                        <div class="event-header">
+                            <h2>JAZZ NIGHT</h2>
+                             <i class="fa-solid fa-ellipsis options-icon"></i>
+                        </div>
+                        <div class="event-info">
+                             <p><i class="fa-solid fa-location-dot"></i> GDYNIA</p>
+                             <p><i class="fa-regular fa-clock"></i> 20.09.2024</p>
+                        </div>
+                        <div class="event-footer">
+                             <div class="checkbox-wrapper">
+                                <input type="checkbox" id="ev4">
+                                <label for="ev4">JESTEM ZAINTERESOWANY</label>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SKRYPT DO ZWIJANIA LOGO -->
+    <script>
+        const scrollContainer = document.getElementById('scroll-container');
+        const header = document.getElementById('app-header');
+
+        scrollContainer.addEventListener('scroll', () => {
+            // Jeśli przewinięto więcej niż 50 pikseli
+            if (scrollContainer.scrollTop > 50) {
+                header.classList.add('header-shrink');
+            } else {
+                header.classList.remove('header-shrink');
+            }
+        });
+    </script>
+</body>
+</html>

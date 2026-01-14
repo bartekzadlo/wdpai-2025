@@ -1,5 +1,6 @@
 <?php
 
+require_once 'src/controllers/DefaultController.php'; // <--- DODANA LINIA
 require_once 'src/controllers/SecurityController.php';
 
 class Routing
@@ -13,14 +14,16 @@ class Routing
         'register' => [
             'controller' => 'SecurityController',
             'action' => 'register'
+        ],
+        // --- NOWA TRASA DLA /main ---
+        'main' => [
+            'controller' => 'DefaultController',
+            'action' => 'index'
         ]
-        // Możesz dodać kolejne ścieżki np. 'dashboard', 'logout', 'profile' itd.
     ];
 
     public static function run($url)
     {
-        //TODO na podstawie sciezki sprawdzamy jaki HTML zwrocic
-        // Pobieramy pierwszą część URL
         $actionKey = explode("/", trim($url, '/'))[0];
 
         // Jeśli URL nie istnieje w tablicy routes -> 404
@@ -29,14 +32,11 @@ class Routing
             return;
         }
 
-        // Pobieramy kontroler i metodę
         $controllerName = self::$routes[$actionKey]['controller'];
         $actionName = self::$routes[$actionKey]['action'];
 
-        // Tworzymy instancję kontrolera
         $controllerObj = new $controllerName();
 
-        //TODO obsługa metod, które nie istnieją
         if (method_exists($controllerObj, $actionName)) {
             $controllerObj->$actionName();
         } else {

@@ -1,61 +1,295 @@
-h1 {
-    color: blue;
+/* RESET */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --main-purple: #b000b0;
+    --card-gray: #bfbfbf;
+    --bg-black: #000000;
+    --font-pixel: "Jersey 10", sans-serif;
 }
 
 body {
+    background-color: var(--bg-black);
+    font-family: var(--font-pixel);
+    overflow: hidden; 
     height: 100vh;
-    margin: 0;
- 
+}
+
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* --- NAGŁÓWEK --- */
+.fixed-header-container {
+    background-color: var(--main-purple);
+    flex-shrink: 0; 
+    /* Dodajemy transition dla paddingu, żeby cały nagłówek płynnie się kurczył */
+    padding: 15px 30px 30px 30px;
+    transition: padding 0.3s ease;
+    z-index: 100;
     display: flex;
     flex-direction: column;
 }
- 
-nav {
-    background-color: aquamarine;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+/* Stan zwinięty (gdy JS doda klasę) */
+.fixed-header-container.header-shrink {
+    padding: 10px 30px 20px 30px; /* Nieco mniejszy padding */
 }
 
-nav > ul {
+.top-icons {
     display: flex;
-    gap: 1.5rem;
+    justify-content: flex-end;
+    color: white;
+    font-size: 1.8rem;
+    gap: 15px;
+    /* Ikony zostają, nie znikają */
 }
+.top-icons i { cursor: pointer; }
 
-.container {
-    background-color: bisque;
+/* --- SEKCJA LOGO Z ANIMACJĄ --- */
+.logo-section {
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 20px;
     
-    display: grid;
-    grid-template-columns: 30% 70%;
+    /* Kluczowe dla animacji */
+    max-height: 100px; /* Wysokość początkowa */
+    opacity: 1;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
 }
- 
-aside {
-    background-color: burlywood;
+
+.main-logo {
+    font-size: 5rem;
+    color: black;
+    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+/* LOGO ZWINIĘTE (ukryte) */
+.fixed-header-container.header-shrink .logo-section {
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    opacity: 0;
+}
+
+
+/* --- WYSZUKIWARKA --- */
+.search-section {
     display: flex;
     justify-content: center;
-    align-items: center;
-}
- 
-main {
-    background-color: rosybrown;
 }
 
-.messages {
-    color: red;
-    font-weight: 500;
-    margin-bottom: 1rem;
+.search-filter-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    align-items: center;
+    width: 100%;
 }
- 
-@media screen and (max-width: 480px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
- 
-    aside {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 80px;
-    }
+
+.search-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50px;
+    padding: 12px 25px;
+    display: flex;
+    align-items: center;
+    width: 45%;
+    max-width: 600px;
+    box-shadow: none; 
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-pixel);
+    font-size: 1.2rem;
+    color: #555;
+    flex-grow: 1;
+    margin: 0 15px;
+}
+
+.search-box i { font-size: 1.2rem; color: #333; }
+
+.filter-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50px;
+    padding: 8px 25px;
+    display: flex;
+    gap: 25px;
+}
+
+.filter-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #333;
+}
+.filter-option i { font-size: 1.1rem; margin-bottom: 2px; }
+
+
+/* --- TREŚĆ I SUWAK --- */
+.scrollable-content {
+    background-color: var(--bg-black);
+    flex-grow: 1; 
+    overflow-y: auto; 
+    position: relative;
+}
+
+.content-padding {
+    padding: 50px 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Suwak tylko w czarnej sekcji */
+.scrollable-content::-webkit-scrollbar {
+    width: 25px;
+    background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 15px;
+    margin: 20px 10px;
+    border: 2px solid black;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: var(--main-purple);
+    border-radius: 15px;
+    border: 3px solid white;
+}
+
+/* --- KARTY --- */
+.event-card {
+    background-color: var(--card-gray);
+    width: 100%;
+    display: flex;
+    height: 250px;
+}
+
+.event-image {
+    width: 35%;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.event-details {
+    width: 65%;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.event-header h2 {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1;
+}
+
+.options-icon { font-size: 1.5rem; cursor: pointer; }
+
+.event-info {
+    font-size: 1.3rem;
+    margin-top: 10px;
+}
+
+.event-info p {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+.event-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border: 2px solid black;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked {
+    background-color: black;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked::after {
+    content: '✔';
+    color: white;
+    font-size: 1.2rem;
+    position: absolute;
+    top: -2px;
+    left: 2px;
+}
+
+.interest-count {
+    margin-left: auto;
+    margin-right: 20px;
+    font-weight: 400;
+}
+
+.card-icons {
+    display: flex;
+    gap: 15px;
+    font-size: 1.5rem;
+}
+
+@media screen and (max-width: 1000px) {
+    .search-filter-wrapper { flex-direction: column; }
+    .search-box, .filter-box { width: 100%; max-width: none; }
+    .event-card { height: auto; flex-direction: column; }
+    .event-image { width: 100%; height: 200px; }
+    .event-details { width: 100%; }
+    .event-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .interest-count { margin: 0; }
 }
