@@ -1,6 +1,6 @@
 <?php
 
-require_once 'src/controllers/DefaultController.php'; // <--- DODANA LINIA
+require_once 'src/controllers/DefaultController.php';
 require_once 'src/controllers/SecurityController.php';
 
 class Routing
@@ -15,10 +15,14 @@ class Routing
             'controller' => 'SecurityController',
             'action' => 'register'
         ],
-        // --- NOWA TRASA DLA /main ---
         'main' => [
             'controller' => 'DefaultController',
             'action' => 'index'
+        ],
+        // --- NOWA TRASA DLA DASHBOARDU ---
+        'dashboard' => [
+            'controller' => 'DefaultController',
+            'action' => 'dashboard'
         ]
     ];
 

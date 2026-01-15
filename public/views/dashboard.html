@@ -1,15 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Zachowujemy importy stylów i skryptów -->
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
+    
+    <!-- Import czcionki Jersey 10 oraz ikon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script src="public/scripts/main.js" defer></script>
 
-    <title>Dashboard</title>
+    <title>Admin Dashboard | EVENT.IO</title>
 </head>
 <body>
-    <h1>DASHBOARD</h1>
+    
+    <div class="admin-container">
+        
+        <!-- BOCZNY PASEK NAWIGACYJNY -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo-text">EVENT.IO</h2>
+                <span class="badge">ADMIN</span>
+            </div>
+
+            <ul class="menu-list">
+                <li class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> PRZEGLĄD</a></li>
+                <li><a href="#"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
+                <li><a href="#"><i class="fa-solid fa-users"></i> UŻYTKOWNICY</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> USTAWIENIA</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="/login" class="btn-logout">WYLOGUJ</a>
+            </div>
+        </nav>
+
+        <!-- GŁÓWNA ZAWARTOŚĆ -->
+        <main class="main-content">
+            
+            <header class="top-bar">
+                <h1>PANEL STEROWANIA</h1>
+                <div class="admin-user">
+                    <span>Witaj, <strong>Administrator</strong></span>
+                    <i class="fa-regular fa-circle-user"></i>
+                </div>
+            </header>
+
+            <!-- STATYSTYKI (KAFELKI) -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>UŻYTKOWNICY</h3>
+                        <p class="stat-number">2,137</p>
+                    </div>
+                </div>
+
+                <div class="stat-card purple-glow">
+                    <div class="stat-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3>AKTYWNE WYDARZENIA</h3>
+                        <p class="stat-number">42</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
+                    <div class="stat-info">
+                        <h3>ZAINTERESOWANIE</h3>
+                        <p class="stat-number">15k</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEKCJA AKCJI I TABELI -->
+            <section class="action-panel">
+                <div class="panel-header">
+                    <h2>OSTATNIO DODANE WYDARZENIA</h2>
+                    <button class="btn-add-event">
+                        <i class="fa-solid fa-plus"></i> DODAJ NOWE
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="pixel-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>NAZWA WYDARZENIA</th>
+                                <th>LOKALIZACJA</th>
+                                <th>DATA</th>
+                                <th>STATUS</th>
+                                <th>AKCJE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Przykładowe dane statyczne -->
+                            <tr>
+                                <td>#001</td>
+                                <td>TECHNO RAVE NIGHT</td>
+                                <td>KATOWICE, SPODEK</td>
+                                <td>24.06.2024</td>
+                                <td class="status-active">AKTYWNE</td>
+                                <td>
+                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
+                                    <i class="fa-solid fa-trash action-icon delete"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#002</td>
+                                <td>JAZZ NIGHT</td>
+                                <td>GDYNIA</td>
+                                <td>20.09.2024</td>
+                                <td class="status-pending">SZKIC</td>
+                                <td>
+                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
+                                    <i class="fa-solid fa-trash action-icon delete"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#003</td>
+                                <td>ROCK LEGENDS</td>
+                                <td>WARSZAWA</td>
+                                <td>15.08.2024</td>
+                                <td class="status-active">AKTYWNE</td>
+                                <td>
+                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
+                                    <i class="fa-solid fa-trash action-icon delete"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
 </body>
 </html>
