@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- Zmieniony import czcionki na JERSEY 10 -->
+    <title>EVENT.IO - REJESTRACJA</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
@@ -13,8 +13,8 @@
     <link rel="stylesheet" type="text/css" href="public/styles/login.css">
 </head>
 <body>
-    <form action="login" method="POST">
-        <h1 id="title">EVENT.IO</h1> 
+    <form action="register" method="POST">
+        <h1 id="title">EVENT.IO</h1>
 
         <?php if(isset($messages)){ ?>
             <div style="color: red; text-align: center; margin-bottom: 10px; font-family: 'Jersey 10', sans-serif; font-size: 1.5rem;">
@@ -24,11 +24,11 @@
 
         <input name="email" type="email" placeholder="Podaj email">
         <input name="password" type="password" placeholder="Podaj hasło">
-        <button type="submit">LOGIN</button>
-        <a href="register" style="color: white; text-decoration: none; margin-top: 10px; font-family: 'Jersey 10', sans-serif;">
-    Nie masz konta? Zarejestruj się
-</a>
+        <button type="submit">ZAREJESTRUJ</button>
 
+        <a href="login" style="color: white; text-decoration: none; margin-top: 10px; font-family: 'Jersey 10', sans-serif;">
+            Masz konto? Zaloguj się
+        </a>
     </form>
 </body>
 </html>

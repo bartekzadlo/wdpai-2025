@@ -4,19 +4,22 @@ require_once 'AppController.php';
 
 class SecurityController extends AppController
 {
-    // ======= LOKALNA "BAZA" UŻYTKOWNIKÓW =======
-    private static array $users = [
-        [
-            'email' => 'admin@event.io',
-            'password' => '$2y$10$bRpNssdcYkU6pG8eUwY.peOVFt6W2.cnyCvSwL3p4kFB/bQTXnLAi', // admin
-            'role' => 'admin'
-        ],
-        [
-            'email' => 'user@event.io',
-            'password' => '$2y$10$yGzUXvMGRd8IQM9nYYutp.CwJKETOOCxJubq8acqFYtJxuOa3XRBG', // user
-            'role' => 'user'
-        ],
-    ];
+    private const USERS_FILE = __DIR__ . '/../../storage/users.json';
+
+    private static function loadUsers(): array
+    {
+        if (!file_exists(self::USERS_FILE)) {
+            return [];
+        }
+
+        $json = file_get_contents(self::USERS_FILE);
+        return json_decode($json, true) ?: [];
+    }
+
+    private static function saveUsers(array $users): void
+    {
+        file_put_contents(self::USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
+    }
 
     public function login()
     {
@@ -31,8 +34,10 @@ class SecurityController extends AppController
             return $this->render('login', ["messages" => "Fill all fields"]);
         }
 
+        $users = self::loadUsers();
+
         $userRow = null;
-        foreach (self::$users as $u) {
+        foreach ($users as $u) {
             if (strcasecmp($u['email'], $email) === 0) {
                 $userRow = $u;
                 break;
@@ -73,13 +78,23 @@ class SecurityController extends AppController
 
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $role = $_POST['role'] ?? 'user';
+        $role = 'user';
 
         if (empty($email) || empty($password)) {
             return $this->render('register', ["messages" => "Fill all fields"]);
         }
 
-        foreach (self::$users as $u) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->render('register', ["messages" => "Invalid email"]);
+        }
+
+        if (!in_array($role, ['admin', 'user'])) {
+            $role = 'user';
+        }
+
+        $users = self::loadUsers();
+
+        foreach ($users as $u) {
             if (strcasecmp($u['email'], $email) === 0) {
                 return $this->render('register', ["messages" => "Email is taken"]);
             }
@@ -87,11 +102,13 @@ class SecurityController extends AppController
 
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        self::$users[] = [
+        $users[] = [
             'email' => $email,
             'password' => $hashedPassword,
             'role' => $role
         ];
+
+        self::saveUsers($users);
 
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/login");

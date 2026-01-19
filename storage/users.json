@@ -1,0 +1,12 @@
+[
+  {
+    "email": "admin@event.io",
+    "password": "$2y$10$bRpNssdcYkU6pG8eUwY.peOVFt6W2.cnyCvSwL3p4kFB/bQTXnLAi",
+    "role": "admin"
+  },
+  {
+    "email": "user@event.io",
+    "password": "$2y$10$yGzUXvMGRd8IQM9nYYutp.CwJKETOOCxJubq8acqFYtJxuOa3XRBG",
+    "role": "user"
+  }
+]

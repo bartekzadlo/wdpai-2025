@@ -23,7 +23,6 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'index'
         ],
-        // --- TRASA DLA DASHBOARDU ---
         'dashboard' => [
             'controller' => 'DefaultController',
             'action' => 'dashboard'
