@@ -3,11 +3,14 @@
 require_once 'AppController.php';
 
 class DefaultController extends AppController {
-    
     public function index() {
-        // Metoda wyświetlająca stronę główną (feed)
-        // Szuka pliku w public/views/main.html
-        $this->render('main');
+        if (isset($_SESSION['user'])) {
+            // Zalogowany user widzi feed (dawne main.html)
+            $this->render('feed'); 
+        } else {
+            // Niezalogowany widzi landing page
+            $this->render('landing');
+        }
     }
 
     public function dashboard() {
