@@ -11,6 +11,10 @@ class Routing
             'controller' => 'SecurityController',
             'action' => 'login'
         ],
+        'logout' => [
+            'controller' => 'SecurityController',
+            'action' => 'logout'
+        ],
         'register' => [
             'controller' => 'SecurityController',
             'action' => 'register'
@@ -19,7 +23,7 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'index'
         ],
-        // --- NOWA TRASA DLA DASHBOARDU ---
+        // --- TRASA DLA DASHBOARDU ---
         'dashboard' => [
             'controller' => 'DefaultController',
             'action' => 'dashboard'

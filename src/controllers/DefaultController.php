@@ -3,19 +3,23 @@
 require_once 'AppController.php';
 
 class DefaultController extends AppController {
+    
     public function index() {
-        if (isset($_SESSION['user'])) {
-            // Zalogowany user widzi feed (dawne main.html)
-            $this->render('feed'); 
-        } else {
-            // Niezalogowany widzi landing page
-            $this->render('landing');
-        }
+        // Metoda wyświetlająca stronę główną (feed)
+        $this->render('main');
     }
 
     public function dashboard() {
+        session_start();
+
+        // Sprawdzenie czy użytkownik jest zalogowany i ma rolę admina
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
         // Metoda wyświetlająca panel administratora
-        // Szuka pliku w public/views/dashboard.html
         $this->render('dashboard');
     }
 }

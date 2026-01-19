@@ -4,34 +4,62 @@ require_once 'AppController.php';
 
 class SecurityController extends AppController
 {
-
-    public function login() {
-        if (!$this->isPost()) return $this->render('login');
+    public function login()
+    {
+        // Jeśli to nie jest POST, wyświetl formularz
+        if (!$this->isPost()) {
+            return $this->render('login');
+        }
 
         $email = $_POST['email'];
-        $pass = $_POST['password'];
+        $password = $_POST['password'];
 
-        // SYMULACJA BAZY DANYCH
-        if ($email === 'admin@event.io' && $pass === 'admin') {
-            $_SESSION['user'] = $email;
+        // MOCK ADMINA
+        if ($email === "admin@event.io" && $password === "admin") {
+            session_start();
             $_SESSION['role'] = 'admin';
-            header("Location: /dashboard");
-        } elseif ($email === 'user@event.io' && $pass === 'user') {
             $_SESSION['user'] = $email;
-            $_SESSION['role'] = 'user';
-            header("Location: /"); // Przenosi do feedu
-        } else {
-            return $this->render('login', ['messages' => 'Błędne dane!']);
+
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/dashboard");
+            return;
         }
+
+        // MOCK UŻYTKOWNIKA
+        if ($email === "user@event.io" && $password === "user") {
+            session_start();
+            $_SESSION['role'] = 'user';
+            $_SESSION['user'] = $email;
+
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/main");
+            return;
+        }
+
+        // BŁĘDNE DANE
+        return $this->render('login', ["messages" => "Błędny email lub hasło!"]);
     }
 
-    public function register() {
-        if (!$this->isPost()) return $this->render('register');
-        return $this->render('login', ['messages' => 'Konto założone!']);
-    }
-
-    public function logout() {
+    public function logout()
+    {
+        session_start();
+        session_unset();
         session_destroy();
-        header("Location: /");
+
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
+    }
+
+    public function register()
+    {
+        // TODO pobranie z formularza email i hasła
+        // TODO insert do bazy danych
+        // TODO zwrocenie informajci o pomyslnym zarejstrowaniu
+        return $this->render("login", ["messages" => "Zarejestrowano użytkownika"]);
+    }
+
+    private function isPost(): bool
+    {
+        return $_SERVER['REQUEST_METHOD'] === 'POST';
     }
 }
