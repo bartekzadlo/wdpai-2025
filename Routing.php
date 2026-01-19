@@ -26,6 +26,10 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'dashboard'
         ],
+        'profile' => [
+            'controller' => 'DefaultController',
+            'action' => 'profile'
+        ],
         'settings' => [
             'controller' => 'DefaultController',
             'action' => 'settings'

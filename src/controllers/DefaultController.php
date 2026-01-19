@@ -38,4 +38,16 @@ class DefaultController extends AppController {
 
         $this->render('settings');
     }
+
+    public function profile() {
+    session_start();
+
+    if (!isset($_SESSION['user'])) {
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
+        return;
+    }
+
+    $this->render('profile');
+    }   
 }

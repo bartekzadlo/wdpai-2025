@@ -20,14 +20,20 @@
     <header class="fixed-header-container" id="app-header">
         
         <div class="top-icons">
-            <!-- USTAWIENIA (wszyscy zalogowani) -->
+            <!-- USTAWIENIA -->
             <a href="/settings">
                 <i class="fa-solid fa-gear"></i>
             </a>
 
+            <!-- PROFIL -->
+            <a href="/profile" title="Profil">
+                <i class="fa-regular fa-circle-user"></i>
+            </a>
+
             <!-- DASHBOARD (tylko admin) -->
+            <!-- Usunięto klasę 'admin-btn', aby przycisk wyglądał tak samo jak inne -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                <a href="/dashboard" class="admin-btn">
+                <a href="/dashboard">
                     <i class="fa-solid fa-chart-line"></i>
                 </a>
             <?php endif; ?>

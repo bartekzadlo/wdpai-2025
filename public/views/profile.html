@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil użytkownika | EVENT.IO</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/styles/main.css">
+
+    <style>
+        .profile-container {
+            max-width: 900px;
+            margin: 120px auto 40px;
+            padding: 30px;
+            background: #1a1a1a;
+            border: 2px solid white;
+            box-shadow: 6px 6px 0px var(--main-purple);
+            color: white;
+            font-family: "Jersey 10", sans-serif;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: #333;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+        }
+
+        .profile-info h2 {
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .profile-section {
+            margin-bottom: 40px;
+        }
+
+        .profile-section h3 {
+            font-size: 2rem;
+            color: var(--main-purple);
+            margin-bottom: 15px;
+        }
+
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-item {
+            background: #dcdcdc;
+            color: black;
+            padding: 15px;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px black;
+        }
+
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .friend-card {
+            background: #333;
+            border: 2px solid white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- HEADER -->
+    <header class="fixed-header-container">
+        <div class="top-icons">
+            <a href="/main"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="/settings"><i class="fa-solid fa-gear"></i></a>
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+
+        <div class="logo-section">
+            <h1 class="main-logo">EVENT.IO</h1>
+        </div>
+    </header>
+
+    <!-- TREŚĆ -->
+    <main class="scrollable-content">
+        <div class="profile-container">
+
+            <!-- HEADER PROFILU -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="profile-info">
+                    <h2><?= $_SESSION['user'] ?></h2>
+                    <p>MIASTO: KRAKÓW</p>
+                    <p>BIO: FAN MUZYKI ELEKTRONICZNEJ 🎶</p>
+                </div>
+            </div>
+
+            <!-- WYDARZENIA -->
+            <div class="profile-section">
+                <h3><i class="fa-regular fa-calendar-check"></i> IDĘ NA WYDARZENIA</h3>
+                <div class="event-list">
+                    <div class="event-item">TECHNO RAVE NIGHT – KATOWICE</div>
+                    <div class="event-item">PITBULL – AFTER PARTY</div>
+                </div>
+            </div>
+
+            <!-- ZNAJOMI -->
+            <div class="profile-section">
+                <h3><i class="fa-solid fa-users"></i> ZNAJOMI</h3>
+                <div class="friends-grid">
+                    <div class="friend-card">ANNA</div>
+                    <div class="friend-card">MICHAŁ</div>
+                    <div class="friend-card">KASIA</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>
