@@ -78,32 +78,63 @@ class SecurityController extends AppController
 
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $role = 'user';
+        $name = trim($_POST['name'] ?? '');
+        $surname = trim($_POST['surname'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        $terms = isset($_POST['terms']);
+        $rodo = isset($_POST['rodo']);
 
-        if (empty($email) || empty($password)) {
-            return $this->render('register', ["messages" => "Fill all fields"]);
+        // Walidacja
+        if (empty($email) || empty($password) || empty($name) || empty($surname) || empty($city)) {
+            return $this->render('register', ["messages" => "Wypełnij wszystkie pola"]);
+        }
+
+        if (!$terms || !$rodo) {
+            return $this->render('register', ["messages" => "Wymagane są zgody (Regulamin i RODO)"]);
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->render('register', ["messages" => "Invalid email"]);
+            return $this->render('register', ["messages" => "Niepoprawny email"]);
         }
 
         $users = self::loadUsers();
 
         foreach ($users as $u) {
             if (strcasecmp($u['email'], $email) === 0) {
-                return $this->render('register', ["messages" => "Email is taken"]);
+                return $this->render('register', ["messages" => "Email jest już zajęty"]);
             }
         }
 
-        $users[] = [
+        // Tworzenie nowego użytkownika z rozszerzonymi danymi
+        $newUser = [
+            'id' => uniqid(), // Unikalne ID
             'email' => $email,
             'password' => password_hash($password, PASSWORD_BCRYPT),
-            'role' => $role
+            'role' => 'user',
+            'name' => $name,
+            'surname' => $surname,
+            'phone' => $phone,
+            'city' => $city,
+            'consents' => [
+                'rodo' => true,
+                'terms' => true,
+                'date' => date('Y-m-d H:i:s')
+            ],
+            // Domyślne ustawienia
+            'settings' => [
+                'email_notif' => true,
+                'sms_notif' => false,
+                'geo_notif' => true,
+                'public_profile' => false,
+                'show_events' => true
+            ]
         ];
 
+        $users[] = $newUser;
         self::saveUsers($users);
 
+        // Opcjonalnie: Automatyczne logowanie po rejestracji lub przekierowanie
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/login");
     }

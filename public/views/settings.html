@@ -14,16 +14,15 @@
     <!-- Główny styl aplikacji -->
     <link rel="stylesheet" href="public/styles/main.css">
 
-    <!-- Dodatkowe style inline dla specyficznych elementów ustawień (aby pasowały do reszty) -->
     <style>
-        /* Stylizacja kontenera ustawień na wzór kart wydarzeń */
+        /* Stylizacja kontenera ustawień */
         .settings-container {
             max-width: 600px;
-            margin: 100px auto 20px; /* Margines góra pod header */
+            margin: 100px auto 40px;
             padding: 2rem;
-            background: #1a1a1a; /* Ciemne tło */
-            border: 2px solid #fff; /* Retro ramka */
-            box-shadow: 4px 4px 0px #fff; /* Cień w stylu pixel art */
+            background: #1a1a1a;
+            border: 2px solid #fff;
+            box-shadow: 4px 4px 0px #fff;
             color: white;
             font-family: 'Jersey 10', sans-serif;
         }
@@ -43,18 +42,25 @@
 
         .settings-section {
             margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .settings-section h3 {
             font-size: 1.5rem;
-            color: #ccc;
+            color: #b000b0; /* Fioletowy akcent */
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Customowy Retro Toggle Switch */
+        /* Wiersz ustawienia */
         .setting-row {
             display: flex;
             justify-content: space-between;
@@ -62,17 +68,20 @@
             padding: 10px 0;
             border-bottom: 1px dashed #444;
         }
+        .setting-row:last-of-type {
+            border-bottom: none;
+        }
 
         .setting-label {
             font-size: 1.2rem;
+            text-transform: uppercase;
         }
 
-        /* Ukrywamy domyślny checkbox */
+        /* --- Customowy Retro Toggle Switch --- */
         .pixel-switch input {
             display: none;
         }
 
-        /* Pudełko przełącznika */
         .pixel-switch label {
             display: block;
             width: 50px;
@@ -84,7 +93,6 @@
             transition: background 0.2s;
         }
 
-        /* Kwadracik w środku (suwak) */
         .pixel-switch label::after {
             content: '';
             position: absolute;
@@ -93,51 +101,83 @@
             width: 16px;
             height: 16px;
             background: #fff;
-            transition: margin-left 0.2s steps(2); /* Skokowa animacja dla efektu retro */
+            transition: margin-left 0.2s steps(2);
         }
 
-        /* Stan zaznaczony */
         .pixel-switch input:checked + label {
-            background: #6a0dad; /* Fioletowy akcent z dashboardu */
+            background: #b000b0;
         }
 
         .pixel-switch input:checked + label::after {
             margin-left: 26px;
         }
 
-        /* Przyciski na dole */
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
+        /* --- Inputy tekstowe (do hasła) --- */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-retro {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 2px solid #555;
+            color: white;
+            font-family: 'Jersey 10', sans-serif;
+            font-size: 1.2rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .input-retro:focus {
+            border-color: #b000b0;
+            background: #000;
         }
 
+        /* --- Przyciski --- */
         .btn-retro {
-            flex: 1;
-            padding: 10px;
+            display: block;
+            width: 100%;
+            padding: 12px;
             border: 2px solid #fff;
             background: transparent;
             color: #fff;
             font-family: 'Jersey 10', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
             text-align: center;
-            text-decoration: none;
+            text-transform: uppercase;
             transition: all 0.2s;
+            margin-top: 10px;
         }
 
         .btn-retro:hover {
             background: #fff;
             color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255,255,255,0.2);
         }
 
         .btn-save {
             background: #fff;
             color: #000;
+            margin-top: 20px;
         }
         
         .btn-save:hover {
             background: #ccc;
+        }
+
+        .btn-danger {
+            border-color: #ff3333;
+            color: #ff3333;
+            margin-top: 20px;
+        }
+
+        .btn-danger:hover {
+            background: #ff3333;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -145,24 +185,16 @@
 
 <div class="app-layout">
 
-    <!-- NAGŁÓWEK (Spójny z main.html) -->
+    <!-- NAGŁÓWEK -->
     <header class="fixed-header-container" id="app-header">
         <div class="top-icons">
-            <!-- Przycisk powrotu -->
-            <a href="/main">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
+            <a href="/main"><i class="fa-solid fa-arrow-left"></i></a>
         </div>
-
         <div class="logo-section">
             <h1 class="main-logo">EVENT.IO</h1>
         </div>
-
         <div class="top-icons">
-            <!-- Wyloguj -->
-            <a href="/logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-            </a>
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
     </header>
 
@@ -174,69 +206,169 @@
                 <h2><i class="fa-solid fa-gear"></i> USTAWIENIA</h2>
             </div>
 
-            <form action="/update-settings" method="POST">
+            <!-- Bez taga <form>, używamy JS do obsługi -->
+            <div id="settings-form">
                 
-                <!-- SEKCJA 1: POWIADOMIENIA -->
+                <!-- 1. POWIADOMIENIA I PRYWATNOŚĆ -->
                 <div class="settings-section">
-                    <h3><i class="fa-regular fa-bell"></i> POWIADOMIENIA</h3>
+                    <h3><i class="fa-regular fa-bell"></i> PREFERENCJE</h3>
                     
                     <div class="setting-row">
-                        <span class="setting-label">POWIADOMIENIA EMAIL</span>
+                        <span class="setting-label">Powiadomienia Email</span>
                         <div class="pixel-switch">
-                            <input type="checkbox" id="email_notif" name="email_notif" checked>
+                            <input type="checkbox" id="email_notif" <?= isset($user['settings']['email_notif']) && $user['settings']['email_notif'] ? 'checked' : '' ?>>
                             <label for="email_notif"></label>
                         </div>
                     </div>
 
                     <div class="setting-row">
-                        <span class="setting-label">POWIADOMIENIA SMS</span>
+                        <span class="setting-label">Powiadomienia SMS</span>
                         <div class="pixel-switch">
-                            <input type="checkbox" id="sms_notif" name="sms_notif">
+                            <input type="checkbox" id="sms_notif" <?= isset($user['settings']['sms_notif']) && $user['settings']['sms_notif'] ? 'checked' : '' ?>>
                             <label for="sms_notif"></label>
                         </div>
                     </div>
                     
                     <div class="setting-row">
-                        <span class="setting-label">NOWE WYDARZENIA W OKOLICY</span>
+                        <span class="setting-label">Nowe w okolicy</span>
                         <div class="pixel-switch">
-                            <input type="checkbox" id="geo_notif" name="geo_notif" checked>
+                            <input type="checkbox" id="geo_notif" <?= isset($user['settings']['geo_notif']) && $user['settings']['geo_notif'] ? 'checked' : '' ?>>
                             <label for="geo_notif"></label>
                         </div>
                     </div>
-                </div>
-
-                <!-- SEKCJA 2: PRYWATNOŚĆ -->
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-lock"></i> PRYWATNOŚĆ</h3>
 
                     <div class="setting-row">
-                        <span class="setting-label">PROFIL PUBLICZNY</span>
+                        <span class="setting-label">Profil publiczny</span>
                         <div class="pixel-switch">
-                            <input type="checkbox" id="public_profile" name="public_profile">
+                            <input type="checkbox" id="public_profile" <?= isset($user['settings']['public_profile']) && $user['settings']['public_profile'] ? 'checked' : '' ?>>
                             <label for="public_profile"></label>
                         </div>
                     </div>
 
                     <div class="setting-row">
-                        <span class="setting-label">POKAZUJ MOJE ZAPISY</span>
+                        <span class="setting-label">Pokazuj moje zapisy</span>
                         <div class="pixel-switch">
-                            <input type="checkbox" id="show_events" name="show_events" checked>
+                            <input type="checkbox" id="show_events" <?= isset($user['settings']['show_events']) && $user['settings']['show_events'] ? 'checked' : '' ?>>
                             <label for="show_events"></label>
                         </div>
                     </div>
+
+                    <button type="button" onclick="savePreferences()" class="btn-retro btn-save">ZAPISZ ZMIANY</button>
                 </div>
 
-                <!-- PRZYCISKI AKCJI -->
-                <div class="action-buttons">
-                    <a href="/main" class="btn-retro">ANULUJ</a>
-                    <button type="submit" class="btn-retro btn-save">ZAPISZ ZMIANY</button>
+                <!-- 2. ZMIANA HASŁA -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-key"></i> ZMIEŃ HASŁO</h3>
+                    
+                    <div class="input-group">
+                        <input type="password" id="old_password" class="input-retro" placeholder="STARE HASŁO">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="new_password" class="input-retro" placeholder="NOWE HASŁO">
+                    </div>
+                    
+                    <button type="button" onclick="changePassword()" class="btn-retro">ZATWIERDŹ NOWE HASŁO</button>
                 </div>
 
-            </form>
+                <!-- 3. USUWANIE KONTA -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> STREFA NIEBEZPIECZNA</h3>
+                    <p style="color: #888; margin-bottom: 10px; font-size: 1rem;">Usunięcie konta jest nieodwracalne. Stracisz dostęp do wszystkich zapisanych wydarzeń.</p>
+                    <button type="button" onclick="deleteAccount()" class="btn-retro btn-danger">USUŃ KONTO TRWALE</button>
+                </div>
+
+            </div>
         </div>
     </main>
 
 </div>
+
+<!-- SKRYPTY OBSŁUGI API -->
+<script>
+    // Pomocnicza funkcja do wysyłania żądań z lepszą obsługą błędów JSON
+    async function sendRequest(url, data) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            // Zamiast od razu response.json(), pobieramy tekst, aby sprawdzić czy nie ma błędów PHP
+            const text = await response.text();
+            
+            try {
+                // Próbujemy sparsować JSON
+                return JSON.parse(text);
+            } catch (e) {
+                // Jeśli się nie uda, wypisujemy błąd w konsoli (F12)
+                console.error("Serwer zwrócił niepoprawny JSON:", text);
+                return { status: 'error', message: 'Wystąpił błąd serwera. Sprawdź konsolę (F12).' };
+            }
+
+        } catch (error) {
+            console.error('Błąd sieci:', error);
+            return { status: 'error', message: 'Błąd połączenia z serwerem' };
+        }
+    }
+
+    // Zapisywanie ustawień (checkboxy)
+    async function savePreferences() {
+        const btn = document.querySelector('.btn-save');
+        const originalText = btn.innerText;
+        btn.innerText = "ZAPISYWANIE...";
+
+        const data = {
+            email_notif: document.getElementById('email_notif').checked,
+            sms_notif: document.getElementById('sms_notif').checked,
+            geo_notif: document.getElementById('geo_notif').checked,
+            public_profile: document.getElementById('public_profile').checked,
+            show_events: document.getElementById('show_events').checked
+        };
+
+        const res = await sendRequest('/api/settings/update', data);
+        
+        alert(res.message);
+        btn.innerText = originalText;
+    }
+
+    // Zmiana hasła
+    async function changePassword() {
+        const oldPass = document.getElementById('old_password').value;
+        const newPass = document.getElementById('new_password').value;
+
+        if(!oldPass || !newPass) {
+            alert("Wprowadź stare i nowe hasło.");
+            return;
+        }
+
+        const res = await sendRequest('/api/settings/password', {
+            old_password: oldPass,
+            new_password: newPass
+        });
+        
+        alert(res.message);
+        
+        if(res.status === 'success') {
+            document.getElementById('old_password').value = '';
+            document.getElementById('new_password').value = '';
+        }
+    }
+
+    // Usuwanie konta
+    async function deleteAccount() {
+        if(confirm("JESTEŚ PEWIEN? TEJ OPERACJI NIE MOŻNA COFNĄĆ!")) {
+            const res = await sendRequest('/api/settings/delete', {});
+            
+            if(res.status === 'success') {
+                alert("Konto zostało usunięte. Do widzenia!");
+                window.location.href = "/login";
+            } else {
+                alert("Wystąpił błąd: " + res.message);
+            }
+        }
+    }
+</script>
 
 </body>
 </html>

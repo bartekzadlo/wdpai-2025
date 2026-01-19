@@ -1,7 +1,9 @@
 <?php
 
+// Upewnij się, że ścieżki są poprawne względem głównego katalogu
 require_once 'src/controllers/DefaultController.php';
 require_once 'src/controllers/SecurityController.php';
+require_once 'src/controllers/SettingsController.php';
 
 class Routing
 {
@@ -31,16 +33,40 @@ class Routing
             'action' => 'profile'
         ],
         'settings' => [
-            'controller' => 'DefaultController',
+            'controller' => 'SettingsController', 
             'action' => 'settings'
+        ],
+
+        // --- API Ustawień (AJAX) ---
+        'api/settings/update' => [
+            'controller' => 'SettingsController', 
+            'action' => 'updateSettings'
+        ],
+        'api/settings/password' => [
+            'controller' => 'SettingsController', 
+            'action' => 'changePassword'
+        ],
+        'api/settings/delete' => [
+            'controller' => 'SettingsController', 
+            'action' => 'deleteAccount'
         ]
     ];
 
     public static function run($url)
     {
-        $actionKey = explode("/", trim($url, '/'))[0];
+        // Rozbijamy URL na części
+        $urlParts = explode("/", trim($url, '/'));
+        $actionKey = $urlParts[0];
 
+        // Obsługa zagnieżdżonych ścieżek dla API (np. api/settings/update)
+        // Sprawdzamy czy pierwszy segment to 'api' i czy mamy wystarczająco dużo części
+        if ($actionKey === 'api' && count($urlParts) >= 3) {
+            $actionKey = $urlParts[0] . '/' . $urlParts[1] . '/' . $urlParts[2];
+        }
+
+        // Jeśli ścieżka nie istnieje w tablicy routes -> 404
         if (!array_key_exists($actionKey, self::$routes)) {
+            http_response_code(404);
             include 'public/views/404.html';
             return;
         }
@@ -48,12 +74,21 @@ class Routing
         $controllerName = self::$routes[$actionKey]['controller'];
         $actionName = self::$routes[$actionKey]['action'];
 
-        $controllerObj = new $controllerName();
-
-        if (method_exists($controllerObj, $actionName)) {
-            $controllerObj->$actionName();
+        // Tworzymy instancję kontrolera i wywołujemy metodę
+        if (class_exists($controllerName)) {
+            $controllerObj = new $controllerName();
+            
+            if (method_exists($controllerObj, $actionName)) {
+                $controllerObj->$actionName();
+            } else {
+                // Metoda nie istnieje w kontrolerze
+                http_response_code(404);
+                include 'public/views/404.html';
+            }
         } else {
-            include 'public/views/404.html';
+            // Klasa kontrolera nie znaleziona
+            http_response_code(500);
+            echo "Internal Server Error: Controller not found.";
         }
     }
 }

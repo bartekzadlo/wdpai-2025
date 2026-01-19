@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EVENT.IO - REJESTRACJA</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="public/styles/login.css">
+    <style>
+        /* Styl dla checkboxów zgód */
+        .consents { text-align: left; margin-top: 10px; font-family: sans-serif; font-size: 0.8rem; color: #ccc; }
+        .consents label { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; cursor: pointer; }
+        .consents input { width: 20px; height: 20px; box-shadow: none; margin: 0; }
+        .two-cols { display: flex; gap: 10px; }
+    </style>
 </head>
 <body>
     <form action="register" method="POST">
@@ -22,8 +25,30 @@
             </div>
         <?php } ?>
 
-        <input name="email" type="email" placeholder="Podaj email">
-        <input name="password" type="password" placeholder="Podaj hasło">
+        <div class="two-cols">
+            <input name="name" type="text" placeholder="Imię">
+            <input name="surname" type="text" placeholder="Nazwisko">
+        </div>
+        
+        <input name="email" type="email" placeholder="E-mail">
+        <input name="password" type="password" placeholder="Hasło">
+        
+        <div class="two-cols">
+            <input name="city" type="text" placeholder="Miasto">
+            <input name="phone" type="tel" placeholder="Telefon">
+        </div>
+
+        <div class="consents">
+            <label>
+                <input type="checkbox" name="terms" required>
+                Akceptuję regulamin serwisu (Wymagane)
+            </label>
+            <label>
+                <input type="checkbox" name="rodo" required>
+                Wyrażam zgodę na przetwarzanie danych RODO (Wymagane)
+            </label>
+        </div>
+
         <button type="submit">ZAREJESTRUJ</button>
 
         <a href="login" style="color: white; text-decoration: none; margin-top: 10px; font-family: 'Jersey 10', sans-serif;">
