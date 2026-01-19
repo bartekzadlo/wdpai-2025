@@ -5,7 +5,6 @@ require_once 'src/controllers/SecurityController.php';
 
 class Routing
 {
-    // Tablica z mapowaniem URL -> kontroler + metoda
     public static $routes = [
         'login' => [
             'controller' => 'SecurityController',
@@ -26,6 +25,10 @@ class Routing
         'dashboard' => [
             'controller' => 'DefaultController',
             'action' => 'dashboard'
+        ],
+        'settings' => [
+            'controller' => 'DefaultController',
+            'action' => 'settings'
         ]
     ];
 
@@ -33,7 +36,6 @@ class Routing
     {
         $actionKey = explode("/", trim($url, '/'))[0];
 
-        // Jeśli URL nie istnieje w tablicy routes -> 404
         if (!array_key_exists($actionKey, self::$routes)) {
             include 'public/views/404.html';
             return;

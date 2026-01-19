@@ -57,7 +57,7 @@ class SecurityController extends AppController
         $_SESSION['user'] = $userRow['email'];
 
         $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/" . ($userRow['role'] === 'admin' ? 'dashboard' : 'main'));
+        header("Location: {$url}/main");
     }
 
     public function logout()
@@ -88,10 +88,6 @@ class SecurityController extends AppController
             return $this->render('register', ["messages" => "Invalid email"]);
         }
 
-        if (!in_array($role, ['admin', 'user'])) {
-            $role = 'user';
-        }
-
         $users = self::loadUsers();
 
         foreach ($users as $u) {
@@ -100,11 +96,9 @@ class SecurityController extends AppController
             }
         }
 
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
         $users[] = [
             'email' => $email,
-            'password' => $hashedPassword,
+            'password' => password_hash($password, PASSWORD_BCRYPT),
             'role' => $role
         ];
 

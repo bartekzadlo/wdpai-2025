@@ -284,6 +284,22 @@ body {
     font-size: 1.5rem;
 }
 
+.admin-btn {
+    margin-left: 15px;
+    padding: 6px 12px;
+    border: 2px solid white;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+.admin-btn:hover {
+    background-color: white;
+    color: black;
+}
+
 @media screen and (max-width: 1000px) {
     .search-filter-wrapper { flex-direction: column; }
     .search-box, .filter-box { width: 100%; max-width: none; }
