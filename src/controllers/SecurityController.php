@@ -4,40 +4,55 @@ require_once 'AppController.php';
 
 class SecurityController extends AppController
 {
+    // ======= LOKALNA "BAZA" UŻYTKOWNIKÓW =======
+    private static array $users = [
+        [
+            'email' => 'admin@event.io',
+            'password' => '$2y$10$bRpNssdcYkU6pG8eUwY.peOVFt6W2.cnyCvSwL3p4kFB/bQTXnLAi', // admin
+            'role' => 'admin'
+        ],
+        [
+            'email' => 'user@event.io',
+            'password' => '$2y$10$yGzUXvMGRd8IQM9nYYutp.CwJKETOOCxJubq8acqFYtJxuOa3XRBG', // user
+            'role' => 'user'
+        ],
+    ];
+
     public function login()
     {
-        // Jeśli to nie jest POST, wyświetl formularz
         if (!$this->isPost()) {
             return $this->render('login');
         }
 
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
 
-        // MOCK ADMINA
-        if ($email === "admin@event.io" && $password === "admin") {
-            session_start();
-            $_SESSION['role'] = 'admin';
-            $_SESSION['user'] = $email;
-
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
-            return;
+        if (empty($email) || empty($password)) {
+            return $this->render('login', ["messages" => "Fill all fields"]);
         }
 
-        // MOCK UŻYTKOWNIKA
-        if ($email === "user@event.io" && $password === "user") {
-            session_start();
-            $_SESSION['role'] = 'user';
-            $_SESSION['user'] = $email;
-
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/main");
-            return;
+        $userRow = null;
+        foreach (self::$users as $u) {
+            if (strcasecmp($u['email'], $email) === 0) {
+                $userRow = $u;
+                break;
+            }
         }
 
-        // BŁĘDNE DANE
-        return $this->render('login', ["messages" => "Błędny email lub hasło!"]);
+        if (!$userRow) {
+            return $this->render('login', ["messages" => "User not found"]);
+        }
+
+        if (!password_verify($password, $userRow['password'])) {
+            return $this->render('login', ["messages" => "Wrong password"]);
+        }
+
+        session_start();
+        $_SESSION['role'] = $userRow['role'];
+        $_SESSION['user'] = $userRow['email'];
+
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/" . ($userRow['role'] === 'admin' ? 'dashboard' : 'main'));
     }
 
     public function logout()
@@ -52,10 +67,34 @@ class SecurityController extends AppController
 
     public function register()
     {
-        // TODO pobranie z formularza email i hasła
-        // TODO insert do bazy danych
-        // TODO zwrocenie informajci o pomyslnym zarejstrowaniu
-        return $this->render("login", ["messages" => "Zarejestrowano użytkownika"]);
+        if (!$this->isPost()) {
+            return $this->render('register');
+        }
+
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $role = $_POST['role'] ?? 'user';
+
+        if (empty($email) || empty($password)) {
+            return $this->render('register', ["messages" => "Fill all fields"]);
+        }
+
+        foreach (self::$users as $u) {
+            if (strcasecmp($u['email'], $email) === 0) {
+                return $this->render('register', ["messages" => "Email is taken"]);
+            }
+        }
+
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        self::$users[] = [
+            'email' => $email,
+            'password' => $hashedPassword,
+            'role' => $role
+        ];
+
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
     }
 
     private function isPost(): bool
