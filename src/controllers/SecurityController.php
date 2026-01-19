@@ -5,19 +5,33 @@ require_once 'AppController.php';
 class SecurityController extends AppController
 {
 
-  public function login()
-  {
-        // TODO get data from database
-        // TODO zwroc HTML logowania, przetworz dane
-        //  $this->render("login", ["name"=> "Bartek"]);
-    return $this->render('login', ["messages" => "Błędne hasło lub login"]);
-  }
+    public function login() {
+        if (!$this->isPost()) return $this->render('login');
 
-  public function register()
-  {
-        // TODO pobranie z formularza email i hasła
-        // TODO insert do bazy danych
-        // TODO zwrocenie informajci o pomyslnym zarejstrowaniu
-            return $this->render("login", ["messages" => "Zarejestrowano uytkownika"]);
-  }
+        $email = $_POST['email'];
+        $pass = $_POST['password'];
+
+        // SYMULACJA BAZY DANYCH
+        if ($email === 'admin@event.io' && $pass === 'admin') {
+            $_SESSION['user'] = $email;
+            $_SESSION['role'] = 'admin';
+            header("Location: /dashboard");
+        } elseif ($email === 'user@event.io' && $pass === 'user') {
+            $_SESSION['user'] = $email;
+            $_SESSION['role'] = 'user';
+            header("Location: /"); // Przenosi do feedu
+        } else {
+            return $this->render('login', ['messages' => 'Błędne dane!']);
+        }
+    }
+
+    public function register() {
+        if (!$this->isPost()) return $this->render('register');
+        return $this->render('login', ['messages' => 'Konto założone!']);
+    }
+
+    public function logout() {
+        session_destroy();
+        header("Location: /");
+    }
 }
