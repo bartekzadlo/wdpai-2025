@@ -172,7 +172,9 @@
                         <p style="color: #ccc; font-style: italic; grid-column: 1 / -1;">Brak znajomych</p>
                     <?php else: ?>
                         <?php foreach ($friends as $friend): ?>
-                            <div class="friend-card"><?= htmlspecialchars($friend->name . ' ' . $friend->surname) ?></div>
+                            <?php if ($friend): ?>
+                                <div class="friend-card"><?= htmlspecialchars($friend->name . ' ' . $friend->surname) ?></div>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>

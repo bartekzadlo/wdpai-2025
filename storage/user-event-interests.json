@@ -10,5 +10,21 @@
     {
         "userId": "",
         "eventId": "ev3"
+    },
+    {
+        "userId": "user",
+        "eventId": "ev2"
+    },
+    {
+        "userId": "admin",
+        "eventId": "ev3"
+    },
+    {
+        "userId": "admin",
+        "eventId": "ev1"
+    },
+    {
+        "userId": "admin",
+        "eventId": "ev2"
     }
 ]

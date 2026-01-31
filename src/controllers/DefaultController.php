@@ -87,6 +87,7 @@ class DefaultController extends AppController {
                 $friendData[] = $friendUser;
             }
         }
+        $friendData = array_filter($friendData, fn($f) => $f !== null);
 
         $this->render('profile', [
             'user' => $user,
