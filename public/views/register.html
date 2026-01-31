@@ -25,6 +25,7 @@
             </div>
         <?php } ?>
 
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
         <div class="two-cols">
             <input name="name" type="text" placeholder="Imię">
             <input name="surname" type="text" placeholder="Nazwisko">
