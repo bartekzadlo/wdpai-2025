@@ -9,7 +9,7 @@ class SecurityController extends AppController
 
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
+        $this->userRepository = UserRepository::getInstance();
     }
 
     public function login()

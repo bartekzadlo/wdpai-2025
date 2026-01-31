@@ -5,6 +5,17 @@ require_once __DIR__ . '/../models/User.php';
 class UserRepository
 {
     private const USERS_FILE = __DIR__ . '/../../storage/users.json';
+    private static ?UserRepository $instance = null;
+
+    private function __construct() {}
+
+    public static function getInstance(): UserRepository
+    {
+        if (self::$instance === null) {
+            self::$instance = new UserRepository();
+        }
+        return self::$instance;
+    }
 
     public function findAll(): array
     {
