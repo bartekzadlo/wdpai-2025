@@ -44,12 +44,8 @@ class SecurityController extends AppController
             }
         }
 
-        if (!$userRow) {
-            return $this->render('login', ["messages" => "User not found"]);
-        }
-
-        if (!password_verify($password, $userRow['password'])) {
-            return $this->render('login', ["messages" => "Wrong password"]);
+        if (!$userRow || !password_verify($password, $userRow['password'])) {
+            return $this->render('login', ["messages" => "Email lub hasło niepoprawne"]);
         }
 
         session_start();
