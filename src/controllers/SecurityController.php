@@ -10,6 +10,8 @@ class SecurityController extends AppController
     public function __construct()
     {
         $this->userRepository = UserRepository::getInstance();
+        // Ensure session cookie has HttpOnly flag
+        ini_set('session.cookie_httponly', 1);
     }
 
     public function login()
@@ -64,6 +66,9 @@ class SecurityController extends AppController
 
         $_SESSION['role'] = $user->role;
         $_SESSION['user'] = $user->email;
+
+        // Regenerate session ID after successful login
+        session_regenerate_id(true);
 
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/main");

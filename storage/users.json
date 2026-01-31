@@ -1,8 +1,14 @@
 [
     {
+        "id": "",
         "email": "admin@event.io",
         "password": "$2y$10$bRpNssdcYkU6pG8eUwY.peOVFt6W2.cnyCvSwL3p4kFB\/bQTXnLAi",
         "role": "admin",
+        "name": "",
+        "surname": "",
+        "phone": "",
+        "city": "",
+        "consents": [],
         "settings": {
             "email_notif": true,
             "sms_notif": true,
@@ -12,15 +18,43 @@
         }
     },
     {
+        "id": "",
         "email": "user@event.io",
         "password": "$2y$10$yGzUXvMGRd8IQM9nYYutp.CwJKETOOCxJubq8acqFYtJxuOa3XRBG",
         "role": "user",
+        "name": "",
+        "surname": "",
+        "phone": "",
+        "city": "",
+        "consents": [],
         "settings": {
             "email_notif": true,
             "sms_notif": false,
             "geo_notif": false,
             "public_profile": false,
             "show_events": false
+        }
+    },
+    {
+        "id": "697d61782fefd",
+        "email": "test@example.com",
+        "password": "$argon2id$v=19$m=65536,t=4,p=1$S2JheEhCNlZ4enhLSm5jVg$VdBsKyxWmrF1ThYlOyS7Qbg\/kOfDUu9pwU9eXJRSMJA",
+        "role": "user",
+        "name": "Test",
+        "surname": "User",
+        "phone": "123456789",
+        "city": "TestCity",
+        "consents": {
+            "rodo": true,
+            "terms": true,
+            "date": "2026-01-31 01:57:12"
+        },
+        "settings": {
+            "email_notif": true,
+            "sms_notif": false,
+            "geo_notif": true,
+            "public_profile": false,
+            "show_events": true
         }
     }
 ]
