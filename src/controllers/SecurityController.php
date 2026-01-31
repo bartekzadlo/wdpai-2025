@@ -130,6 +130,13 @@ class SecurityController extends AppController
         if (strlen($password) > 128) {
             return $this->render('register', ["messages" => "Password too long"]);
         }
+        // Password complexity validation
+        if (!preg_match('/[A-Z]/', $password)) {
+            return $this->render('register', ["messages" => "Hasło musi zawierać przynajmniej jedną wielką literę"]);
+        }
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $password)) {
+            return $this->render('register', ["messages" => "Hasło musi zawierać przynajmniej jeden znak specjalny"]);
+        }
         if (strlen($name) > 50) {
             return $this->render('register', ["messages" => "Name too long"]);
         }
