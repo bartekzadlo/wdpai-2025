@@ -138,7 +138,7 @@ class SecurityController extends AppController
         $newUser = new User(
             uniqid(), // Unikalne ID
             $email,
-            password_hash($password, PASSWORD_BCRYPT),
+            password_hash($password, PASSWORD_ARGON2ID),
             'user',
             $name,
             $surname,
