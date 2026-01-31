@@ -15,7 +15,23 @@ class SecurityController extends AppController
     public function login()
     {
         if (!$this->isPost()) {
-            return $this->render('login');
+            // Generate CSRF token for GET request
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            if (!isset($_SESSION['csrf_token'])) {
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            }
+            return $this->render('login', ['csrf_token' => $_SESSION['csrf_token']]);
+        }
+
+        // Validate CSRF token for POST request
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $csrf_token = $_POST['csrf_token'] ?? '';
+        if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+            return $this->render('login', ["messages" => "Invalid CSRF token"]);
         }
 
         $email = $_POST['email'] ?? '';
@@ -35,7 +51,6 @@ class SecurityController extends AppController
             return $this->render('login', ["messages" => "Email lub hasło niepoprawne"]);
         }
 
-        session_start();
         $_SESSION['role'] = $user->role;
         $_SESSION['user'] = $user->email;
 
