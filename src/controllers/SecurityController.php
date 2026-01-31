@@ -41,6 +41,17 @@ class SecurityController extends AppController
             return $this->render('login', ["messages" => "Fill all fields"]);
         }
 
+        // Input length validation
+        if (strlen($email) > 255) {
+            return $this->render('login', ["messages" => "Email too long"]);
+        }
+        if (strlen($password) < 8) {
+            return $this->render('login', ["messages" => "Password too short"]);
+        }
+        if (strlen($password) > 128) {
+            return $this->render('login', ["messages" => "Password too long"]);
+        }
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return $this->render('login', ["messages" => "Niepoprawny email"]);
         }
@@ -86,6 +97,29 @@ class SecurityController extends AppController
         // Walidacja
         if (empty($email) || empty($password) || empty($name) || empty($surname) || empty($city)) {
             return $this->render('register', ["messages" => "Wypełnij wszystkie pola"]);
+        }
+
+        // Input length validation
+        if (strlen($email) > 255) {
+            return $this->render('register', ["messages" => "Email too long"]);
+        }
+        if (strlen($password) < 8) {
+            return $this->render('register', ["messages" => "Password too short"]);
+        }
+        if (strlen($password) > 128) {
+            return $this->render('register', ["messages" => "Password too long"]);
+        }
+        if (strlen($name) > 50) {
+            return $this->render('register', ["messages" => "Name too long"]);
+        }
+        if (strlen($surname) > 50) {
+            return $this->render('register', ["messages" => "Surname too long"]);
+        }
+        if (strlen($phone) > 20) {
+            return $this->render('register', ["messages" => "Phone too long"]);
+        }
+        if (strlen($city) > 100) {
+            return $this->render('register', ["messages" => "City too long"]);
         }
 
         if (!$terms || !$rodo) {
