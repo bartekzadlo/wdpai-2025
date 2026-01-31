@@ -16,7 +16,7 @@ class SettingsController extends AppController {
         $this->checkAuth();
         $data = $this->getJsonInput();
 
-        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
         if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
             return;
@@ -65,7 +65,7 @@ class SettingsController extends AppController {
     public function deleteAccount() {
         $this->checkAuth();
 
-        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
         if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
             return;
@@ -88,7 +88,7 @@ class SettingsController extends AppController {
             return;
         }
 
-        $currentUser = $this->userRepository->findByEmail($_SESSION['user']);
+        $currentUser = $this->userRepository->findByEmail($_SESSION['user']['email']);
 
         $this->render('settings', ['user' => $currentUser ? $currentUser->toArray() : null]);
     }
