@@ -34,6 +34,10 @@ class SecurityController extends AppController
             return $this->render('login', ["messages" => "Fill all fields"]);
         }
 
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->render('login', ["messages" => "Niepoprawny email"]);
+        }
+
         $users = self::loadUsers();
 
         $userRow = null;
