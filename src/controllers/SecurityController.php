@@ -33,36 +33,52 @@ class SecurityController extends AppController
         }
         $csrf_token = $_POST['csrf_token'] ?? '';
         if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
-            return $this->render('login', ["messages" => "Invalid CSRF token"]);
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            return $this->render('login', ["messages" => "Invalid CSRF token", 'csrf_token' => $_SESSION['csrf_token']]);
         }
 
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
         if (empty($email) || empty($password)) {
-            return $this->render('login', ["messages" => "Fill all fields"]);
+            return $this->render('login', ["messages" => "Fill all fields", 'csrf_token' => $_SESSION['csrf_token']]);
         }
 
         // Input length validation
         if (strlen($email) > 255) {
-            return $this->render('login', ["messages" => "Email too long"]);
-        }
-        if (strlen($password) < 8) {
-            return $this->render('login', ["messages" => "Password too short"]);
+            return $this->render('login', ["messages" => "Email too long", 'csrf_token' => $_SESSION['csrf_token']]);
         }
         if (strlen($password) > 128) {
-            return $this->render('login', ["messages" => "Password too long"]);
+            return $this->render('login', ["messages" => "Password too long", 'csrf_token' => $_SESSION['csrf_token']]);
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->render('login', ["messages" => "Niepoprawny email"]);
+            return $this->render('login', ["messages" => "Niepoprawny email", 'csrf_token' => $_SESSION['csrf_token']]);
+        }
+
+        // Check for login block
+        $blockKey = 'login_attempts_' . md5($email);
+        $blockTimeKey = 'login_block_time_' . md5($email);
+        if (isset($_SESSION[$blockTimeKey]) && time() < $_SESSION[$blockTimeKey]) {
+            $remaining = $_SESSION[$blockTimeKey] - time();
+            return $this->render('login', ["messages" => "Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za " . ceil($remaining / 60) . " minut.", 'csrf_token' => $_SESSION['csrf_token']]);
         }
 
         $user = $this->userRepository->findByEmail($email);
 
         if (!$user || !password_verify($password, $user->password)) {
-            return $this->render('login', ["messages" => "Email lub hasło niepoprawne"]);
+            // Increment failed attempts
+            $_SESSION[$blockKey] = ($_SESSION[$blockKey] ?? 0) + 1;
+            if ($_SESSION[$blockKey] >= 5) {
+                $_SESSION[$blockTimeKey] = time() + 120; // Block for 2 minutes
+                unset($_SESSION[$blockKey]); // Reset attempts after blocking
+            }
+            return $this->render('login', ["messages" => "Email lub hasło niepoprawne", 'csrf_token' => $_SESSION['csrf_token']]);
         }
+
+        // Reset attempts on successful login
+        unset($_SESSION[$blockKey]);
+        unset($_SESSION[$blockTimeKey]);
 
         $_SESSION['role'] = $user->role;
         $_SESSION['user'] = $user->email;
