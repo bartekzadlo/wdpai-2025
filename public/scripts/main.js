@@ -99,4 +99,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const parts = dateStr.split('.');
         return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
+
+    // Handle interest checkbox changes
+    eventCards.forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        const eventId = checkbox.id;
+
+        checkbox.addEventListener('change', async () => {
+            try {
+                const response = await fetch('/api/interest/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `eventId=${encodeURIComponent(eventId)}`
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Update checkbox state
+                checkbox.checked = data.isInterested;
+
+                // Update interest count
+                let interestCountSpan = card.querySelector('.interest-count');
+                if (data.interestCount > 0) {
+                    if (interestCountSpan) {
+                        interestCountSpan.textContent = `LICZBA ZAINTERESOWANYCH: ${data.interestCount}`;
+                    } else {
+                        // Create new interest count span if it doesn't exist
+                        interestCountSpan = document.createElement('span');
+                        interestCountSpan.className = 'interest-count';
+                        interestCountSpan.textContent = `LICZBA ZAINTERESOWANYCH: ${data.interestCount}`;
+                        card.querySelector('.checkbox-wrapper').after(interestCountSpan);
+                    }
+                } else {
+                    if (interestCountSpan) {
+                        interestCountSpan.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling interest:', error);
+                // Revert checkbox state on error
+                checkbox.checked = !checkbox.checked;
+                alert('Wystąpił błąd podczas aktualizacji zainteresowania. Spróbuj ponownie.');
+            }
+        });
+    });
 });

@@ -81,7 +81,7 @@ class SecurityController extends AppController
         unset($_SESSION[$blockTimeKey]);
 
         $_SESSION['role'] = $user->role;
-        $_SESSION['user'] = $user->email;
+        $_SESSION['user'] = ['id' => $user->id, 'email' => $user->email];
 
         // Regenerate session ID after successful login
         session_regenerate_id(true);

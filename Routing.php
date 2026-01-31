@@ -4,6 +4,7 @@
 require_once 'src/controllers/DefaultController.php';
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/SettingsController.php';
+require_once 'src/controllers/ApiController.php';
 
 class Routing
 {
@@ -47,8 +48,18 @@ class Routing
             'action' => 'changePassword'
         ],
         'api/settings/delete' => [
-            'controller' => 'SettingsController', 
+            'controller' => 'SettingsController',
             'action' => 'deleteAccount'
+        ],
+
+        // --- API Interests ---
+        'api/interest/toggle' => [
+            'controller' => 'ApiController',
+            'action' => 'toggleInterest'
+        ],
+        'api/interest/status' => [
+            'controller' => 'ApiController',
+            'action' => 'getInterestStatus'
         ]
     ];
 

@@ -104,7 +104,7 @@
                     </div>
                     <div class="event-footer">
                         <div class="checkbox-wrapper">
-                            <input type="checkbox" id="<?php echo htmlspecialchars($event->id); ?>" <?php echo $event->id === 'ev2' ? 'checked' : ''; ?>>
+                            <input type="checkbox" id="<?php echo htmlspecialchars($event->id); ?>" <?php echo isset($event->isInterested) && $event->isInterested ? 'checked' : ''; ?>>
                             <label for="<?php echo htmlspecialchars($event->id); ?>">JESTEM ZAINTERESOWANY</label>
                         </div>
                         <?php if ($event->interestCount > 0): ?>

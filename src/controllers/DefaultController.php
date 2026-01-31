@@ -13,8 +13,22 @@ class DefaultController extends AppController {
         }
 
         require_once __DIR__ . '/../repository/EventRepository.php';
+        require_once __DIR__ . '/../repository/UserEventInterestRepository.php';
+
         $eventRepository = EventRepository::getInstance();
+        $interestRepository = UserEventInterestRepository::getInstance();
+
         $events = $eventRepository->findAll();
+
+        // Update interest counts and user interest status
+        foreach ($events as $event) {
+            $event->interestCount = $interestRepository->getInterestCount($event->id);
+            if (isset($_SESSION['user'])) {
+                $event->isInterested = $interestRepository->isInterested($_SESSION['user']['id'], $event->id);
+            } else {
+                $event->isInterested = false;
+            }
+        }
 
         $this->render('main', ['events' => $events]);
     }
