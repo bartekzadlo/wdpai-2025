@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Date filter
-            if (dateValue && event.date !== dateValue) {
+            if (dateValue && parseDate(event.date) !== dateValue) {
                 show = false;
             }
 
@@ -93,4 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners for inputs
     locationInput.addEventListener('input', filterEvents);
     dateInput.addEventListener('change', filterEvents);
+
+    // Function to parse date from DD.MM.YYYY to YYYY-MM-DD
+    function parseDate(dateStr) {
+        const parts = dateStr.split('.');
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
 });
