@@ -46,14 +46,52 @@ class DefaultController extends AppController {
     }
 
     public function profile() {
-    session_start();
+        session_start();
 
-    if (!isset($_SESSION['user'])) {
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/login");
-        return;
+        if (!isset($_SESSION['user'])) {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        require_once __DIR__ . '/../repository/UserRepository.php';
+        require_once __DIR__ . '/../repository/UserFriendRepository.php';
+
+        $userId = $_SESSION['user']['id'];
+        $userRepo = UserRepository::getInstance();
+        $user = $userRepo->findById($userId);
+
+        // Get user's interested events
+        $interestRepo = UserEventInterestRepository::getInstance();
+        $userInterests = $interestRepo->findByUserId($userId);
+        $interestedEventIds = array_map(fn($interest) => $interest->eventId, $userInterests);
+
+        $eventRepo = EventRepository::getInstance();
+        $interestedEvents = [];
+        foreach ($interestedEventIds as $eventId) {
+            $event = $eventRepo->findById($eventId);
+            if ($event) {
+                $interestedEvents[] = $event;
+            }
+        }
+
+        // Get user's friends
+        $friendRepo = UserFriendRepository::getInstance();
+        $friends = $friendRepo->findByUserId($userId);
+        $friendData = [];
+        foreach ($friends as $friend) {
+            $friendId = $friend->userId === $userId ? $friend->friendId : $friend->userId;
+            $friendUser = $userRepo->findById($friendId);
+            if ($friendUser) {
+                $friendData[] = $friendUser;
+            }
+        }
+
+        $this->render('profile', [
+            'user' => $user,
+            'interestedEvents' => $interestedEvents,
+            'friends' => $friendData
+        ]);
     }
-
-    $this->render('profile');
-    }   
 }

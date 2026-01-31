@@ -1,6 +1,14 @@
-{
-    "1": {
+[
+    {
+        "userId": "",
+        "eventId": "ev1"
+    },
+    {
         "userId": "",
         "eventId": "ev2"
+    },
+    {
+        "userId": "",
+        "eventId": "ev3"
     }
-}
+]

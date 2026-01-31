@@ -41,6 +41,14 @@
             justify-content: center;
             align-items: center;
             font-size: 4rem;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .profile-info h2 {
@@ -117,12 +125,25 @@
             <!-- HEADER PROFILU -->
             <div class="profile-header">
                 <div class="profile-avatar">
-                    <i class="fa-solid fa-user"></i>
+                    <?php if (!empty($user->profilePicture)): ?>
+                        <img src="<?= htmlspecialchars($user->profilePicture) ?>" alt="Zdjęcie profilowe">
+                    <?php else: ?>
+                        <i class="fa-solid fa-user"></i>
+                    <?php endif; ?>
                 </div>
 
                 <div class="profile-info">
-                    <h2><?= $_SESSION['user'] ?></h2>
-                    <p>MIASTO: KRAKÓW</p>
+                    <h2>
+                        <?php
+                        $displayName = trim($user->name . ' ' . $user->surname);
+                        if (empty($displayName)) {
+                            echo htmlspecialchars($user->email ?? 'Użytkownik');
+                        } else {
+                            echo htmlspecialchars($displayName);
+                        }
+                        ?>
+                    </h2>
+                    <p>MIASTO: <?= htmlspecialchars($user->city ?: 'KRAKÓW') ?></p>
                     <p>BIO: FAN MUZYKI ELEKTRONICZNEJ 🎶</p>
                 </div>
             </div>
@@ -131,8 +152,13 @@
             <div class="profile-section">
                 <h3><i class="fa-regular fa-calendar-check"></i> IDĘ NA WYDARZENIA</h3>
                 <div class="event-list">
-                    <div class="event-item">TECHNO RAVE NIGHT – KATOWICE</div>
-                    <div class="event-item">PITBULL – AFTER PARTY</div>
+                    <?php if (empty($interestedEvents)): ?>
+                        <p style="color: #ccc; font-style: italic;">Brak wydarzeń, które Cię interesują</p>
+                    <?php else: ?>
+                        <?php foreach ($interestedEvents as $event): ?>
+                            <div class="event-item"><?= htmlspecialchars($event->title) ?> – <?= htmlspecialchars($event->location) ?></div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -140,9 +166,13 @@
             <div class="profile-section">
                 <h3><i class="fa-solid fa-users"></i> ZNAJOMI</h3>
                 <div class="friends-grid">
-                    <div class="friend-card">ANNA</div>
-                    <div class="friend-card">MICHAŁ</div>
-                    <div class="friend-card">KASIA</div>
+                    <?php if (empty($friends)): ?>
+                        <p style="color: #ccc; font-style: italic; grid-column: 1 / -1;">Brak znajomych</p>
+                    <?php else: ?>
+                        <?php foreach ($friends as $friend): ?>
+                            <div class="friend-card"><?= htmlspecialchars($friend->name . ' ' . $friend->surname) ?></div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 

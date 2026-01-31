@@ -64,6 +64,14 @@ class UserEventInterestRepository
         return $count;
     }
 
+    public function findByUserId(string $userId): array
+    {
+        $interests = $this->findAll();
+        return array_filter($interests, function($interest) use ($userId) {
+            return $interest->userId === $userId;
+        });
+    }
+
     private function loadInterests(): array
     {
         if (!file_exists(self::INTERESTS_FILE)) {

@@ -9,6 +9,10 @@ require_once 'src/controllers/ApiController.php';
 class Routing
 {
     public static $routes = [
+        '' => [
+            'controller' => 'DefaultController',
+            'action' => 'index'
+        ],
         'login' => [
             'controller' => 'SecurityController',
             'action' => 'login'

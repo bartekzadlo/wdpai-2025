@@ -10,6 +10,7 @@ class User
     public string $surname;
     public string $phone;
     public string $city;
+    public string $profilePicture;
     public array $consents;
     public array $settings;
 
@@ -22,6 +23,7 @@ class User
         string $surname,
         string $phone,
         string $city,
+        string $profilePicture = '',
         array $consents = [],
         array $settings = []
     ) {
@@ -33,6 +35,7 @@ class User
         $this->surname = $surname;
         $this->phone = $phone;
         $this->city = $city;
+        $this->profilePicture = $profilePicture;
         $this->consents = $consents;
         $this->settings = $settings;
     }
@@ -48,6 +51,7 @@ class User
             $data['surname'] ?? '',
             $data['phone'] ?? '',
             $data['city'] ?? '',
+            $data['profilePicture'] ?? '',
             $data['consents'] ?? [],
             $data['settings'] ?? []
         );
@@ -64,6 +68,7 @@ class User
             'surname' => $this->surname,
             'phone' => $this->phone,
             'city' => $this->city,
+            'profilePicture' => $this->profilePicture,
             'consents' => $this->consents,
             'settings' => $this->settings,
         ];
