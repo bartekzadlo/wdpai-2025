@@ -12,7 +12,11 @@ class DefaultController extends AppController {
             return;
         }
 
-        $this->render('main');
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        $eventRepository = EventRepository::getInstance();
+        $events = $eventRepository->findAll();
+
+        $this->render('main', ['events' => $events]);
     }
 
     public function dashboard() {

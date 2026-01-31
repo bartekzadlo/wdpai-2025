@@ -82,105 +82,37 @@
     <!-- TREŚĆ -->
     <main class="scrollable-content" id="scroll-container">
         <div class="content-padding">
-            
-            <!-- KARTA 1 -->
-            <article class="event-card">
-                <div class="event-image">
-                    <img src="https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
-                </div>
-                <div class="event-details">
-                    <div class="event-header">
-                        <h2>PITBULL – PARTY AFTER PARTY</h2>
-                        <i class="fa-solid fa-ellipsis options-icon"></i>
-                    </div>
-                    <div class="event-info">
-                        <p><i class="fa-solid fa-location-dot"></i> KRAKÓW, TAURON ARENA</p>
-                        <p><i class="fa-regular fa-clock"></i> 23.06.2024</p>
-                    </div>
-                    <div class="event-footer">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="ev1">
-                            <label for="ev1">JESTEM ZAINTERESOWANY</label>
-                        </div>
-                        <span class="interest-count">LICZBA ZAINTERESOWANYCH: 2137</span>
-                    </div>
-                </div>
-            </article>
 
-            <!-- KARTA 2 -->
+            <?php foreach ($events as $event): ?>
             <article class="event-card">
                 <div class="event-image">
-                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
+                    <img src="<?php echo htmlspecialchars($event->imageUrl); ?>" alt="Event">
                 </div>
                 <div class="event-details">
                     <div class="event-header">
-                        <h2>TECHNO RAVE NIGHT</h2>
+                        <h2><?php echo htmlspecialchars($event->title); ?></h2>
                         <i class="fa-solid fa-ellipsis options-icon"></i>
                     </div>
                     <div class="event-info">
-                        <p><i class="fa-solid fa-location-dot"></i> KATOWICE, SPODEK</p>
-                        <p><i class="fa-regular fa-clock"></i> 24.06.2024</p>
+                        <p><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($event->location); ?></p>
+                        <p><i class="fa-regular fa-clock"></i> <?php echo htmlspecialchars($event->date); ?></p>
                     </div>
                     <div class="event-footer">
                         <div class="checkbox-wrapper">
-                            <input type="checkbox" id="ev2" checked>
-                            <label for="ev2">JESTEM ZAINTERESOWANY</label>
+                            <input type="checkbox" id="<?php echo htmlspecialchars($event->id); ?>" <?php echo $event->id === 'ev2' ? 'checked' : ''; ?>>
+                            <label for="<?php echo htmlspecialchars($event->id); ?>">JESTEM ZAINTERESOWANY</label>
                         </div>
-                        <span class="interest-count">LICZBA ZAINTERESOWANYCH: 2138</span>
+                        <?php if ($event->interestCount > 0): ?>
+                        <span class="interest-count">LICZBA ZAINTERESOWANYCH: <?php echo htmlspecialchars($event->interestCount); ?></span>
+                        <?php endif; ?>
                         <div class="card-icons">
-                            <i class="fa-regular fa-heart"></i>
                             <i class="fa-regular fa-bell"></i>
                             <i class="fa-solid fa-share-nodes"></i>
                         </div>
                     </div>
                 </div>
             </article>
-
-            <!-- KARTA 3 -->
-            <article class="event-card">
-                <div class="event-image">
-                    <img src="https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
-                </div>
-                <div class="event-details">
-                    <div class="event-header">
-                        <h2>ROCK LEGENDS</h2>
-                        <i class="fa-solid fa-ellipsis options-icon"></i>
-                    </div>
-                    <div class="event-info">
-                        <p><i class="fa-solid fa-location-dot"></i> WARSZAWA</p>
-                        <p><i class="fa-regular fa-clock"></i> 15.08.2024</p>
-                    </div>
-                    <div class="event-footer">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="ev3">
-                            <label for="ev3">JESTEM ZAINTERESOWANY</label>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- KARTA 4 -->
-            <article class="event-card">
-                <div class="event-image">
-                    <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Event">
-                </div>
-                <div class="event-details">
-                    <div class="event-header">
-                        <h2>JAZZ NIGHT</h2>
-                        <i class="fa-solid fa-ellipsis options-icon"></i>
-                    </div>
-                    <div class="event-info">
-                        <p><i class="fa-solid fa-location-dot"></i> GDYNIA</p>
-                        <p><i class="fa-regular fa-clock"></i> 20.09.2024</p>
-                    </div>
-                    <div class="event-footer">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="ev4">
-                            <label for="ev4">JESTEM ZAINTERESOWANY</label>
-                        </div>
-                    </div>
-                </div>
-            </article>
+            <?php endforeach; ?>
 
         </div>
     </main>
