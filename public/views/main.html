@@ -58,21 +58,26 @@
                 </div>
 
                 <div class="filter-box">
-                    <div class="filter-option">
+                    <div class="filter-option" id="location-filter">
                         <i class="fa-solid fa-location-dot"></i>
                         <span>Lokalizacja</span>
                     </div>
-                    <div class="filter-option">
+                    <div class="filter-option" id="saved-filter">
                         <i class="fa-regular fa-bookmark"></i>
                         <span>Zapisane</span>
                     </div>
-                    <div class="filter-option">
+                    <div class="filter-option" id="date-filter">
                         <i class="fa-regular fa-calendar"></i>
                         <span>Data</span>
                     </div>
-                    <div class="filter-option">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                        <span>Więcej opcji</span>
+
+                    <!-- Hidden filter inputs -->
+                    <div id="location-input-container" class="filter-input-container" style="display: none;">
+                        <input type="text" id="location-input" placeholder="Wpisz lokalizację" list="location-suggestions">
+                        <datalist id="location-suggestions"></datalist>
+                    </div>
+                    <div id="date-input-container" class="filter-input-container" style="display: none;">
+                        <input type="date" id="date-input">
                     </div>
                 </div>
             </div>
@@ -131,6 +136,11 @@
         }
     });
 </script>
+
+<!-- EXPORT EVENTS DATA TO JS -->
+<script src="public/scripts/events-data.php"></script>
+
+<script src="public/scripts/main.js"></script>
 
 </body>
 </html>
