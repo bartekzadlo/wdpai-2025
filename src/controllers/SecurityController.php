@@ -1,24 +1,15 @@
 <?php
 
 require_once 'AppController.php';
+require_once __DIR__ . '/../repository/UserRepository.php';
 
 class SecurityController extends AppController
 {
-    private const USERS_FILE = __DIR__ . '/../../storage/users.json';
+    private UserRepository $userRepository;
 
-    private static function loadUsers(): array
+    public function __construct()
     {
-        if (!file_exists(self::USERS_FILE)) {
-            return [];
-        }
-
-        $json = file_get_contents(self::USERS_FILE);
-        return json_decode($json, true) ?: [];
-    }
-
-    private static function saveUsers(array $users): void
-    {
-        file_put_contents(self::USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
+        $this->userRepository = new UserRepository();
     }
 
     public function login()
@@ -38,23 +29,15 @@ class SecurityController extends AppController
             return $this->render('login', ["messages" => "Niepoprawny email"]);
         }
 
-        $users = self::loadUsers();
+        $user = $this->userRepository->findByEmail($email);
 
-        $userRow = null;
-        foreach ($users as $u) {
-            if (strcasecmp($u['email'], $email) === 0) {
-                $userRow = $u;
-                break;
-            }
-        }
-
-        if (!$userRow || !password_verify($password, $userRow['password'])) {
+        if (!$user || !password_verify($password, $user->password)) {
             return $this->render('login', ["messages" => "Email lub hasło niepoprawne"]);
         }
 
         session_start();
-        $_SESSION['role'] = $userRow['role'];
-        $_SESSION['user'] = $userRow['email'];
+        $_SESSION['role'] = $user->role;
+        $_SESSION['user'] = $user->email;
 
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/main");
@@ -98,41 +81,36 @@ class SecurityController extends AppController
             return $this->render('register', ["messages" => "Niepoprawny email"]);
         }
 
-        $users = self::loadUsers();
-
-        foreach ($users as $u) {
-            if (strcasecmp($u['email'], $email) === 0) {
-                return $this->render('register', ["messages" => "Email jest już zajęty"]);
-            }
+        if ($this->userRepository->emailExists($email)) {
+            return $this->render('register', ["messages" => "Email jest już zajęty"]);
         }
 
         // Tworzenie nowego użytkownika z rozszerzonymi danymi
-        $newUser = [
-            'id' => uniqid(), // Unikalne ID
-            'email' => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT),
-            'role' => 'user',
-            'name' => $name,
-            'surname' => $surname,
-            'phone' => $phone,
-            'city' => $city,
-            'consents' => [
+        $newUser = new User(
+            uniqid(), // Unikalne ID
+            $email,
+            password_hash($password, PASSWORD_BCRYPT),
+            'user',
+            $name,
+            $surname,
+            $phone,
+            $city,
+            [
                 'rodo' => true,
                 'terms' => true,
                 'date' => date('Y-m-d H:i:s')
             ],
             // Domyślne ustawienia
-            'settings' => [
+            [
                 'email_notif' => true,
                 'sms_notif' => false,
                 'geo_notif' => true,
                 'public_profile' => false,
                 'show_events' => true
             ]
-        ];
+        );
 
-        $users[] = $newUser;
-        self::saveUsers($users);
+        $this->userRepository->save($newUser);
 
         // Opcjonalnie: Automatyczne logowanie po rejestracji lub przekierowanie
         $url = "http://$_SERVER[HTTP_HOST]";

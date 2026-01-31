@@ -1,45 +1,43 @@
 <?php
 
 require_once __DIR__ . '/AppController.php';
+require_once __DIR__ . '/../repository/UserRepository.php';
 
 class SettingsController extends AppController {
-    
-    private const USERS_FILE = __DIR__ . '/../../storage/users.json';
+
+    private UserRepository $userRepository;
+
+    public function __construct()
+    {
+        $this->userRepository = new UserRepository();
+    }
 
     public function updateSettings() {
         $this->checkAuth();
         $data = $this->getJsonInput();
-        
-        $users = $this->loadUsers();
-        $currentUserEmail = $_SESSION['user'];
-        $updated = false;
 
-        foreach ($users as &$user) {
-            if ($user['email'] === $currentUserEmail) {
-                if (!isset($user['settings'])) {
-                    $user['settings'] = [];
-                }
-                
-                foreach ($data as $key => $value) {
-                    $user['settings'][$key] = (bool)$value;
-                }
-                $updated = true;
-                break;
-            }
-        }
-
-        if ($updated) {
-            $this->saveUsers($users);
-            $this->sendJsonResponse(['status' => 'success', 'message' => 'Ustawienia zaktualizowane']);
-        } else {
+        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
+            return;
         }
+
+        if (!isset($user->settings)) {
+            $user->settings = [];
+        }
+
+        foreach ($data as $key => $value) {
+            $user->settings[$key] = (bool)$value;
+        }
+
+        $this->userRepository->save($user);
+        $this->sendJsonResponse(['status' => 'success', 'message' => 'Ustawienia zaktualizowane']);
     }
 
     public function changePassword() {
         $this->checkAuth();
         $data = $this->getJsonInput();
-        
+
         $oldPass = $data['old_password'] ?? '';
         $newPass = $data['new_password'] ?? '';
 
@@ -48,45 +46,33 @@ class SettingsController extends AppController {
             return;
         }
 
-        $users = $this->loadUsers();
-        $currentUserEmail = $_SESSION['user'];
-        $found = false;
-
-        foreach ($users as &$user) {
-            if ($user['email'] === $currentUserEmail) {
-                if (!password_verify($oldPass, $user['password'])) {
-                    $this->sendJsonResponse(['status' => 'error', 'message' => 'Stare hasło jest niepoprawne'], 400);
-                    return;
-                }
-                
-                $user['password'] = password_hash($newPass, PASSWORD_BCRYPT);
-                $found = true;
-                break;
-            }
-        }
-
-        if ($found) {
-            $this->saveUsers($users);
-            $this->sendJsonResponse(['status' => 'success', 'message' => 'Hasło zmienione']);
-        } else {
+        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Błąd użytkownika'], 404);
+            return;
         }
+
+        if (!password_verify($oldPass, $user->password)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Stare hasło jest niepoprawne'], 400);
+            return;
+        }
+
+        $user->password = password_hash($newPass, PASSWORD_BCRYPT);
+        $this->userRepository->save($user);
+        $this->sendJsonResponse(['status' => 'success', 'message' => 'Hasło zmienione']);
     }
 
     public function deleteAccount() {
         $this->checkAuth();
-        
-        $users = $this->loadUsers();
-        $currentUserEmail = $_SESSION['user'];
-        
-        $newUsers = array_filter($users, function($user) use ($currentUserEmail) {
-            return $user['email'] !== $currentUserEmail;
-        });
 
-        $newUsers = array_values($newUsers);
+        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        if (!$user) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
+            return;
+        }
 
-        $this->saveUsers($newUsers);
-        
+        $this->userRepository->delete($user->id);
+
         session_destroy();
         $this->sendJsonResponse(['status' => 'success', 'message' => 'Konto usunięte']);
     }
@@ -102,16 +88,9 @@ class SettingsController extends AppController {
             return;
         }
 
-        $users = $this->loadUsers();
-        $currentUser = null;
-        foreach($users as $u) {
-            if($u['email'] === $_SESSION['user']) {
-                $currentUser = $u;
-                break;
-            }
-        }
+        $currentUser = $this->userRepository->findByEmail($_SESSION['user']);
 
-        $this->render('settings', ['user' => $currentUser]);
+        $this->render('settings', ['user' => $currentUser ? $currentUser->toArray() : null]);
     }
 
     // --- Helpers ---
@@ -145,17 +124,5 @@ class SettingsController extends AppController {
         exit;
     }
 
-    private function loadUsers(): array {
-        if (!file_exists(self::USERS_FILE)) return [];
-        $json = file_get_contents(self::USERS_FILE);
-        return json_decode($json, true) ?: [];
-    }
 
-    private function saveUsers(array $users): void {
-        $dir = dirname(self::USERS_FILE);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        file_put_contents(self::USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
-    }
 }
