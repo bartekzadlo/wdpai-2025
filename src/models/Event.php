@@ -1,5 +1,7 @@
 <?php
 
+require_once 'EventStatus.php';
+
 class Event
 {
     public string $id;

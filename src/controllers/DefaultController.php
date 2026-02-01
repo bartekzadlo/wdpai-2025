@@ -28,14 +28,16 @@ class DefaultController extends AppController {
             } else {
                 $event->isInterested = false;
             }
-            // Set status for each event
-            $currentDate = date('d.m.Y');
-            $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+            // Set status for each event, but keep PENDING as is
+            if ($event->status !== EventStatus::PENDING) {
+                $currentDate = date('d.m.Y');
+                $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? EventStatus::ACTIVE : EventStatus::INACTIVE;
+            }
         }
 
-        // Filter to show only active events
+        // Filter to show only active events, but include pending for admin
         $events = array_filter($events, function($event) {
-            return $event->status === 'AKTYWNE';
+            return $event->status === EventStatus::ACTIVE || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && $event->status === EventStatus::PENDING);
         });
 
         $this->render('main', ['events' => $events]);
@@ -86,7 +88,7 @@ class DefaultController extends AppController {
     public function addEvent() {
         session_start();
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['user'])) {
             $url = "http://$_SERVER[HTTP_HOST]";
             header("Location: {$url}/login");
             return;
@@ -131,6 +133,7 @@ class DefaultController extends AppController {
                 // Create new event
                 require_once __DIR__ . '/../repository/EventRepository.php';
                 require_once __DIR__ . '/../models/Event.php';
+                require_once __DIR__ . '/../models/EventStatus.php';
 
                 $eventRepository = EventRepository::getInstance();
 
@@ -144,6 +147,9 @@ class DefaultController extends AppController {
                 }
                 $newId = $maxId + 1;
 
+                // Set status based on user role
+                $status = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? EventStatus::ACTIVE : EventStatus::PENDING;
+
                 $newEvent = new Event(
                     (string)$newId,
                     $title,
@@ -153,14 +159,16 @@ class DefaultController extends AppController {
                     $description,
                     0, // interestCount
                     false, // isInterested
-                    date('Y-m-d H:i:s') // createdAt
+                    date('Y-m-d H:i:s'), // createdAt
+                    $status
                 );
 
                 $eventRepository->save($newEvent);
 
-                // Redirect back to dashboard
+                // Redirect back to dashboard for admin, main for user
                 $url = "http://$_SERVER[HTTP_HOST]";
-                header("Location: {$url}/dashboard");
+                $redirectUrl = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? '/dashboard' : '/main';
+                header("Location: {$url}{$redirectUrl}");
                 return;
             } else {
                 // Render form with errors
@@ -169,8 +177,12 @@ class DefaultController extends AppController {
             }
         }
 
-        // Render form
-        $this->render('add-event');
+        // Render form based on role
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+            $this->render('add-event');
+        } else {
+            $this->render('add-event-user');
+        }
     }
 
     public function profile() {

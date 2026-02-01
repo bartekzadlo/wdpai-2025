@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Zachowujemy importy stylów i skryptów -->
+    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
+
+    <!-- Import czcionki Jersey 10 oraz ikon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="public/scripts/main.js" defer></script>
+
+    <title>Dodaj Wydarzenie | EVENT.IO</title>
+</head>
+<body>
+
+    <div class="admin-container" style="grid-template-columns: 1fr;"> <!-- Usuwamy sidebar, więc tylko główna zawartość -->
+
+        <!-- GŁÓWNA ZAWARTOŚĆ -->
+        <main class="main-content" style="margin-left: 0;">
+
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <a href="/main" style="text-decoration: none; color: inherit;">
+                        <i class="fa-solid fa-arrow-left" style="font-size: 1.5rem; cursor: pointer;"></i>
+                    </a>
+                    <a href="/main" style="text-decoration: none;">
+                        <h1 class="logo-text" style="margin: 0; font-size: 2rem;">EVENT.IO</h1>
+                    </a>
+                </div>
+            </header>
+
+            <!-- FORMULARZ DODAWANIA WYDARZENIA -->
+            <section class="form-section">
+                <div class="form-container">
+                    <form action="/add-event" method="POST" class="event-form">
+
+                        <?php if (isset($errors) && !empty($errors)): ?>
+                        <div class="error-messages">
+                            <ul>
+                                <?php foreach ($errors as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="form-group">
+                            <label for="title">Nazwa wydarzenia *</label>
+                            <input type="text" id="title" name="title" required
+                                   value="<?php echo htmlspecialchars($formData['title'] ?? ''); ?>"
+                                   placeholder="np. TECHNO RAVE NIGHT">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Lokalizacja *</label>
+                            <input type="text" id="location" name="location" required
+                                   value="<?php echo htmlspecialchars($formData['location'] ?? ''); ?>"
+                                   placeholder="np. KATOWICE, SPODEK">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Data wydarzenia *</label>
+                            <input type="text" id="date" name="date" required
+                                   value="<?php echo htmlspecialchars($formData['date'] ?? ''); ?>"
+                                   placeholder="DD.MM.YYYY (np. 15.06.2025)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">URL obrazka *</label>
+                            <input type="url" id="imageUrl" name="imageUrl" required
+                                   value="<?php echo htmlspecialchars($formData['imageUrl'] ?? ''); ?>"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Opis wydarzenia</label>
+                            <textarea id="description" name="description" rows="4"
+                                      placeholder="Dodaj opis wydarzenia..."><?php echo htmlspecialchars($formData['description'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="/main" class="btn-cancel">ANULUJ</a>
+                            <button type="submit" class="btn-submit">
+                                <i class="fa-solid fa-plus"></i> DODAJ WYDARZENIE
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
