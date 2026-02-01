@@ -28,6 +28,9 @@ class DefaultController extends AppController {
             } else {
                 $event->isInterested = false;
             }
+            // Set status for each event
+            $currentDate = date('d.m.Y');
+            $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
         }
 
         $this->render('main', ['events' => $events]);
@@ -73,6 +76,94 @@ class DefaultController extends AppController {
             'interestCount' => $interestCount,
             'recentEvents' => $recentEvents
         ]);
+    }
+
+    public function addEvent() {
+        session_start();
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle form submission
+            $title = trim($_POST['title'] ?? '');
+            $location = trim($_POST['location'] ?? '');
+            $date = trim($_POST['date'] ?? '');
+            $imageUrl = trim($_POST['imageUrl'] ?? '');
+
+            // Validation
+            $errors = [];
+            if (empty($title)) {
+                $errors[] = 'Nazwa wydarzenia jest wymagana';
+            }
+            if (empty($location)) {
+                $errors[] = 'Lokalizacja jest wymagana';
+            }
+            if (empty($date)) {
+                $errors[] = 'Data jest wymagana';
+            } elseif (!preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $date)) {
+                $errors[] = 'Data musi być w formacie DD.MM.YYYY';
+            } else {
+                // Validate date format and future date
+                $dateObj = DateTime::createFromFormat('d.m.Y', $date);
+                if (!$dateObj) {
+                    $errors[] = 'Nieprawidłowy format daty';
+                } elseif ($dateObj < new DateTime()) {
+                    $errors[] = 'Data musi być w przyszłości';
+                }
+            }
+            if (empty($imageUrl)) {
+                $errors[] = 'URL obrazka jest wymagany';
+            } elseif (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $errors[] = 'Nieprawidłowy URL obrazka';
+            }
+
+            if (empty($errors)) {
+                // Create new event
+                require_once __DIR__ . '/../repository/EventRepository.php';
+                require_once __DIR__ . '/../models/Event.php';
+
+                $eventRepository = EventRepository::getInstance();
+
+                // Generate new ID
+                $allEvents = $eventRepository->findAll();
+                $maxId = 0;
+                foreach ($allEvents as $event) {
+                    if (is_numeric($event->id) && $event->id > $maxId) {
+                        $maxId = $event->id;
+                    }
+                }
+                $newId = $maxId + 1;
+
+                $newEvent = new Event(
+                    (string)$newId,
+                    $title,
+                    $location,
+                    $date,
+                    $imageUrl,
+                    0, // interestCount
+                    false, // isInterested
+                    date('Y-m-d H:i:s') // createdAt
+                );
+
+                $eventRepository->save($newEvent);
+
+                // Redirect back to dashboard
+                $url = "http://$_SERVER[HTTP_HOST]";
+                header("Location: {$url}/dashboard");
+                return;
+            } else {
+                // Render form with errors
+                $this->render('add-event', ['errors' => $errors, 'formData' => $_POST]);
+                return;
+            }
+        }
+
+        // Render form
+        $this->render('add-event');
     }
 
     public function profile() {

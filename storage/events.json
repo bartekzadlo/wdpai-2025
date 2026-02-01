@@ -1,11 +1,11 @@
 [
     {
         "id": "1",
-        "title": "PITBULL – PARTY AFTER PARTY",
-        "location": "KRAKÓW, TAURON ARENA",
+        "title": "PITBULL \u2013 PARTY AFTER PARTY",
+        "location": "KRAK\u00d3W, TAURON ARENA",
         "date": "15.06.2025",
         "createdAt": "2024-01-15 10:00:00",
-        "imageUrl": "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "imageUrl": "https:\/\/images.pexels.com\/photos\/1190298\/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=600",
         "interestCount": 2137
     },
     {
@@ -14,7 +14,7 @@
         "location": "KATOWICE, SPODEK",
         "date": "20.07.2025",
         "createdAt": "2024-02-20 14:30:00",
-        "imageUrl": "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "imageUrl": "https:\/\/images.pexels.com\/photos\/1763075\/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600",
         "interestCount": 2138
     },
     {
@@ -23,7 +23,7 @@
         "location": "WARSZAWA",
         "date": "10.08.2026",
         "createdAt": "2024-03-10 09:15:00",
-        "imageUrl": "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "imageUrl": "https:\/\/images.pexels.com\/photos\/1540406\/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600",
         "interestCount": 42
     },
     {
@@ -32,7 +32,16 @@
         "location": "GDYNIA",
         "date": "05.09.2025",
         "createdAt": "2024-04-05 16:45:00",
-        "imageUrl": "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "imageUrl": "https:\/\/images.pexels.com\/photos\/1105666\/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600",
         "interestCount": 37
+    },
+    {
+        "id": "5",
+        "title": "IMPREZA PO ODDANIU PROJEKTU",
+        "location": "MIASTECZKO STUDENCKIE AGH",
+        "date": "25.10.2026",
+        "createdAt": "2026-02-01 21:28:00",
+        "imageUrl": "https:\/\/as2.ftcdn.net\/v2\/jpg\/01\/20\/28\/25\/1000_F_120282530_gMCruc8XX2mwf5YtODLV2O1TGHzu4CAb.webp",
+        "interestCount": 0
     }
 ]

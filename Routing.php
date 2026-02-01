@@ -33,6 +33,10 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'dashboard'
         ],
+        'add-event' => [
+            'controller' => 'DefaultController',
+            'action' => 'addEvent'
+        ],
         'profile' => [
             'controller' => 'DefaultController',
             'action' => 'profile'

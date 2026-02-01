@@ -10,6 +10,7 @@ class Event
     public string $imageUrl;
     public int $interestCount;
     public bool $isInterested;
+    public string $status;
 
     public function __construct(
         string $id,
@@ -19,7 +20,8 @@ class Event
         string $imageUrl,
         int $interestCount = 0,
         bool $isInterested = false,
-        string $createdAt = null
+        string $createdAt = null,
+        string $status = ''
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -29,6 +31,7 @@ class Event
         $this->imageUrl = $imageUrl;
         $this->interestCount = $interestCount;
         $this->isInterested = $isInterested;
+        $this->status = $status;
     }
 
     public static function fromArray(array $data): self

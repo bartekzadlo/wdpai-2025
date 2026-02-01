@@ -258,6 +258,115 @@ body {
 .action-icon:hover { color: white; transform: scale(1.2); }
 .action-icon.delete:hover { color: red; }
 
+/* FORMULARZ DODAWANIA WYDARZENIA */
+.form-section {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border: 1px solid #333;
+    margin-top: 30px;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 1.5rem;
+    color: white;
+    text-transform: uppercase;
+}
+
+.form-group input {
+    padding: 12px;
+    font-size: 1.4rem;
+    font-family: var(--font-pixel);
+    background-color: var(--card-gray);
+    border: 2px solid #555;
+    color: black;
+    outline: none;
+    transition: 0.2s;
+}
+
+.form-group input:focus {
+    border-color: var(--main-purple);
+    box-shadow: 0 0 5px var(--main-purple);
+}
+
+.form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.btn-cancel {
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    font-family: var(--font-pixel);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    border: 2px solid #555;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #555;
+    border-color: #777;
+}
+
+.btn-submit {
+    background-color: var(--main-purple);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-family: var(--font-pixel);
+    font-size: 1.5rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0px white;
+    transition: 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: white;
+    color: black;
+    box-shadow: 3px 3px 0px var(--main-purple);
+}
+
+.error-messages {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 2px solid red;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.error-messages ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.error-messages li {
+    color: #ff6b6b;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
 /* RESPANSYWNOŚĆ */
 @media screen and (max-width: 900px) {
     .admin-container { flex-direction: column; overflow-y: auto; height: auto;}
