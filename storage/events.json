@@ -6,7 +6,7 @@
         "date": "15.06.2025",
         "createdAt": "2024-01-15 10:00:00",
         "imageUrl": "https:\/\/images.pexels.com\/photos\/1190298\/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "interestCount": 2137
+        "description": "PITBULL – PARTY AFTER PARTY to niezapomniana noc z jednym z najwi\u0119kszych gwiazd muzyki hip-hop i dance. W Tauron Arenie w Krakowie do\u015bwiadczysz energii, kt\u00f3ra przeniesie Ci\u0119 w wir tanca i zabawy. Przygotuj si\u0119 na hitowe utwory, pirotechnik\u0119 i atmosfer\u0119, kt\u00f3ra utrzyma si\u0119 do rana. To wydarzenie dla wszystkich mi\u0142o\u015bnik\u00f3w muzyki i dobrej zabawy!"
     },
     {
         "id": "2",
@@ -15,7 +15,7 @@
         "date": "20.07.2025",
         "createdAt": "2024-02-20 14:30:00",
         "imageUrl": "https:\/\/images.pexels.com\/photos\/1763075\/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "interestCount": 2138
+        "description": "Techno Rock Night to fuzja nowoczesnego techno z klasycznym rockiem. W Spodku w Katowicach spotkaj si\u0119 z najlepszymi DJ-ami i zespo\u0142ami, kt\u00f3re po\u0142\u0105cz\u0105 gatunki w unikalny spos\u00f3b. Oczekuj na pot\u0119\u017cne bity, elektryzuj\u0105ce gitary i atmosfer\u0119, kt\u00f3ra przeniesie Ci\u0119 w inny wymiar muzyki."
     },
     {
         "id": "3",
@@ -24,7 +24,7 @@
         "date": "10.08.2026",
         "createdAt": "2024-03-10 09:15:00",
         "imageUrl": "https:\/\/images.pexels.com\/photos\/1540406\/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "interestCount": 42
+        "description": "ROCK LEGENDS to ho\u0142d dla najwi\u0119kszych ikon rocka. W Warszawie spotkaj si\u0119 z legendami gatunku, kt\u00f3re zagra\u0105 swoje najwi\u0119ksze hity. Przygotuj si\u0119 na pot\u0119\u017cne riffy, sol\u00f3wki i atmosfer\u0119, kt\u00f3ra przeniesie Ci\u0119 w czasy z\u0142otego wieku rocka. To wydarzenie dla prawdziwych fan\u00f3w muzyki rockowej!"
     },
     {
         "id": "4",
@@ -33,7 +33,7 @@
         "date": "05.09.2025",
         "createdAt": "2024-04-05 16:45:00",
         "imageUrl": "https:\/\/images.pexels.com\/photos\/1105666\/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "interestCount": 37
+        "description": "Jazz Night w Gdyni to wiecz\u00f3r po\u015bwi\u0119cony najpi\u0119kniejszym brzmieniom jazzu. Wybitni muzycy zagra\u0105 klasyczne standardy i nowoczesne interpretacje. Rozlu\u017anij si\u0119 przy fili\u017cance kawy, poczuj atmosfer\u0119 intymnych klub\u00f3w jazzowych i pozw\u00f3l, by muzyka przenios\u0142a Ci\u0119 w relaksuj\u0105cy nastr\u00f3j."
     },
     {
         "id": "5",
@@ -42,6 +42,7 @@
         "date": "25.10.2026",
         "createdAt": "2026-02-01 21:28:00",
         "imageUrl": "https:\/\/as2.ftcdn.net\/v2\/jpg\/01\/20\/28\/25\/1000_F_120282530_gMCruc8XX2mwf5YtODLV2O1TGHzu4CAb.webp",
-        "interestCount": 0
+        "interestCount": 0,
+        "description": "Po miesi\u0105cach pracy nad projektem czas na odpoczynek! Impreza po oddaniu projektu w Miastku Studenckim AGH to okazja do celebrowania sukcesu. Baw si\u0119 z kolegami, tancz przy najlepszych hitach, jedz pyszne jedzenie i dziel si\u0119 wspomnieniami. To wydarzenie dla wszystkich, kt\u00f3rzy przyczynili si\u0119 do sukcesu projektu!"
     }
 ]

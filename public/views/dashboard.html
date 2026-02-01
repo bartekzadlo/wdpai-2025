@@ -103,7 +103,7 @@
                         </thead>
                         <tbody>
                             <?php foreach ($recentEvents as $index => $event): ?>
-                            <tr>
+                            <tr onclick="window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
                                 <td><?php echo htmlspecialchars($event->id); ?></td>
                                 <td><?php echo htmlspecialchars($event->title); ?></td>
                                 <td><?php echo htmlspecialchars($event->location); ?></td>

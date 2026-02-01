@@ -93,6 +93,7 @@ class DefaultController extends AppController {
             $location = trim($_POST['location'] ?? '');
             $date = trim($_POST['date'] ?? '');
             $imageUrl = trim($_POST['imageUrl'] ?? '');
+            $description = trim($_POST['description'] ?? '');
 
             // Validation
             $errors = [];
@@ -144,6 +145,7 @@ class DefaultController extends AppController {
                     $location,
                     $date,
                     $imageUrl,
+                    $description,
                     0, // interestCount
                     false, // isInterested
                     date('Y-m-d H:i:s') // createdAt
@@ -215,5 +217,46 @@ class DefaultController extends AppController {
             'interestedEvents' => $interestedEvents,
             'friends' => $friendData
         ]);
+    }
+
+    public function eventDetails() {
+        session_start();
+        if (!isset($_SESSION['user'])) {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        $eventId = $_GET['id'] ?? '';
+        if (empty($eventId)) {
+            http_response_code(404);
+            include 'public/views/404.html';
+            return;
+        }
+
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        require_once __DIR__ . '/../repository/UserEventInterestRepository.php';
+
+        $eventRepository = EventRepository::getInstance();
+        $interestRepository = UserEventInterestRepository::getInstance();
+
+        $event = $eventRepository->findById($eventId);
+        if (!$event) {
+            http_response_code(404);
+            include 'public/views/404.html';
+            return;
+        }
+
+        $event->interestCount = $interestRepository->getInterestCount($event->id);
+        if (isset($_SESSION['user'])) {
+            $event->isInterested = $interestRepository->isInterested($_SESSION['user']['id'], $event->id);
+        } else {
+            $event->isInterested = false;
+        }
+        // Set status for the event
+        $currentDate = date('d.m.Y');
+        $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+
+        $this->render('event-details', ['event' => $event]);
     }
 }

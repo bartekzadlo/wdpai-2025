@@ -96,6 +96,12 @@
                                    placeholder="https://example.com/image.jpg">
                         </div>
 
+                        <div class="form-group">
+                            <label for="description">Opis wydarzenia</label>
+                            <textarea id="description" name="description" rows="4"
+                                      placeholder="Dodaj opis wydarzenia..."><?php echo htmlspecialchars($formData['description'] ?? ''); ?></textarea>
+                        </div>
+
                         <div class="form-actions">
                             <a href="/dashboard" class="btn-cancel">ANULUJ</a>
                             <button type="submit" class="btn-submit">

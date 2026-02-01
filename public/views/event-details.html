@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVENT.IO</title>
-    
+    <title><?php echo htmlspecialchars($event->title); ?> | EVENT.IO</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
 
     <!-- NAGŁÓWEK -->
     <header class="fixed-header-container" id="app-header">
-        
+
         <div class="top-icons">
             <!-- USTAWIENIA -->
             <a href="/settings">
@@ -31,7 +31,6 @@
             </a>
 
             <!-- DASHBOARD (tylko admin) -->
-            <!-- Usunięto klasę 'admin-btn', aby przycisk wyglądał tak samo jak inne -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                 <a href="/dashboard">
                     <i class="fa-solid fa-chart-line"></i>
@@ -90,22 +89,19 @@
     <main class="scrollable-content" id="scroll-container">
         <div class="content-padding">
 
-            <?php foreach ($events as $event): ?>
-            <article class="event-card" onclick="window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
-                <div class="event-image">
+            <article class="event-detail-card">
+                <div class="event-detail-image">
                     <img src="<?php echo htmlspecialchars($event->imageUrl); ?>" alt="Event">
                 </div>
-                <div class="event-details">
-                    <div class="event-header">
-                        <h2><?php echo htmlspecialchars($event->title); ?></h2>
-                    </div>
-                    <div class="event-info">
+                <div class="event-detail-content">
+                    <h1><?php echo htmlspecialchars($event->title); ?></h1>
+                    <div class="event-detail-info">
                         <p><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($event->location); ?></p>
                         <p><i class="fa-regular fa-clock"></i> <?php echo htmlspecialchars($event->date); ?></p>
                         <p><i class="fa-solid fa-info-circle"></i> Status: <?php echo htmlspecialchars($event->status); ?></p>
                     </div>
-                    <div class="event-footer">
-                        <div class="checkbox-wrapper" onclick="event.stopPropagation();">
+                    <div class="event-detail-footer">
+                        <div class="checkbox-wrapper">
                             <input type="checkbox" id="<?php echo htmlspecialchars($event->id); ?>" <?php echo isset($event->isInterested) && $event->isInterested ? 'checked' : ''; ?>>
                             <label for="<?php echo htmlspecialchars($event->id); ?>">JESTEM ZAINTERESOWANY</label>
                         </div>
@@ -113,12 +109,20 @@
                         <span class="interest-count">LICZBA ZAINTERESOWANYCH: <?php echo htmlspecialchars($event->interestCount); ?></span>
                         <?php endif; ?>
                         <div class="card-icons">
-                            <i class="fa-solid fa-share-nodes share-btn" data-url="<?php echo htmlspecialchars('http://' . $_SERVER['HTTP_HOST'] . '/event-details?id=' . $event->id); ?>" onclick="event.stopPropagation();"></i>
+                            <i class="fa-solid fa-share-nodes share-btn" data-url="<?php echo htmlspecialchars('http://' . $_SERVER['HTTP_HOST'] . '/event-details?id=' . $event->id); ?>"></i>
                         </div>
                     </div>
                 </div>
             </article>
-            <?php endforeach; ?>
+            <?php if (!empty($event->description)): ?>
+            <div class="event-description">
+                <h2>Opis wydarzenia</h2>
+                <div class="description-text">
+                    <p><?php echo nl2br(htmlspecialchars($event->description)); ?></p>
+                </div>
+            </div>
+            <?php endif; ?>
+            </article>
 
         </div>
 
@@ -126,8 +130,7 @@
         <div style="height: 200px; background-color: black;"></div>
     </main>
 
-    <!-- Message box for share -->
-    <div id="share-message" class="share-message">Link skopiowany!</div>
+
 </div>
 
 <!-- SKRYPT ZWIJANIA HEADERA -->

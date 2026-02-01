@@ -42,8 +42,12 @@ class Routing
             'action' => 'profile'
         ],
         'settings' => [
-            'controller' => 'SettingsController', 
+            'controller' => 'SettingsController',
             'action' => 'settings'
+        ],
+        'event-details' => [
+            'controller' => 'DefaultController',
+            'action' => 'eventDetails'
         ],
 
         // --- API Ustawień (AJAX) ---

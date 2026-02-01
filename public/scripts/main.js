@@ -149,4 +149,70 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Handle interest checkbox changes in event details
+    const eventDetailCheckbox = document.querySelector('.event-detail-card input[type="checkbox"]');
+    if (eventDetailCheckbox) {
+        eventDetailCheckbox.addEventListener('change', async () => {
+            const eventId = eventDetailCheckbox.id;
+            try {
+                const response = await fetch('/api/interest/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `eventId=${encodeURIComponent(eventId)}`
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Update checkbox state
+                eventDetailCheckbox.checked = data.isInterested;
+
+                // Update interest count in event details
+                let interestCountSpan = document.querySelector('.event-detail-info p:last-child');
+                if (data.interestCount > 0) {
+                    if (interestCountSpan && interestCountSpan.textContent.includes('Liczba zainteresowanych')) {
+                        interestCountSpan.textContent = `Liczba zainteresowanych: ${data.interestCount}`;
+                    } else {
+                        // Create new interest count p if it doesn't exist
+                        const newP = document.createElement('p');
+                        newP.innerHTML = `<i class="fa-solid fa-users"></i> Liczba zainteresowanych: ${data.interestCount}`;
+                        document.querySelector('.event-detail-info').appendChild(newP);
+                    }
+                } else {
+                    if (interestCountSpan && interestCountSpan.textContent.includes('Liczba zainteresowanych')) {
+                        interestCountSpan.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling interest:', error);
+                // Revert checkbox state on error
+                eventDetailCheckbox.checked = !eventDetailCheckbox.checked;
+                alert('Wystąpił błąd podczas aktualizacji zainteresowania. Spróbuj ponownie.');
+            }
+        });
+    }
+
+    // Handle share button clicks
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('share-btn')) {
+            e.preventDefault(); // Prevent navigating to event details
+            const url = e.target.getAttribute('data-url');
+            navigator.clipboard.writeText(url).then(() => {
+                const message = document.getElementById('share-message');
+                message.classList.add('show');
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Nie udało się skopiować linku.');
+            });
+        }
+    });
 });
