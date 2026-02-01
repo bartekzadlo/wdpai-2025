@@ -59,7 +59,7 @@
                     <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                     <div class="stat-info">
                         <h3>UŻYTKOWNICY</h3>
-                        <p class="stat-number">2,137</p>
+                        <p class="stat-number"><?php echo $userCount; ?></p>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@
                     <div class="stat-icon"><i class="fa-regular fa-calendar-check"></i></div>
                     <div class="stat-info">
                         <h3>AKTYWNE WYDARZENIA</h3>
-                        <p class="stat-number">42</p>
+                        <p class="stat-number"><?php echo $eventCount; ?></p>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
                     <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
                     <div class="stat-info">
                         <h3>ZAINTERESOWANIE</h3>
-                        <p class="stat-number">15k</p>
+                        <p class="stat-number"><?php echo $interestCount; ?></p>
                     </div>
                 </div>
             </section>
@@ -102,40 +102,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Przykładowe dane statyczne -->
+                            <?php foreach ($recentEvents as $index => $event): ?>
                             <tr>
-                                <td>#001</td>
-                                <td>TECHNO RAVE NIGHT</td>
-                                <td>KATOWICE, SPODEK</td>
-                                <td>24.06.2024</td>
-                                <td class="status-active">AKTYWNE</td>
+                                <td><?php echo htmlspecialchars($event->id); ?></td>
+                                <td><?php echo htmlspecialchars($event->title); ?></td>
+                                <td><?php echo htmlspecialchars($event->location); ?></td>
+                                <td><?php echo htmlspecialchars($event->date); ?></td>
+                                <td class="<?php echo $event->status === 'AKTYWNE' ? 'status-active' : 'status-pending'; ?>"><?php echo htmlspecialchars($event->status); ?></td>
                                 <td>
                                     <i class="fa-solid fa-pen-to-square action-icon"></i>
                                     <i class="fa-solid fa-trash action-icon delete"></i>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>JAZZ NIGHT</td>
-                                <td>GDYNIA</td>
-                                <td>20.09.2024</td>
-                                <td class="status-pending">SZKIC</td>
-                                <td>
-                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
-                                    <i class="fa-solid fa-trash action-icon delete"></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#003</td>
-                                <td>ROCK LEGENDS</td>
-                                <td>WARSZAWA</td>
-                                <td>15.08.2024</td>
-                                <td class="status-active">AKTYWNE</td>
-                                <td>
-                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
-                                    <i class="fa-solid fa-trash action-icon delete"></i>
-                                </td>
-                            </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

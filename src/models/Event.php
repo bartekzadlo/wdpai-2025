@@ -6,6 +6,7 @@ class Event
     public string $title;
     public string $location;
     public string $date;
+    public string $createdAt;
     public string $imageUrl;
     public int $interestCount;
     public bool $isInterested;
@@ -17,12 +18,14 @@ class Event
         string $date,
         string $imageUrl,
         int $interestCount = 0,
-        bool $isInterested = false
+        bool $isInterested = false,
+        string $createdAt = null
     ) {
         $this->id = $id;
         $this->title = $title;
         $this->location = $location;
         $this->date = $date;
+        $this->createdAt = $createdAt ?? date('Y-m-d H:i:s');
         $this->imageUrl = $imageUrl;
         $this->interestCount = $interestCount;
         $this->isInterested = $isInterested;
@@ -36,7 +39,9 @@ class Event
             $data['location'] ?? '',
             $data['date'] ?? '',
             $data['imageUrl'] ?? '',
-            $data['interestCount'] ?? 0
+            $data['interestCount'] ?? 0,
+            false,
+            $data['createdAt'] ?? null
         );
     }
 
@@ -47,6 +52,7 @@ class Event
             'title' => $this->title,
             'location' => $this->location,
             'date' => $this->date,
+            'createdAt' => $this->createdAt,
             'imageUrl' => $this->imageUrl,
             'interestCount' => $this->interestCount,
         ];

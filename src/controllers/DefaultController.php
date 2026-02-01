@@ -42,7 +42,37 @@ class DefaultController extends AppController {
             return;
         }
 
-        $this->render('dashboard');
+        require_once __DIR__ . '/../repository/UserRepository.php';
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        require_once __DIR__ . '/../repository/UserEventInterestRepository.php';
+
+        $userRepository = UserRepository::getInstance();
+        $eventRepository = EventRepository::getInstance();
+        $interestRepository = UserEventInterestRepository::getInstance();
+
+        $userCount = count($userRepository->findAll());
+        $eventCount = count($eventRepository->findAll());
+        $interestCount = count($interestRepository->findAll());
+
+        // Get last 3 events by creation date
+        $allEvents = $eventRepository->findAll();
+        usort($allEvents, function($a, $b) {
+            return strtotime($b->createdAt) <=> strtotime($a->createdAt);
+        });
+        $recentEvents = array_slice($allEvents, 0, 3);
+
+        // Determine status for each event
+        $currentDate = date('d.m.Y');
+        foreach ($recentEvents as $event) {
+            $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+        }
+
+        $this->render('dashboard', [
+            'userCount' => $userCount,
+            'eventCount' => $eventCount,
+            'interestCount' => $interestCount,
+            'recentEvents' => $recentEvents
+        ]);
     }
 
     public function profile() {
