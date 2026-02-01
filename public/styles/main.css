@@ -240,6 +240,10 @@ body {
     z-index: 1000;
 }
 
+.share-message.show {
+    display: block;
+}
+
 .event-detail-card {
     background-color: var(--card-gray);
     width: 100%;

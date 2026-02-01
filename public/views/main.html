@@ -91,7 +91,7 @@
         <div class="content-padding">
 
             <?php foreach ($events as $event): ?>
-            <article class="event-card" onclick="window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
+            <article class="event-card" onclick="if (!event.target.closest('.share-btn')) window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
                 <div class="event-image">
                     <img src="<?php echo htmlspecialchars($event->imageUrl); ?>" alt="Event">
                 </div>
@@ -113,7 +113,7 @@
                         <span class="interest-count">LICZBA ZAINTERESOWANYCH: <?php echo htmlspecialchars($event->interestCount); ?></span>
                         <?php endif; ?>
                         <div class="card-icons">
-                            <i class="fa-solid fa-share-nodes share-btn" data-url="<?php echo htmlspecialchars('http://' . $_SERVER['HTTP_HOST'] . '/event-details?id=' . $event->id); ?>" onclick="event.stopPropagation();"></i>
+                            <i class="fa-solid fa-share-nodes share-btn" data-url="<?php echo htmlspecialchars('http://' . $_SERVER['HTTP_HOST'] . '/event-details?id=' . $event->id); ?>"></i>
                         </div>
                     </div>
                 </div>

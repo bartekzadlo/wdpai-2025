@@ -1,18 +1,18 @@
-[
-    {
+{
+    "0": {
         "userId": "user",
         "eventId": "2"
     },
-    {
-        "userId": "admin",
-        "eventId": "3"
-    },
-    {
+    "2": {
         "userId": "admin",
         "eventId": "2"
     },
-    {
+    "3": {
         "userId": "admin",
         "eventId": "1"
+    },
+    "6": {
+        "userId": "admin",
+        "eventId": "5"
     }
-]
+}

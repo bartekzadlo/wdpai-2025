@@ -33,6 +33,11 @@ class DefaultController extends AppController {
             $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
         }
 
+        // Filter to show only active events
+        $events = array_filter($events, function($event) {
+            return $event->status === 'AKTYWNE';
+        });
+
         $this->render('main', ['events' => $events]);
     }
 

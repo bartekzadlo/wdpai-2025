@@ -200,19 +200,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle share button clicks
     document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('share-btn')) {
+        if (e.target.classList.contains('share-btn') || e.target.closest('.share-btn')) {
             e.preventDefault(); // Prevent navigating to event details
-            const url = e.target.getAttribute('data-url');
-            navigator.clipboard.writeText(url).then(() => {
-                const message = document.getElementById('share-message');
-                message.classList.add('show');
-                setTimeout(() => {
-                    message.classList.remove('show');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                alert('Nie udało się skopiować linku.');
-            });
+            e.stopPropagation(); // Prevent bubbling to parent elements
+            const url = e.target.getAttribute('data-url') || e.target.closest('.share-btn').getAttribute('data-url');
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    const message = document.getElementById('share-message');
+                    if (message) {
+                        message.classList.add('show');
+                        setTimeout(() => {
+                            message.classList.remove('show');
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    console.error('Failed to copy with clipboard API: ', err);
+                    // Fallback to execCommand
+                    fallbackCopyTextToClipboard(url);
+                });
+            } else {
+                // Fallback for browsers without clipboard API
+                fallbackCopyTextToClipboard(url);
+            }
         }
     });
+
+// Fallback function to copy text to clipboard
+function fallbackCopyTextToClipboard(text) {
+    const input = document.createElement("input");
+    input.value = text;
+    input.style.position = "fixed";
+    input.style.top = "0";
+    input.style.left = "0";
+    input.style.width = "1px";
+    input.style.height = "1px";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            const message = document.getElementById('share-message');
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        } else {
+            alert('Nie udało się skopiować linku.');
+        }
+    } catch (err) {
+        console.error('Fallback copy failed: ', err);
+        alert('Nie udało się skopiować linku.');
+    }
+    document.body.removeChild(input);
+}
 });
