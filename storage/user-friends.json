@@ -1,9 +1,0 @@
-[
-    {
-        "id": "friend1",
-        "userId": "admin",
-        "friendId": "user",
-        "status": "accepted",
-        "createdAt": "2024-01-01 12:00:00"
-    }
-]
