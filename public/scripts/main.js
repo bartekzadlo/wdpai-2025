@@ -1,3 +1,26 @@
+// Mobile bottom navigation functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+
+    bottomNavItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Remove active class from all items
+            bottomNavItems.forEach(navItem => navItem.classList.remove('active'));
+
+            // Add active class to clicked item
+            item.classList.add('active');
+
+            // Handle navigation - redirect to the appropriate page
+            const href = item.getAttribute('href');
+            if (href && href !== '#') {
+                window.location.href = href;
+            }
+        });
+    });
+});
+
 // Event edit and delete functions for dashboard
 function editEvent(eventId) {
     window.location.href = `/edit-event?id=${eventId}`;
