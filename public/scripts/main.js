@@ -35,6 +35,38 @@ async function deleteEvent(eventId) {
     }
 }
 
+async function acceptEvent(eventId) {
+    if (!confirm('Czy na pewno chcesz zaakceptować to wydarzenie?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/event/accept', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `eventId=${encodeURIComponent(eventId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Wydarzenie zostało zaakceptowane!');
+            // Refresh the page to update the dashboard
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas akceptowania wydarzenia.');
+        }
+    } catch (error) {
+        console.error('Error accepting event:', error);
+        alert('Wystąpił błąd podczas akceptowania wydarzenia.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Only proceed if eventsData is defined (i.e., on pages that load events)
     if (typeof eventsData === 'undefined') {

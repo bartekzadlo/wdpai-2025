@@ -1,5 +1,5 @@
-[
-    {
+{
+    "0": {
         "id": "1",
         "title": "PITBULL \u2013 PARTY AFTER PARTY",
         "location": "KRAK\u00d3W, TAURON ARENA",
@@ -10,7 +10,7 @@
         "interestCount": 0,
         "status": ""
     },
-    {
+    "1": {
         "id": "2",
         "title": "TECHNO ROCK NIGHT",
         "location": "KATOWICE, SPODEK",
@@ -21,7 +21,7 @@
         "interestCount": 0,
         "status": ""
     },
-    {
+    "2": {
         "id": "3",
         "title": "ROCK LEGENDS",
         "location": "WARSZAWA",
@@ -32,18 +32,7 @@
         "interestCount": 0,
         "status": ""
     },
-    {
-        "id": "4",
-        "title": "JAZZ NIGHT",
-        "location": "GDYNIA",
-        "date": "05.09.2025",
-        "createdAt": "2024-04-05 16:45:00",
-        "imageUrl": "https:\/\/images.pexels.com\/photos\/1105666\/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "description": "Jazz Night w Gdyni to wiecz\u00f3r po\u015bwi\u0119cony najpi\u0119kniejszym brzmieniom jazzu. Wybitni muzycy zagra\u0105 klasyczne standardy i nowoczesne interpretacje. Rozlu\u017anij si\u0119 przy fili\u017cance kawy, poczuj atmosfer\u0119 intymnych klub\u00f3w jazzowych i pozw\u00f3l, by muzyka przenios\u0142a Ci\u0119 w relaksuj\u0105cy nastr\u00f3j.",
-        "interestCount": 0,
-        "status": ""
-    },
-    {
+    "4": {
         "id": "5",
         "title": "IMPREZA PO ODDANIU PROJEKTU",
         "location": "MIASTECZKO STUDENCKIE AGH",
@@ -54,7 +43,7 @@
         "interestCount": 0,
         "status": ""
     },
-    {
+    "5": {
         "id": "6",
         "title": "czad imprezka",
         "location": "m\u00f3j dom",
@@ -64,27 +53,5 @@
         "description": "Czad imprezka a nie \u017cadna posiad\u00f3wka",
         "interestCount": 0,
         "status": ""
-    },
-    {
-        "id": "7",
-        "title": "im",
-        "location": "asa",
-        "date": "25.10.2026",
-        "createdAt": "2026-02-04 05:58:47",
-        "imageUrl": "https:\/\/as2.ftcdn.net\/v2\/jpg\/01\/20\/28\/25\/1000_F_120282530_gMCruc8XX2mwf5YtODLV2O1TGHzu4CAb.webp",
-        "description": "aaa",
-        "interestCount": 0,
-        "status": ""
-    },
-    {
-        "id": "8",
-        "title": "aa",
-        "location": "aa",
-        "date": "04.03.2026",
-        "createdAt": "2026-02-04 06:02:29",
-        "imageUrl": "https:\/\/as2.ftcdn.net\/v2\/jpg\/01\/20\/28\/25\/1000_F_120282530_gMCruc8XX2mwf5YtODLV2O1TGHzu4CAb.webp",
-        "description": "aa",
-        "interestCount": 0,
-        "status": "AKTYWNE"
     }
-]
+}

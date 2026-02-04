@@ -110,6 +110,9 @@
                                 <td><?php echo htmlspecialchars($event->date); ?></td>
                                 <td class="<?php echo $event->status === 'AKTYWNE' ? 'status-active' : 'status-pending'; ?>"><?php echo htmlspecialchars($event->status); ?></td>
                                 <td>
+                                    <?php if ($event->status === 'OCZEKUJACE'): ?>
+                                        <i class="fa-solid fa-check action-icon accept" onclick="event.stopPropagation(); acceptEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Akceptuj wydarzenie"></i>
+                                    <?php endif; ?>
                                     <i class="fa-solid fa-pen-to-square action-icon" onclick="event.stopPropagation(); editEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Edytuj wydarzenie"></i>
                                     <i class="fa-solid fa-trash action-icon delete" onclick="event.stopPropagation(); deleteEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Usuń wydarzenie"></i>
                                 </td>

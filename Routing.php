@@ -82,6 +82,10 @@ class Routing
         'api/event/delete' => [
             'controller' => 'ApiController',
             'action' => 'deleteEvent'
+        ],
+        'api/event/accept' => [
+            'controller' => 'ApiController',
+            'action' => 'acceptEvent'
         ]
     ];
 
