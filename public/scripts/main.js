@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Get elements
+    const searchInput = document.getElementById('search-input');
     const locationFilter = document.getElementById('location-filter');
     const savedFilter = document.getElementById('saved-filter');
     const dateFilter = document.getElementById('date-filter');
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Filter events function
     function filterEvents() {
+        const searchValue = searchInput.value.toLowerCase();
         const locationValue = locationInput.value.toLowerCase();
         const dateValue = dateInput.value;
         const showSavedOnly = isSavedFilterActive;
@@ -58,6 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!event) return;
 
             let show = true;
+
+            // Search filter (title)
+            if (searchValue && !event.title.toLowerCase().includes(searchValue)) {
+                show = false;
+            }
 
             // Location filter
             if (locationValue && !event.location.toLowerCase().includes(locationValue)) {
@@ -91,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event listeners for inputs
+    searchInput.addEventListener('input', filterEvents);
     locationInput.addEventListener('input', filterEvents);
     dateInput.addEventListener('change', filterEvents);
 
@@ -255,5 +263,154 @@ function fallbackCopyTextToClipboard(text) {
         alert('Nie udało się skopiować linku.');
     }
     document.body.removeChild(input);
+}
+
+// Friend management functions
+async function searchUsers() {
+    const query = document.getElementById('user-search').value;
+    const resultsDiv = document.getElementById('search-results');
+
+    if (query.length < 2) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/friends/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const users = await response.json();
+        resultsDiv.innerHTML = '';
+
+        users.forEach(user => {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user-result';
+            userDiv.innerHTML = `
+                <span>${user.name} ${user.surname}</span>
+                <button onclick="sendFriendRequest('${user.id}')">WYŚLIJ ZAPROSZENIE</button>
+            `;
+            resultsDiv.appendChild(userDiv);
+        });
+    } catch (error) {
+        console.error('Error searching users:', error);
+    }
+}
+
+async function sendFriendRequest(friendId) {
+    try {
+        const response = await fetch('/api/friends/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `friendId=${encodeURIComponent(friendId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Zaproszenie zostało wysłane!');
+            // Refresh the page to update the UI
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas wysyłania zaproszenia.');
+        }
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+        alert('Wystąpił błąd podczas wysyłania zaproszenia.');
+    }
+}
+
+async function acceptFriendRequest(requestId) {
+    try {
+        const response = await fetch('/api/friends/accept', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `requestId=${encodeURIComponent(requestId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Zaproszenie zostało zaakceptowane!');
+            // Refresh the page to update the UI
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas akceptowania zaproszenia.');
+        }
+    } catch (error) {
+        console.error('Error accepting friend request:', error);
+        alert('Wystąpił błąd podczas akceptowania zaproszenia.');
+    }
+}
+
+async function rejectFriendRequest(requestId) {
+    try {
+        const response = await fetch('/api/friends/reject', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `requestId=${encodeURIComponent(requestId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Zaproszenie zostało odrzucone!');
+            // Refresh the page to update the UI
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas odrzucania zaproszenia.');
+        }
+    } catch (error) {
+        console.error('Error rejecting friend request:', error);
+        alert('Wystąpił błąd podczas odrzucania zaproszenia.');
+    }
+}
+
+async function removeFriend(friendId) {
+    if (!confirm('Czy na pewno chcesz usunąć tego znajomego?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/friends/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `friendId=${encodeURIComponent(friendId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Znajomy został usunięty!');
+            // Refresh the page to update the UI
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas usuwania znajomego.');
+        }
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        alert('Wystąpił błąd podczas usuwania znajomego.');
+    }
 }
 });
