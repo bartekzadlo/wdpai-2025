@@ -120,3 +120,30 @@ body {
         font-size: 2rem;
     }
 }
+
+/* Mobile adjustments for very small screens */
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 10px;
+        gap: 15px;
+    }
+    .logo {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    .error-code {
+        font-size: 6rem;
+    }
+    .error-message {
+        font-size: 1.8rem;
+    }
+    .error-description {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    .btn-back {
+        max-width: 250px;
+        padding: 12px 15px;
+        font-size: 1.8rem;
+    }
+}

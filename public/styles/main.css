@@ -447,3 +447,122 @@ body {
     .event-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
     .interest-count { margin: 0; }
 }
+
+/* Tablet adjustments */
+@media screen and (max-width: 768px) {
+    .fixed-header-container {
+        padding: 10px 20px 15px 20px;
+    }
+    .top-icons {
+        font-size: 1.5rem;
+        gap: 10px;
+    }
+    .main-logo {
+        font-size: 4rem;
+    }
+    .search-box input {
+        font-size: 1rem;
+    }
+    .filter-option {
+        font-size: 0.8rem;
+    }
+    .content-padding {
+        padding: 30px 5%;
+    }
+    .event-detail-card {
+        flex-direction: column;
+        height: auto;
+    }
+    .event-detail-image {
+        width: 100%;
+        height: 200px;
+    }
+    .event-detail-content {
+        width: 100%;
+        padding: 15px 20px;
+    }
+    .event-description {
+        width: calc(100% - 10%);
+        margin: 0 5%;
+        padding: 15px;
+    }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 480px) {
+    body {
+        overflow-x: hidden;
+    }
+    .fixed-header-container {
+        padding: 8px 15px 10px 15px;
+    }
+    .top-icons {
+        font-size: 1.3rem;
+        gap: 8px;
+    }
+    .main-logo {
+        font-size: 3rem;
+    }
+    .search-box {
+        padding: 10px 15px;
+        width: 80%;
+        max-width: 300px;
+    }
+    .search-box input {
+        font-size: 0.9rem;
+        margin: 0 8px;
+    }
+    .filter-box {
+        padding: 6px 15px;
+        width: 80%;
+        max-width: 300px;
+    }
+    .filter-option {
+        font-size: 0.7rem;
+    }
+    .content-padding {
+        padding: 20px 3%;
+        gap: 20px;
+    }
+    .event-card {
+        height: auto;
+    }
+    .event-image {
+        height: 150px;
+    }
+    .event-details {
+        padding: 15px 20px;
+    }
+    .event-header h2 {
+        font-size: 2rem;
+    }
+    .event-info {
+        font-size: 1.1rem;
+    }
+    .event-footer {
+        font-size: 1rem;
+    }
+    .card-icons {
+        gap: 10px;
+        font-size: 1.3rem;
+    }
+    .event-detail-content h1 {
+        font-size: 2rem;
+    }
+    .event-detail-info {
+        font-size: 1.1rem;
+    }
+    .event-detail-footer {
+        font-size: 1rem;
+    }
+    .event-description {
+        padding: 10px;
+        font-size: 1.3rem;
+    }
+    .event-description h2 {
+        font-size: 2rem;
+    }
+    .scrollable-content::-webkit-scrollbar {
+        width: 10px;
+    }
+}
