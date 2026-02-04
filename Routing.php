@@ -57,6 +57,10 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'events'
         ],
+        'users' => [
+            'controller' => 'DefaultController',
+            'action' => 'users'
+        ],
 
         // --- API Ustawień (AJAX) ---
         'api/settings/userinfo' => [

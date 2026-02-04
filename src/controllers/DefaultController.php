@@ -118,6 +118,23 @@ class DefaultController extends AppController {
         $this->render('admin-events', ['events' => $allEvents]);
     }
 
+    public function users() {
+        session_start();
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        require_once __DIR__ . '/../repository/UserRepository.php';
+
+        $userRepository = UserRepository::getInstance();
+        $users = $userRepository->findAll();
+
+        $this->render('admin-users', ['users' => $users]);
+    }
+
     public function addEvent() {
         session_start();
 

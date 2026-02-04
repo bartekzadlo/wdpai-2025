@@ -15,7 +15,7 @@
 
     <script src="public/scripts/main.js" defer></script>
 
-    <title>Admin Events | EVENT.IO</title>
+    <title>Admin Users | EVENT.IO</title>
 </head>
 <body>
 
@@ -32,8 +32,8 @@
 
             <ul class="menu-list">
                 <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> PRZEGLĄD</a></li>
-                <li class="active"><a href="/events"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
-                <li><a href="/users"><i class="fa-solid fa-users"></i> UŻYTKOWNICY</a></li>
+                <li><a href="/events"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
+                <li class="active"><a href="/users"><i class="fa-solid fa-users"></i> UŻYTKOWNICY</a></li>
             </ul>
 
             <div class="logout-section">
@@ -55,10 +55,7 @@
             <!-- SEKCJA AKCJI I TABELI -->
             <section class="action-panel">
                 <div class="panel-header">
-                    <h2>WSZYSTKIE WYDARZENIA</h2>
-                    <a href="/add-event" class="btn-add-event">
-                        <i class="fa-solid fa-plus"></i> DODAJ NOWE
-                    </a>
+                    <h2>WSZYSCY UŻYTKOWNICY</h2>
                 </div>
 
                 <div class="table-wrapper">
@@ -66,28 +63,18 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>NAZWA WYDARZENIA</th>
-                                <th>LOKALIZACJA</th>
-                                <th>DATA</th>
-                                <th>STATUS</th>
-                                <th>AKCJE</th>
+                                <th>NAZWA UŻYTKOWNIKA</th>
+                                <th>EMAIL</th>
+                                <th>ROLA</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($events as $index => $event): ?>
-                            <tr onclick="window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
-                                <td><?php echo htmlspecialchars($event->id); ?></td>
-                                <td><?php echo htmlspecialchars($event->title); ?></td>
-                                <td><?php echo htmlspecialchars($event->location); ?></td>
-                                <td><?php echo htmlspecialchars($event->date); ?></td>
-                                <td class="<?php echo $event->status === 'AKTYWNE' ? 'status-active' : 'status-pending'; ?>"><?php echo htmlspecialchars($event->status); ?></td>
-                                <td>
-                                    <?php if ($event->status === 'OCZEKUJACE'): ?>
-                                        <i class="fa-solid fa-check action-icon accept" onclick="event.stopPropagation(); acceptEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Akceptuj wydarzenie"></i>
-                                    <?php endif; ?>
-                                    <i class="fa-solid fa-pen-to-square action-icon" onclick="event.stopPropagation(); editEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Edytuj wydarzenie"></i>
-                                    <i class="fa-solid fa-trash action-icon delete" onclick="event.stopPropagation(); deleteEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Usuń wydarzenie"></i>
-                                </td>
+                            <?php foreach ($users as $user): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($user->id); ?></td>
+                                <td><?php echo htmlspecialchars(($user->name ?? '') . ' ' . ($user->surname ?? '')); ?></td>
+                                <td><?php echo htmlspecialchars($user->email); ?></td>
+                                <td><?php echo htmlspecialchars($user->role); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
