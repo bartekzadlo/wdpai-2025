@@ -21,7 +21,7 @@
     {
         "id": "user",
         "email": "user@event.io",
-        "password": "$2y$10$yGzUXvMGRd8IQM9nYYutp.CwJKETOOCxJubq8acqFYtJxuOa3XRBG",
+        "password": "$2y$10$tKyE21RE5.mhhN7O\/soXduuxVEq\/40kZ4.sQWsJuJpsd10S0zTfJC",
         "role": "user",
         "name": "adam",
         "surname": "adam",

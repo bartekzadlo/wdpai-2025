@@ -46,7 +46,25 @@ class SettingsController extends AppController {
             return;
         }
 
-        $user = $this->userRepository->findByEmail($_SESSION['user']);
+        // Password validation same as registration
+        if (strlen($newPass) < 8) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło zbyt krótkie'], 400);
+            return;
+        }
+        if (strlen($newPass) > 128) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło zbyt długie'], 400);
+            return;
+        }
+        if (!preg_match('/[A-Z]/', $newPass)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło musi zawierać przynajmniej jedną wielką literę'], 400);
+            return;
+        }
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $newPass)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło musi zawierać przynajmniej jeden znak specjalny'], 400);
+            return;
+        }
+
+        $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
         if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Błąd użytkownika'], 404);
             return;
@@ -57,7 +75,7 @@ class SettingsController extends AppController {
             return;
         }
 
-        $user->password = password_hash($newPass, PASSWORD_BCRYPT);
+        $user->password = password_hash($newPass, PASSWORD_ARGON2ID);
         $this->userRepository->save($user);
         $this->sendJsonResponse(['status' => 'success', 'message' => 'Hasło zmienione']);
     }

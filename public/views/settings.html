@@ -210,55 +210,8 @@
 
             <!-- Bez taga <form>, używamy JS do obsługi -->
             <div id="settings-form">
-                
-                <!-- 1. POWIADOMIENIA I PRYWATNOŚĆ -->
-                <div class="settings-section">
-                    <h3><i class="fa-regular fa-bell"></i> PREFERENCJE</h3>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Powiadomienia Email</span>
-                        <div class="pixel-switch">
-                            <input type="checkbox" id="email_notif" <?= isset($user['settings']['email_notif']) && $user['settings']['email_notif'] ? 'checked' : '' ?>>
-                            <label for="email_notif"></label>
-                        </div>
-                    </div>
 
-                    <div class="setting-row">
-                        <span class="setting-label">Powiadomienia SMS</span>
-                        <div class="pixel-switch">
-                            <input type="checkbox" id="sms_notif" <?= isset($user['settings']['sms_notif']) && $user['settings']['sms_notif'] ? 'checked' : '' ?>>
-                            <label for="sms_notif"></label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Nowe w okolicy</span>
-                        <div class="pixel-switch">
-                            <input type="checkbox" id="geo_notif" <?= isset($user['settings']['geo_notif']) && $user['settings']['geo_notif'] ? 'checked' : '' ?>>
-                            <label for="geo_notif"></label>
-                        </div>
-                    </div>
-
-                    <div class="setting-row">
-                        <span class="setting-label">Profil publiczny</span>
-                        <div class="pixel-switch">
-                            <input type="checkbox" id="public_profile" <?= isset($user['settings']['public_profile']) && $user['settings']['public_profile'] ? 'checked' : '' ?>>
-                            <label for="public_profile"></label>
-                        </div>
-                    </div>
-
-                    <div class="setting-row">
-                        <span class="setting-label">Pokazuj moje zapisy</span>
-                        <div class="pixel-switch">
-                            <input type="checkbox" id="show_events" <?= isset($user['settings']['show_events']) && $user['settings']['show_events'] ? 'checked' : '' ?>>
-                            <label for="show_events"></label>
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="savePreferences()" class="btn-retro btn-save">ZAPISZ ZMIANY</button>
-                </div>
-
-                <!-- 2. ZMIANA HASŁA -->
+                <!-- 1. ZMIANA HASŁA -->
                 <div class="settings-section">
                     <h3><i class="fa-solid fa-key"></i> ZMIEŃ HASŁO</h3>
                     
@@ -314,25 +267,7 @@
         }
     }
 
-    // Zapisywanie ustawień (checkboxy)
-    async function savePreferences() {
-        const btn = document.querySelector('.btn-save');
-        const originalText = btn.innerText;
-        btn.innerText = "ZAPISYWANIE...";
 
-        const data = {
-            email_notif: document.getElementById('email_notif').checked,
-            sms_notif: document.getElementById('sms_notif').checked,
-            geo_notif: document.getElementById('geo_notif').checked,
-            public_profile: document.getElementById('public_profile').checked,
-            show_events: document.getElementById('show_events').checked
-        };
-
-        const res = await sendRequest('/api/settings/update', data);
-        
-        alert(res.message);
-        btn.innerText = originalText;
-    }
 
     // Zmiana hasła
     async function changePassword() {
