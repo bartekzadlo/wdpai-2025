@@ -18,5 +18,9 @@
     "7": {
         "userId": "user",
         "eventId": "5"
+    },
+    "8": {
+        "userId": "admin",
+        "eventId": "3"
     }
 }

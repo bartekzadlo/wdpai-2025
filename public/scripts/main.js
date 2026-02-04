@@ -1,14 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Only proceed if eventsData is defined (i.e., on pages that load events)
+    if (typeof eventsData === 'undefined') {
+        return;
+    }
+
     // Populate location suggestions
     const locationSuggestions = document.getElementById('location-suggestions');
-    const uniqueLocations = [...new Set(eventsData.map(event => event.location))];
-    uniqueLocations.forEach(location => {
-        const option = document.createElement('option');
-        option.value = location;
-        locationSuggestions.appendChild(option);
-    });
+    if (locationSuggestions) {
+        const uniqueLocations = [...new Set(eventsData.map(event => event.location))];
+        uniqueLocations.forEach(location => {
+            const option = document.createElement('option');
+            option.value = location;
+            locationSuggestions.appendChild(option);
+        });
+    }
 
-    // Get elements
+    // Get elements (only if they exist on the page)
     const searchInput = document.getElementById('search-input');
     const locationFilter = document.getElementById('location-filter');
     const savedFilter = document.getElementById('saved-filter');
@@ -23,35 +30,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSavedFilterActive = false;
 
     // Toggle location input
-    locationFilter.addEventListener('click', () => {
-        locationInputContainer.style.display = locationInputContainer.style.display === 'none' ? 'block' : 'none';
-        dateInputContainer.style.display = 'none'; // Hide date input
-        updateFilterHighlights();
-        filterEvents();
-    });
+    if (locationFilter) {
+        locationFilter.addEventListener('click', () => {
+            locationInputContainer.style.display = locationInputContainer.style.display === 'none' ? 'block' : 'none';
+            dateInputContainer.style.display = 'none'; // Hide date input
+            updateFilterHighlights();
+            filterEvents();
+        });
+    }
 
     // Toggle date input
-    dateFilter.addEventListener('click', () => {
-        dateInputContainer.style.display = dateInputContainer.style.display === 'none' ? 'block' : 'none';
-        locationInputContainer.style.display = 'none'; // Hide location input
-        updateFilterHighlights();
-        filterEvents();
-    });
+    if (dateFilter) {
+        dateFilter.addEventListener('click', () => {
+            dateInputContainer.style.display = dateInputContainer.style.display === 'none' ? 'block' : 'none';
+            locationInputContainer.style.display = 'none'; // Hide location input
+            updateFilterHighlights();
+            filterEvents();
+        });
+    }
 
     // Saved filter
-    savedFilter.addEventListener('click', () => {
-        isSavedFilterActive = !isSavedFilterActive;
-        locationInputContainer.style.display = 'none';
-        dateInputContainer.style.display = 'none';
-        updateFilterHighlights();
-        filterEvents();
-    });
+    if (savedFilter) {
+        savedFilter.addEventListener('click', () => {
+            isSavedFilterActive = !isSavedFilterActive;
+            locationInputContainer.style.display = 'none';
+            dateInputContainer.style.display = 'none';
+            updateFilterHighlights();
+            filterEvents();
+        });
+    }
 
     // Filter events function
     function filterEvents() {
-        const searchValue = searchInput.value.toLowerCase();
-        const locationValue = locationInput.value.toLowerCase();
-        const dateValue = dateInput.value;
+        const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+        const locationValue = locationInput ? locationInput.value.toLowerCase() : '';
+        const dateValue = dateInput ? dateInput.value : '';
         const showSavedOnly = isSavedFilterActive;
 
         eventCards.forEach(card => {
@@ -98,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event listeners for inputs
-    searchInput.addEventListener('input', filterEvents);
-    locationInput.addEventListener('input', filterEvents);
-    dateInput.addEventListener('change', filterEvents);
+    if (searchInput) searchInput.addEventListener('input', filterEvents);
+    if (locationInput) locationInput.addEventListener('input', filterEvents);
+    if (dateInput) dateInput.addEventListener('change', filterEvents);
 
     // Function to parse date from DD.MM.YYYY to YYYY-MM-DD
     function parseDate(dateStr) {
@@ -111,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle interest checkbox changes
     eventCards.forEach(card => {
         const checkbox = card.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
         const eventId = checkbox.id;
 
         checkbox.addEventListener('change', async () => {
@@ -181,19 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update checkbox state
                 eventDetailCheckbox.checked = data.isInterested;
 
-                // Update interest count in event details
-                let interestCountSpan = document.querySelector('.event-detail-info p:last-child');
+                // Update interest count
+                let interestCountSpan = document.querySelector('.event-detail-footer .interest-count');
                 if (data.interestCount > 0) {
-                    if (interestCountSpan && interestCountSpan.textContent.includes('Liczba zainteresowanych')) {
-                        interestCountSpan.textContent = `Liczba zainteresowanych: ${data.interestCount}`;
+                    if (interestCountSpan) {
+                        interestCountSpan.textContent = `LICZBA ZAINTERESOWANYCH: ${data.interestCount}`;
                     } else {
-                        // Create new interest count p if it doesn't exist
-                        const newP = document.createElement('p');
-                        newP.innerHTML = `<i class="fa-solid fa-users"></i> Liczba zainteresowanych: ${data.interestCount}`;
-                        document.querySelector('.event-detail-info').appendChild(newP);
+                        // Create new interest count span if it doesn't exist
+                        interestCountSpan = document.createElement('span');
+                        interestCountSpan.className = 'interest-count';
+                        interestCountSpan.textContent = `LICZBA ZAINTERESOWANYCH: ${data.interestCount}`;
+                        document.querySelector('.event-detail-footer .checkbox-wrapper').after(interestCountSpan);
                     }
                 } else {
-                    if (interestCountSpan && interestCountSpan.textContent.includes('Liczba zainteresowanych')) {
+                    if (interestCountSpan) {
                         interestCountSpan.remove();
                     }
                 }
