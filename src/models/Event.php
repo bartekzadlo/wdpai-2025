@@ -2,17 +2,28 @@
 
 require_once 'EventStatus.php';
 
+// Klasa reprezentująca wydarzenie w aplikacji
 class Event
 {
+    // Unikalny identyfikator wydarzenia
     public string $id;
+    // Tytuł wydarzenia
     public string $title;
+    // Lokalizacja wydarzenia
     public string $location;
+    // Data wydarzenia
     public string $date;
+    // Data utworzenia wydarzenia
     public string $createdAt;
+    // URL obrazka wydarzenia
     public string $imageUrl;
+    // Opis wydarzenia
     public string $description;
+    // Liczba zainteresowań wydarzeniem
     public int $interestCount;
+    // Czy użytkownik jest zainteresowany wydarzeniem
     public bool $isInterested;
+    // Status wydarzenia (aktywne, nieaktywne, oczekujące)
     public string $status;
 
     public function __construct(

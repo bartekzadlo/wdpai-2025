@@ -1,6 +1,6 @@
 <?php
 
-// Upewnij się, że ścieżki są poprawne względem głównego katalogu
+// Ładuję kontrolery, bo inaczej aplikacja nie będzie wiedziała, co robić
 require_once 'src/controllers/DefaultController.php';
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/SettingsController.php';
@@ -99,7 +99,7 @@ class Routing
 
     public static function run($url)
     {
-        // Rozbijamy URL na części
+        // Dzielę URL na kawałki, żeby wyciągnąć pierwszą część jako klucz akcji
         $urlParts = explode("/", trim($url, '/'));
         $actionKey = $urlParts[0];
 
@@ -109,7 +109,7 @@ class Routing
             $actionKey = $urlParts[0] . '/' . $urlParts[1] . '/' . $urlParts[2];
         }
 
-        // Jeśli ścieżka nie istnieje w tablicy routes -> 404
+        // Jeśli nie ma takiej ścieżki w routach, to 404 - proste
         if (!array_key_exists($actionKey, self::$routes)) {
             http_response_code(404);
             include 'public/views/404.html';

@@ -133,18 +133,24 @@ class SettingsController extends AppController {
         $this->sendJsonResponse(['status' => 'success', 'message' => 'Hasło zmienione']);
     }
 
+    // Metoda obsługująca usunięcie konta użytkownika
     public function deleteAccount() {
+        // Sprawdzenie autoryzacji użytkownika
         $this->checkAuth();
 
+        // Pobranie użytkownika z bazy danych
         $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
         if (!$user) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
             return;
         }
 
+        // Usunięcie użytkownika z bazy danych
         $this->userRepository->delete($user->id);
 
+        // Zniszczenie sesji
         session_destroy();
+        // Zwrócenie odpowiedzi sukcesu
         $this->sendJsonResponse(['status' => 'success', 'message' => 'Konto usunięte']);
     }
 
@@ -164,34 +170,44 @@ class SettingsController extends AppController {
         $this->render('settings', ['user' => $currentUser ? $currentUser->toArray() : null]);
     }
 
-    // --- Helpers ---
+    // --- Metody pomocnicze ---
 
+    // Prywatna metoda sprawdzająca autoryzację użytkownika
     private function checkAuth() {
+        // Rozpoczęcie sesji jeśli nie jest już rozpoczęta
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        
+
+        // Sprawdzenie czy użytkownik jest zalogowany
         if (!isset($_SESSION['user'])) {
             $this->sendJsonResponse(['status' => 'error', 'message' => 'Unauthorized'], 401);
             exit;
         }
     }
 
+    // Prywatna metoda pobierająca dane JSON z ciała żądania
     private function getJsonInput() {
+        // Pobranie danych z wejścia php://input
         $input = file_get_contents('php://input');
+        // Dekodowanie JSON na tablicę asocjacyjną
         return json_decode($input, true) ?? [];
     }
 
-    // --- TUTAJ BYŁ BŁĄD, POPRAWIONA METODA: ---
+    // Prywatna metoda wysyłająca odpowiedź JSON
     private function sendJsonResponse($data, $code = 200) {
-        // Sprawdzamy czy bufor istnieje (ob_get_length > 0) zanim spróbujemy go wyczyścić
+        // Sprawdzenie czy bufor wyjścia istnieje przed jego wyczyszczeniem
         if (ob_get_length()) {
             ob_clean();
         }
-        
+
+        // Ustawienie nagłówka Content-Type na application/json
         header('Content-Type: application/json');
+        // Ustawienie kodu odpowiedzi HTTP
         http_response_code($code);
+        // Wysłanie danych JSON
         echo json_encode($data);
+        // Zakończenie wykonania skryptu
         exit;
     }
 
