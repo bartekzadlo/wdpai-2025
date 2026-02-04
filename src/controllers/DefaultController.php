@@ -87,6 +87,37 @@ class DefaultController extends AppController {
         ]);
     }
 
+    public function events() {
+        session_start();
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        require_once __DIR__ . '/../models/EventStatus.php';
+
+        $eventRepository = EventRepository::getInstance();
+
+        // Get all events sorted by creation date descending
+        $allEvents = $eventRepository->findAll();
+        usort($allEvents, function($a, $b) {
+            return strtotime($b->createdAt) <=> strtotime($a->createdAt);
+        });
+
+        // Determine status for each event, but keep PENDING as is
+        $currentDate = date('d.m.Y');
+        foreach ($allEvents as $event) {
+            if ($event->status !== EventStatus::PENDING) {
+                $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+            }
+        }
+
+        $this->render('admin-events', ['events' => $allEvents]);
+    }
+
     public function addEvent() {
         session_start();
 

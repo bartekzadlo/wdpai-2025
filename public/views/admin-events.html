@@ -6,7 +6,7 @@
     <!-- Zachowujemy importy stylów i skryptów -->
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
-    
+
     <!-- Import czcionki Jersey 10 oraz ikon -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,12 +15,12 @@
 
     <script src="public/scripts/main.js" defer></script>
 
-    <title>Admin Dashboard | EVENT.IO</title>
+    <title>Admin Events | EVENT.IO</title>
 </head>
 <body>
-    
+
     <div class="admin-container">
-        
+
         <!-- BOCZNY PASEK NAWIGACYJNY -->
         <nav class="sidebar">
             <div class="sidebar-header">
@@ -31,8 +31,8 @@
             </div>
 
             <ul class="menu-list">
-                <li class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> PRZEGLĄD</a></li>
-                <li><a href="/events"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
+                <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> PRZEGLĄD</a></li>
+                <li class="active"><a href="/events"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
                 <li><a href="#"><i class="fa-solid fa-users"></i> UŻYTKOWNICY</a></li>
                 <li><a href="#"><i class="fa-solid fa-gear"></i> USTAWIENIA</a></li>
             </ul>
@@ -44,7 +44,7 @@
 
         <!-- GŁÓWNA ZAWARTOŚĆ -->
         <main class="main-content">
-            
+
             <header class="top-bar">
                 <h1>PANEL STEROWANIA</h1>
                 <div class="admin-user">
@@ -53,37 +53,10 @@
                 </div>
             </header>
 
-            <!-- STATYSTYKI (KAFELKI) -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3>UŻYTKOWNICY</h3>
-                        <p class="stat-number"><?php echo $userCount; ?></p>
-                    </div>
-                </div>
-
-                <div class="stat-card purple-glow">
-                    <div class="stat-icon"><i class="fa-regular fa-calendar-check"></i></div>
-                    <div class="stat-info">
-                        <h3>AKTYWNE WYDARZENIA</h3>
-                        <p class="stat-number"><?php echo $eventCount; ?></p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
-                    <div class="stat-info">
-                        <h3>ZAINTERESOWANIE</h3>
-                        <p class="stat-number"><?php echo $interestCount; ?></p>
-                    </div>
-                </div>
-            </section>
-
             <!-- SEKCJA AKCJI I TABELI -->
             <section class="action-panel">
                 <div class="panel-header">
-                    <h2>OSTATNIO DODANE WYDARZENIA</h2>
+                    <h2>WSZYSTKIE WYDARZENIA</h2>
                     <a href="/add-event" class="btn-add-event">
                         <i class="fa-solid fa-plus"></i> DODAJ NOWE
                     </a>
@@ -102,7 +75,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($recentEvents as $index => $event): ?>
+                            <?php foreach ($events as $index => $event): ?>
                             <tr onclick="window.location.href='/event-details?id=<?php echo htmlspecialchars($event->id); ?>'" style="cursor: pointer;">
                                 <td><?php echo htmlspecialchars($event->id); ?></td>
                                 <td><?php echo htmlspecialchars($event->title); ?></td>
