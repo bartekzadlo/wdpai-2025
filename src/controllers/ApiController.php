@@ -2,6 +2,7 @@
 
 require_once 'AppController.php';
 require_once __DIR__ . '/../repository/UserEventInterestRepository.php';
+require_once __DIR__ . '/../repository/EventRepository.php';
 
 class ApiController extends AppController
 {
@@ -59,5 +60,36 @@ class ApiController extends AppController
             'isInterested' => $isInterested,
             'interestCount' => $interestCount
         ]);
+    }
+
+    public function deleteEvent()
+    {
+        session_start();
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            return;
+        }
+
+        $eventId = $_POST['eventId'] ?? '';
+
+        if (empty($eventId)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Event ID is required']);
+            return;
+        }
+
+        $eventRepo = EventRepository::getInstance();
+        $event = $eventRepo->findById($eventId);
+
+        if (!$event) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Event not found']);
+            return;
+        }
+
+        $eventRepo->delete($eventId);
+
+        echo json_encode(['success' => true]);
     }
 }

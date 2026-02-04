@@ -37,6 +37,10 @@ class Routing
             'controller' => 'DefaultController',
             'action' => 'addEvent'
         ],
+        'edit-event' => [
+            'controller' => 'DefaultController',
+            'action' => 'editEvent'
+        ],
         'profile' => [
             'controller' => 'DefaultController',
             'action' => 'profile'
@@ -72,6 +76,12 @@ class Routing
         'api/interest/status' => [
             'controller' => 'ApiController',
             'action' => 'getInterestStatus'
+        ],
+
+        // --- API Events ---
+        'api/event/delete' => [
+            'controller' => 'ApiController',
+            'action' => 'deleteEvent'
         ]
     ];
 

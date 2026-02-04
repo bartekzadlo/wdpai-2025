@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Zachowujemy importy stylów i skryptów -->
+    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
+
+    <!-- Import czcionki Jersey 10 oraz ikon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="public/scripts/main.js" defer></script>
+
+    <title>Edytuj Wydarzenie | EVENT.IO</title>
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <!-- BOCZNY PASEK NAWIGACYJNY -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="/main" style="text-decoration: none;">
+                    <h2 class="logo-text">EVENT.IO</h2>
+                </a>
+                <span class="badge">ADMIN</span>
+            </div>
+
+            <ul class="menu-list">
+                <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> PRZEGLĄD</a></li>
+                <li class="active"><a href="#"><i class="fa-regular fa-calendar-plus"></i> WYDARZENIA</a></li>
+                <li><a href="#"><i class="fa-solid fa-users"></i> UŻYTKOWNICY</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> USTAWIENIA</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="/login" class="btn-logout">WYLOGUJ</a>
+            </div>
+        </nav>
+
+        <!-- GŁÓWNA ZAWARTOŚĆ -->
+        <main class="main-content">
+
+            <header class="top-bar">
+                <h1>EDYTUJ WYDARZENIE</h1>
+                <div class="admin-user">
+                    <span>Witaj, <strong>Administrator</strong></span>
+                    <i class="fa-regular fa-circle-user"></i>
+                </div>
+            </header>
+
+            <!-- FORMULARZ EDYCJI WYDARZENIA -->
+            <section class="form-section">
+                <div class="form-container">
+                    <form action="/edit-event?id=<?php echo htmlspecialchars($event->id); ?>" method="POST" class="event-form">
+
+                        <?php if (isset($errors) && !empty($errors)): ?>
+                        <div class="error-messages">
+                            <ul>
+                                <?php foreach ($errors as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="form-group">
+                            <label for="title">Nazwa wydarzenia *</label>
+                            <input type="text" id="title" name="title" required
+                                   value="<?php echo htmlspecialchars($event->title); ?>"
+                                   placeholder="np. TECHNO RAVE NIGHT">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Lokalizacja *</label>
+                            <input type="text" id="location" name="location" required
+                                   value="<?php echo htmlspecialchars($event->location); ?>"
+                                   placeholder="np. KATOWICE, SPODEK">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Data wydarzenia *</label>
+                            <input type="text" id="date" name="date" required
+                                   value="<?php echo htmlspecialchars($event->date); ?>"
+                                   placeholder="DD.MM.YYYY (np. 15.06.2025)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">URL obrazka *</label>
+                            <input type="url" id="imageUrl" name="imageUrl" required
+                                   value="<?php echo htmlspecialchars($event->imageUrl); ?>"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Opis wydarzenia</label>
+                            <textarea id="description" name="description" rows="4"
+                                      placeholder="Dodaj opis wydarzenia..."><?php echo htmlspecialchars($event->description); ?></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="/dashboard" class="btn-cancel">ANULUJ</a>
+                            <button type="submit" class="btn-submit">
+                                <i class="fa-solid fa-save"></i> ZAPISZ ZMIANY
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

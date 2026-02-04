@@ -238,6 +238,93 @@ class DefaultController extends AppController {
         ]);
     }
 
+    public function editEvent() {
+        session_start();
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            return;
+        }
+
+        $eventId = $_GET['id'] ?? '';
+        if (empty($eventId)) {
+            http_response_code(404);
+            include 'public/views/404.html';
+            return;
+        }
+
+        require_once __DIR__ . '/../repository/EventRepository.php';
+
+        $eventRepository = EventRepository::getInstance();
+        $event = $eventRepository->findById($eventId);
+
+        if (!$event) {
+            http_response_code(404);
+            include 'public/views/404.html';
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle form submission
+            $title = trim($_POST['title'] ?? '');
+            $location = trim($_POST['location'] ?? '');
+            $date = trim($_POST['date'] ?? '');
+            $imageUrl = trim($_POST['imageUrl'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+
+            // Validation
+            $errors = [];
+            if (empty($title)) {
+                $errors[] = 'Nazwa wydarzenia jest wymagana';
+            }
+            if (empty($location)) {
+                $errors[] = 'Lokalizacja jest wymagana';
+            }
+            if (empty($date)) {
+                $errors[] = 'Data jest wymagana';
+            } elseif (!preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $date)) {
+                $errors[] = 'Data musi być w formacie DD.MM.YYYY';
+            } else {
+                // Validate date format and future date
+                $dateObj = DateTime::createFromFormat('d.m.Y', $date);
+                if (!$dateObj) {
+                    $errors[] = 'Nieprawidłowy format daty';
+                } elseif ($dateObj < new DateTime()) {
+                    $errors[] = 'Data musi być w przyszłości';
+                }
+            }
+            if (empty($imageUrl)) {
+                $errors[] = 'URL obrazka jest wymagany';
+            } elseif (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $errors[] = 'Nieprawidłowy URL obrazka';
+            }
+
+            if (empty($errors)) {
+                // Update the event
+                $event->title = $title;
+                $event->location = $location;
+                $event->date = $date;
+                $event->imageUrl = $imageUrl;
+                $event->description = $description;
+
+                $eventRepository->save($event);
+
+                // Redirect back to dashboard
+                $url = "http://$_SERVER[HTTP_HOST]";
+                header("Location: {$url}/dashboard");
+                return;
+            } else {
+                // Render form with errors
+                $this->render('edit-event', ['event' => $event, 'errors' => $errors]);
+                return;
+            }
+        }
+
+        // Render form with current event data
+        $this->render('edit-event', ['event' => $event]);
+    }
+
     public function eventDetails() {
         session_start();
         if (!isset($_SESSION['user'])) {

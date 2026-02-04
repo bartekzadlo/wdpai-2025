@@ -1,3 +1,40 @@
+// Event edit and delete functions for dashboard
+function editEvent(eventId) {
+    window.location.href = `/edit-event?id=${eventId}`;
+}
+
+async function deleteEvent(eventId) {
+    if (!confirm('Czy na pewno chcesz usunąć to wydarzenie? Tej akcji nie można cofnąć.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/event/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `eventId=${encodeURIComponent(eventId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Wydarzenie zostało usunięte!');
+            // Refresh the page to update the dashboard
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas usuwania wydarzenia.');
+        }
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Wystąpił błąd podczas usuwania wydarzenia.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Only proceed if eventsData is defined (i.e., on pages that load events)
     if (typeof eventsData === 'undefined') {
@@ -428,4 +465,42 @@ async function removeFriend(friendId) {
         alert('Wystąpił błąd podczas usuwania znajomego.');
     }
 }
+
+// Event edit and delete functions for dashboard
+function editEvent(eventId) {
+    window.location.href = `/edit-event?id=${eventId}`;
+}
+
+async function deleteEvent(eventId) {
+    if (!confirm('Czy na pewno chcesz usunąć to wydarzenie? Tej akcji nie można cofnąć.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/event/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `eventId=${encodeURIComponent(eventId)}`
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Wydarzenie zostało usunięte!');
+            // Refresh the page to update the dashboard
+            location.reload();
+        } else {
+            alert('Wystąpił błąd podczas usuwania wydarzenia.');
+        }
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Wystąpił błąd podczas usuwania wydarzenia.');
+    }
+}
+
 });

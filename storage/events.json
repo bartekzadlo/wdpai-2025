@@ -86,16 +86,5 @@
         "description": "aa",
         "interestCount": 0,
         "status": "AKTYWNE"
-    },
-    {
-        "id": "9",
-        "title": "aaaaaaaa",
-        "location": "asdasdas",
-        "date": "25.10.2026",
-        "createdAt": "2026-02-04 06:02:49",
-        "imageUrl": "https:\/\/as2.ftcdn.net\/v2\/jpg\/01\/20\/28\/25\/1000_F_120282530_gMCruc8XX2mwf5YtODLV2O1TGHzu4CAb.webp",
-        "description": "asdasdasd",
-        "interestCount": 0,
-        "status": "OCZEKUJACE"
     }
 ]

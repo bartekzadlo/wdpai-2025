@@ -110,8 +110,8 @@
                                 <td><?php echo htmlspecialchars($event->date); ?></td>
                                 <td class="<?php echo $event->status === 'AKTYWNE' ? 'status-active' : 'status-pending'; ?>"><?php echo htmlspecialchars($event->status); ?></td>
                                 <td>
-                                    <i class="fa-solid fa-pen-to-square action-icon"></i>
-                                    <i class="fa-solid fa-trash action-icon delete"></i>
+                                    <i class="fa-solid fa-pen-to-square action-icon" onclick="event.stopPropagation(); editEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Edytuj wydarzenie"></i>
+                                    <i class="fa-solid fa-trash action-icon delete" onclick="event.stopPropagation(); deleteEvent('<?php echo htmlspecialchars($event->id); ?>');" title="Usuń wydarzenie"></i>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
