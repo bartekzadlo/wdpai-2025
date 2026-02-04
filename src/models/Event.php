@@ -66,6 +66,7 @@ class Event
             'imageUrl' => $this->imageUrl,
             'description' => $this->description,
             'interestCount' => $this->interestCount,
+            'status' => $this->status,
         ];
     }
 }

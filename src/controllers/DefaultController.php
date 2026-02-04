@@ -71,10 +71,12 @@ class DefaultController extends AppController {
         });
         $recentEvents = array_slice($allEvents, 0, 3);
 
-        // Determine status for each event
+        // Determine status for each event, but keep PENDING as is
         $currentDate = date('d.m.Y');
         foreach ($recentEvents as $event) {
-            $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+            if ($event->status !== EventStatus::PENDING) {
+                $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+            }
         }
 
         $this->render('dashboard', [
@@ -270,9 +272,11 @@ class DefaultController extends AppController {
         } else {
             $event->isInterested = false;
         }
-        // Set status for the event
-        $currentDate = date('d.m.Y');
-        $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+        // Set status for the event, but keep PENDING as is
+        if ($event->status !== EventStatus::PENDING) {
+            $currentDate = date('d.m.Y');
+            $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? 'AKTYWNE' : 'NIEAKTYWNE';
+        }
 
         $this->render('event-details', ['event' => $event]);
     }
