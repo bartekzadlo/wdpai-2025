@@ -1,13 +1,17 @@
 <?php
 
 require_once __DIR__ . '/../models/UserFriend.php';
+require_once __DIR__ . '/../database/Database.php';
 
 class UserFriendRepository
 {
-    private const FRIENDS_FILE = __DIR__ . '/../../storage/user-friends.json';
+    private PDO $db;
     private static ?UserFriendRepository $instance = null;
 
-    private function __construct() {}
+    private function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
 
     public static function getInstance(): UserFriendRepository
     {
@@ -19,77 +23,135 @@ class UserFriendRepository
 
     public function findAll(): array
     {
-        $data = $this->loadFriends();
-        return array_map([UserFriend::class, 'fromArray'], $data);
+        $stmt = $this->db->query("
+            SELECT 
+                id,
+                user_id as \"userId\",
+                friend_id as \"friendId\",
+                status,
+                created_at as \"createdAt\"
+            FROM user_friends
+            ORDER BY created_at DESC
+        ");
+        
+        $friends = [];
+        while ($row = $stmt->fetch()) {
+            $friends[] = UserFriend::fromArray($row);
+        }
+        return $friends;
     }
 
     public function findByUserId(string $userId): array
     {
-        $friends = $this->findAll();
-        return array_filter($friends, function($friend) use ($userId) {
-            return ($friend->userId === $userId || $friend->friendId === $userId) && $friend->status === 'accepted';
-        });
+        $stmt = $this->db->prepare("
+            SELECT 
+                id,
+                user_id as \"userId\",
+                friend_id as \"friendId\",
+                status,
+                created_at as \"createdAt\"
+            FROM user_friends
+            WHERE (user_id = :user_id OR friend_id = :user_id) AND status = 'accepted'
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([':user_id' => $userId]);
+        
+        $friends = [];
+        while ($row = $stmt->fetch()) {
+            $friends[] = UserFriend::fromArray($row);
+        }
+        return $friends;
     }
 
     public function findPendingRequests(string $userId): array
     {
-        $friends = $this->findAll();
-        return array_filter($friends, function($friend) use ($userId) {
-            return $friend->friendId === $userId && $friend->status === 'pending';
-        });
+        $stmt = $this->db->prepare("
+            SELECT 
+                id,
+                user_id as \"userId\",
+                friend_id as \"friendId\",
+                status,
+                created_at as \"createdAt\"
+            FROM user_friends
+            WHERE friend_id = :user_id AND status = 'pending'
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([':user_id' => $userId]);
+        
+        $friends = [];
+        while ($row = $stmt->fetch()) {
+            $friends[] = UserFriend::fromArray($row);
+        }
+        return $friends;
     }
 
     public function findFriendship(string $userId, string $friendId): ?UserFriend
     {
-        $friends = $this->findAll();
-        foreach ($friends as $friend) {
-            if (($friend->userId === $userId && $friend->friendId === $friendId) ||
-                ($friend->userId === $friendId && $friend->friendId === $userId)) {
-                return $friend;
-            }
+        $stmt = $this->db->prepare("
+            SELECT 
+                id,
+                user_id as \"userId\",
+                friend_id as \"friendId\",
+                status,
+                created_at as \"createdAt\"
+            FROM user_friends
+            WHERE (user_id = :user_id AND friend_id = :friend_id)
+               OR (user_id = :friend_id AND friend_id = :user_id)
+        ");
+        $stmt->execute([
+            ':user_id' => $userId,
+            ':friend_id' => $friendId
+        ]);
+        
+        $row = $stmt->fetch();
+        if (!$row) {
+            return null;
         }
-        return null;
+        
+        return UserFriend::fromArray($row);
     }
 
     public function save(UserFriend $friend): void
     {
-        $friends = $this->findAll();
-        $found = false;
-        foreach ($friends as &$f) {
-            if ($f->id === $friend->id) {
-                $f = $friend;
-                $found = true;
-                break;
-            }
+        $existing = $this->db->prepare("SELECT id FROM user_friends WHERE id = :id");
+        $existing->execute([':id' => $friend->id]);
+        
+        if ($existing->fetch()) {
+            // UPDATE
+            $stmt = $this->db->prepare("
+                UPDATE user_friends SET
+                    user_id = :user_id,
+                    friend_id = :friend_id,
+                    status = :status
+                WHERE id = :id
+            ");
+            
+            $stmt->execute([
+                ':id' => $friend->id,
+                ':user_id' => $friend->userId,
+                ':friend_id' => $friend->friendId,
+                ':status' => $friend->status
+            ]);
+        } else {
+            // INSERT
+            $stmt = $this->db->prepare("
+                INSERT INTO user_friends (id, user_id, friend_id, status, created_at)
+                VALUES (:id, :user_id, :friend_id, :status, :created_at)
+            ");
+            
+            $stmt->execute([
+                ':id' => $friend->id,
+                ':user_id' => $friend->userId,
+                ':friend_id' => $friend->friendId,
+                ':status' => $friend->status,
+                ':created_at' => $friend->createdAt
+            ]);
         }
-        if (!$found) {
-            $friends[] = $friend;
-        }
-        $this->saveFriends(array_map(fn($f) => $f->toArray(), $friends));
     }
 
     public function delete(string $id): void
     {
-        $friends = $this->findAll();
-        $friends = array_filter($friends, fn($f) => $f->id !== $id);
-        $this->saveFriends(array_map(fn($f) => $f->toArray(), $friends));
-    }
-
-    private function loadFriends(): array
-    {
-        if (!file_exists(self::FRIENDS_FILE)) {
-            return [];
-        }
-        $json = file_get_contents(self::FRIENDS_FILE);
-        return json_decode($json, true) ?: [];
-    }
-
-    private function saveFriends(array $friends): void
-    {
-        $dir = dirname(self::FRIENDS_FILE);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        file_put_contents(self::FRIENDS_FILE, json_encode($friends, JSON_PRETTY_PRINT));
+        $stmt = $this->db->prepare("DELETE FROM user_friends WHERE id = :id");
+        $stmt->execute([':id' => $id]);
     }
 }

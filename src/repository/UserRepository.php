@@ -1,13 +1,17 @@
 <?php
 
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../database/Database.php';
 
 class UserRepository
 {
-    private const USERS_FILE = __DIR__ . '/../../storage/users.json';
+    private PDO $db;
     private static ?UserRepository $instance = null;
 
-    private function __construct() {}
+    private function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
 
     public static function getInstance(): UserRepository
     {
@@ -19,76 +23,110 @@ class UserRepository
 
     public function findAll(): array
     {
-        $data = $this->loadUsers();
-        return array_map([User::class, 'fromArray'], $data);
+        $stmt = $this->db->query("
+            SELECT id, email, password, role, name, surname, phone, city, 
+                   profile_picture as \"profilePicture\", consents
+            FROM users
+            ORDER BY created_at DESC
+        ");
+        
+        $users = [];
+        while ($row = $stmt->fetch()) {
+            $row['consents'] = json_decode($row['consents'], true) ?? [];
+            $users[] = User::fromArray($row);
+        }
+        return $users;
     }
 
     public function findByEmail(string $email): ?User
     {
-        $users = $this->findAll();
-        foreach ($users as $user) {
-            if (strcasecmp($user->email, $email) === 0) {
-                return $user;
-            }
+        $stmt = $this->db->prepare("
+            SELECT id, email, password, role, name, surname, phone, city, 
+                   profile_picture as \"profilePicture\", consents
+            FROM users
+            WHERE LOWER(email) = LOWER(:email)
+        ");
+        $stmt->execute([':email' => $email]);
+        
+        $row = $stmt->fetch();
+        if (!$row) {
+            return null;
         }
-        return null;
+        
+        $row['consents'] = json_decode($row['consents'], true) ?? [];
+        return User::fromArray($row);
     }
 
     public function findById(string $id): ?User
     {
-        $users = $this->findAll();
-        foreach ($users as $user) {
-            if ($user->id === $id) {
-                return $user;
-            }
+        $stmt = $this->db->prepare("
+            SELECT id, email, password, role, name, surname, phone, city, 
+                   profile_picture as \"profilePicture\", consents
+            FROM users
+            WHERE id = :id
+        ");
+        $stmt->execute([':id' => $id]);
+        
+        $row = $stmt->fetch();
+        if (!$row) {
+            return null;
         }
-        return null;
+        
+        $row['consents'] = json_decode($row['consents'], true) ?? [];
+        return User::fromArray($row);
     }
 
     public function save(User $user): void
     {
-        $users = $this->findAll();
-        $found = false;
-        foreach ($users as &$u) {
-            if ($u->id === $user->id) {
-                $u = $user;
-                $found = true;
-                break;
-            }
+        $existing = $this->findById($user->id);
+        
+        if ($existing) {
+            // UPDATE
+            $stmt = $this->db->prepare("
+                UPDATE users SET
+                    email = :email,
+                    password = :password,
+                    role = :role,
+                    name = :name,
+                    surname = :surname,
+                    phone = :phone,
+                    city = :city,
+                    profile_picture = :profile_picture,
+                    consents = :consents
+                WHERE id = :id
+            ");
+        } else {
+            // INSERT
+            $stmt = $this->db->prepare("
+                INSERT INTO users (id, email, password, role, name, surname, phone, city, profile_picture, consents)
+                VALUES (:id, :email, :password, :role, :name, :surname, :phone, :city, :profile_picture, :consents)
+            ");
         }
-        if (!$found) {
-            $users[] = $user;
-        }
-        $this->saveUsers(array_map(fn($u) => $u->toArray(), $users));
+        
+        $consents = is_array($user->consents) ? json_encode($user->consents) : '{}';
+        
+        $stmt->execute([
+            ':id' => $user->id,
+            ':email' => $user->email,
+            ':password' => $user->password,
+            ':role' => $user->role,
+            ':name' => $user->name,
+            ':surname' => $user->surname,
+            ':phone' => $user->phone,
+            ':city' => $user->city,
+            ':profile_picture' => $user->profilePicture,
+            ':consents' => $consents
+        ]);
     }
 
     public function delete(string $id): void
     {
-        $users = $this->findAll();
-        $users = array_filter($users, fn($u) => $u->id !== $id);
-        $this->saveUsers(array_map(fn($u) => $u->toArray(), $users));
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
+        $stmt->execute([':id' => $id]);
     }
 
     public function emailExists(string $email): bool
     {
         return $this->findByEmail($email) !== null;
-    }
-
-    private function loadUsers(): array
-    {
-        if (!file_exists(self::USERS_FILE)) {
-            return [];
-        }
-        $json = file_get_contents(self::USERS_FILE);
-        return json_decode($json, true) ?: [];
-    }
-
-    private function saveUsers(array $users): void
-    {
-        $dir = dirname(self::USERS_FILE);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        file_put_contents(self::USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
     }
 }

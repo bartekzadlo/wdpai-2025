@@ -1,13 +1,17 @@
 <?php
 
 require_once __DIR__ . '/../models/UserEventInterest.php';
+require_once __DIR__ . '/../database/Database.php';
 
 class UserEventInterestRepository
 {
-    private const INTERESTS_FILE = __DIR__ . '/../../storage/user-event-interests.json';
+    private PDO $db;
     private static ?UserEventInterestRepository $instance = null;
 
-    private function __construct() {}
+    private function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
 
     public static function getInstance(): UserEventInterestRepository
     {
@@ -19,74 +23,114 @@ class UserEventInterestRepository
 
     public function findAll(): array
     {
-        $data = $this->loadInterests();
-        return array_map([UserEventInterest::class, 'fromArray'], $data);
+        $stmt = $this->db->query("
+            SELECT user_id as \"userId\", event_id as \"eventId\"
+            FROM user_event_interests
+            ORDER BY created_at DESC
+        ");
+        
+        $interests = [];
+        while ($row = $stmt->fetch()) {
+            $interests[] = UserEventInterest::fromArray($row);
+        }
+        return $interests;
     }
 
     public function toggleInterest(string $userId, string $eventId): bool
     {
-        $interests = $this->findAll();
-        $found = false;
-        foreach ($interests as $key => $interest) {
-            if ($interest->userId === $userId && $interest->eventId === $eventId) {
-                unset($interests[$key]);
-                $found = true;
-                break;
-            }
+        // Sprawdź czy zainteresowanie już istnieje
+        $stmt = $this->db->prepare("
+            SELECT id FROM user_event_interests
+            WHERE user_id = :user_id AND event_id = :event_id
+        ");
+        $stmt->execute([
+            ':user_id' => $userId,
+            ':event_id' => $eventId
+        ]);
+        
+        $exists = $stmt->fetch();
+        
+        if ($exists) {
+            // Usuń zainteresowanie
+            $stmt = $this->db->prepare("
+                DELETE FROM user_event_interests
+                WHERE user_id = :user_id AND event_id = :event_id
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            return false; // Zainteresowanie zostało usunięte
+        } else {
+            // Dodaj zainteresowanie
+            $stmt = $this->db->prepare("
+                INSERT INTO user_event_interests (user_id, event_id)
+                VALUES (:user_id, :event_id)
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            return true; // Zainteresowanie zostało dodane
         }
-        if (!$found) {
-            $interests[] = new UserEventInterest($userId, $eventId);
-        }
-        $this->saveInterests(array_map(fn($i) => $i->toArray(), $interests));
-        return !$found;
     }
 
     public function isInterested(string $userId, string $eventId): bool
     {
-        $interests = $this->findAll();
-        foreach ($interests as $interest) {
-            if ($interest->userId === $userId && $interest->eventId === $eventId) {
-                return true;
-            }
-        }
-        return false;
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM user_event_interests
+            WHERE user_id = :user_id AND event_id = :event_id
+        ");
+        $stmt->execute([
+            ':user_id' => $userId,
+            ':event_id' => $eventId
+        ]);
+        
+        return $stmt->fetchColumn() > 0;
     }
 
     public function getInterestCount(string $eventId): int
     {
-        $interests = $this->findAll();
-        $count = 0;
-        foreach ($interests as $interest) {
-            if ($interest->eventId === $eventId) {
-                $count++;
-            }
-        }
-        return $count;
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM user_event_interests
+            WHERE event_id = :event_id
+        ");
+        $stmt->execute([':event_id' => $eventId]);
+        
+        return (int)$stmt->fetchColumn();
     }
 
     public function findByUserId(string $userId): array
     {
-        $interests = $this->findAll();
-        return array_filter($interests, function($interest) use ($userId) {
-            return $interest->userId === $userId;
-        });
+        $stmt = $this->db->prepare("
+            SELECT user_id as \"userId\", event_id as \"eventId\"
+            FROM user_event_interests
+            WHERE user_id = :user_id
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([':user_id' => $userId]);
+        
+        $interests = [];
+        while ($row = $stmt->fetch()) {
+            $interests[] = UserEventInterest::fromArray($row);
+        }
+        return $interests;
     }
 
-    private function loadInterests(): array
+    public function findByEventId(string $eventId): array
     {
-        if (!file_exists(self::INTERESTS_FILE)) {
-            return [];
+        $stmt = $this->db->prepare("
+            SELECT user_id as \"userId\", event_id as \"eventId\"
+            FROM user_event_interests
+            WHERE event_id = :event_id
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([':event_id' => $eventId]);
+        
+        $interests = [];
+        while ($row = $stmt->fetch()) {
+            $interests[] = UserEventInterest::fromArray($row);
         }
-        $json = file_get_contents(self::INTERESTS_FILE);
-        return json_decode($json, true) ?: [];
-    }
-
-    private function saveInterests(array $interests): void
-    {
-        $dir = dirname(self::INTERESTS_FILE);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        file_put_contents(self::INTERESTS_FILE, json_encode($interests, JSON_PRETTY_PRINT));
+        return $interests;
     }
 }
