@@ -9,33 +9,19 @@
         "phone": "",
         "city": "",
         "profilePicture": "",
-        "consents": [],
-        "settings": {
-            "email_notif": true,
-            "sms_notif": true,
-            "geo_notif": true,
-            "public_profile": false,
-            "show_events": false
-        }
+        "consents": []
     },
     {
         "id": "user",
         "email": "user@event.io",
         "password": "$2y$10$tKyE21RE5.mhhN7O\/soXduuxVEq\/40kZ4.sQWsJuJpsd10S0zTfJC",
         "role": "user",
-        "name": "adam",
-        "surname": "adam",
-        "phone": "",
-        "city": "",
-        "profilePicture": "",
-        "consents": [],
-        "settings": {
-            "email_notif": true,
-            "sms_notif": false,
-            "geo_notif": false,
-            "public_profile": false,
-            "show_events": false
-        }
+        "name": "Bart\u0142omiej",
+        "surname": "U\u017cytkownik",
+        "phone": "534536124",
+        "city": "Krak\u00f3w",
+        "profilePicture": "https:\/\/45775c58-e0f2-4a9f-9d67-39a39c8b1918.mdnplay.dev\/shared-assets\/images\/examples\/grapefruit-slice.jpg",
+        "consents": []
     },
     {
         "id": "697d61782fefd",
@@ -51,13 +37,6 @@
             "rodo": true,
             "terms": true,
             "date": "2026-01-31 01:57:12"
-        },
-        "settings": {
-            "email_notif": true,
-            "sms_notif": false,
-            "geo_notif": true,
-            "public_profile": false,
-            "show_events": true
         }
     }
 ]

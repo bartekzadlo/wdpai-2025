@@ -12,26 +12,79 @@ class SettingsController extends AppController {
         $this->userRepository = UserRepository::getInstance();
     }
 
-    public function updateSettings() {
+
+
+    public function updateUserInfo() {
         $this->checkAuth();
         $data = $this->getJsonInput();
 
-        $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
-        if (!$user) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Użytkownik nieznaleziony'], 404);
+        $email = trim($data['email'] ?? '');
+        $name = trim($data['name'] ?? '');
+        $surname = trim($data['surname'] ?? '');
+        $phone = trim($data['phone'] ?? '');
+        $city = trim($data['city'] ?? '');
+        $profilePicture = trim($data['profile_picture'] ?? '');
+
+        // Walidacja - identyczna jak przy rejestracji
+        if (empty($email) || empty($name) || empty($surname) || empty($city)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Wypełnij wszystkie pola'], 400);
             return;
         }
 
-        if (!isset($user->settings)) {
-            $user->settings = [];
+        // Input length validation - identyczna jak przy rejestracji
+        if (strlen($email) > 255) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Email too long'], 400);
+            return;
+        }
+        if (strlen($name) > 50) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Name too long'], 400);
+            return;
+        }
+        if (strlen($surname) > 50) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Surname too long'], 400);
+            return;
+        }
+        if (strlen($phone) > 20) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Phone too long'], 400);
+            return;
+        }
+        if (strlen($city) > 100) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'City too long'], 400);
+            return;
         }
 
-        foreach ($data as $key => $value) {
-            $user->settings[$key] = (bool)$value;
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Niepoprawny email'], 400);
+            return;
         }
+
+        $user = $this->userRepository->findByEmail($_SESSION['user']['email']);
+        if (!$user) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Błąd użytkownika'], 404);
+            return;
+        }
+
+        // Check if email is being changed and if it's already taken
+        if ($email !== $user->email && $this->userRepository->emailExists($email)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'Email jest już zajęty'], 400);
+            return;
+        }
+
+        $user->email = $email;
+        $user->name = $name;
+        $user->surname = $surname;
+        $user->phone = $phone;
+        $user->city = $city;
+        $user->profilePicture = $profilePicture;
 
         $this->userRepository->save($user);
-        $this->sendJsonResponse(['status' => 'success', 'message' => 'Ustawienia zaktualizowane']);
+
+        // Update session if email changed
+        if ($email !== $_SESSION['user']['email']) {
+            $_SESSION['user']['email'] = $email;
+        }
+
+        $this->sendJsonResponse(['status' => 'success', 'message' => 'Dane zaktualizowane']);
     }
 
     public function changePassword() {

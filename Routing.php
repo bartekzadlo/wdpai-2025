@@ -51,12 +51,12 @@ class Routing
         ],
 
         // --- API Ustawień (AJAX) ---
-        'api/settings/update' => [
-            'controller' => 'SettingsController', 
-            'action' => 'updateSettings'
+        'api/settings/userinfo' => [
+            'controller' => 'SettingsController',
+            'action' => 'updateUserInfo'
         ],
         'api/settings/password' => [
-            'controller' => 'SettingsController', 
+            'controller' => 'SettingsController',
             'action' => 'changePassword'
         ],
         'api/settings/delete' => [

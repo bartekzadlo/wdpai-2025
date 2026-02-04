@@ -12,7 +12,6 @@ class User
     public string $city;
     public string $profilePicture;
     public array $consents;
-    public array $settings;
 
     public function __construct(
         string $id,
@@ -24,8 +23,7 @@ class User
         string $phone,
         string $city,
         string $profilePicture = '',
-        array $consents = [],
-        array $settings = []
+        array $consents = []
     ) {
         $this->id = $id;
         $this->email = $email;
@@ -37,7 +35,6 @@ class User
         $this->city = $city;
         $this->profilePicture = $profilePicture;
         $this->consents = $consents;
-        $this->settings = $settings;
     }
 
     public static function fromArray(array $data): self
@@ -70,7 +67,6 @@ class User
             'city' => $this->city,
             'profilePicture' => $this->profilePicture,
             'consents' => $this->consents,
-            'settings' => $this->settings,
         ];
     }
 }

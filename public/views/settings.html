@@ -211,7 +211,33 @@
             <!-- Bez taga <form>, używamy JS do obsługi -->
             <div id="settings-form">
 
-                <!-- 1. ZMIANA HASŁA -->
+                <!-- 1. DANE UŻYTKOWNIKA -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-user"></i> DANE UŻYTKOWNIKA</h3>
+
+                    <div class="input-group">
+                        <input type="email" id="user_email" class="input-retro" placeholder="EMAIL" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user_name" class="input-retro" placeholder="IMIĘ" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user_surname" class="input-retro" placeholder="NAZWISKO" value="<?= htmlspecialchars($user['surname'] ?? '') ?>">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user_phone" class="input-retro" placeholder="TELEFON" value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user_city" class="input-retro" placeholder="MIASTO" value="<?= htmlspecialchars($user['city'] ?? '') ?>">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user_profile_picture" class="input-retro" placeholder="ZDZIĘCIE PROFILOWE (URL)" value="<?= htmlspecialchars($user['profilePicture'] ?? '') ?>">
+                    </div>
+
+                    <button type="button" onclick="updateUserInfo()" class="btn-retro">ZAKTUALIZUJ DANE</button>
+                </div>
+
+                <!-- 2. ZMIANA HASŁA -->
                 <div class="settings-section">
                     <h3><i class="fa-solid fa-key"></i> ZMIEŃ HASŁO</h3>
                     
@@ -268,6 +294,32 @@
     }
 
 
+
+    // Aktualizacja danych użytkownika
+    async function updateUserInfo() {
+        const email = document.getElementById('user_email').value;
+        const name = document.getElementById('user_name').value;
+        const surname = document.getElementById('user_surname').value;
+        const phone = document.getElementById('user_phone').value;
+        const city = document.getElementById('user_city').value;
+        const profilePicture = document.getElementById('user_profile_picture').value;
+
+        if(!email || !name || !surname || !city) {
+            alert("Wypełnij wszystkie wymagane pola.");
+            return;
+        }
+
+        const res = await sendRequest('/api/settings/userinfo', {
+            email: email,
+            name: name,
+            surname: surname,
+            phone: phone,
+            city: city,
+            profile_picture: profilePicture
+        });
+
+        alert(res.message);
+    }
 
     // Zmiana hasła
     async function changePassword() {

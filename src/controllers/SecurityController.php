@@ -183,18 +183,11 @@ class SecurityController extends AppController
             $surname,
             $phone,
             $city,
+            '',
             [
                 'rodo' => true,
                 'terms' => true,
                 'date' => date('Y-m-d H:i:s')
-            ],
-            // Domyślne ustawienia
-            [
-                'email_notif' => true,
-                'sms_notif' => false,
-                'geo_notif' => true,
-                'public_profile' => false,
-                'show_events' => true
             ]
         );
 
