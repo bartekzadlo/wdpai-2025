@@ -6,23 +6,27 @@ require_once __DIR__ . '/../models/Event.php';
 class EventRepository extends BaseRepository
 {
 
+    /**
+     * Pobiera wszystkie wydarzenia używając WIDOKU v_event_statistics (JOIN 4 tabel)
+     * Widok łączy: events + user_event_interests + event_categories + categories
+     */
     public function findAll(): array
     {
         $stmt = $this->db->query("
             SELECT 
-                e.id,
-                e.title,
-                e.location,
-                e.date,
-                e.created_at as \"createdAt\",
-                e.image_url as \"imageUrl\",
-                e.description,
-                e.status,
-                COUNT(DISTINCT uei.id) as \"interestCount\"
-            FROM events e
-            LEFT JOIN user_event_interests uei ON e.id = uei.event_id
-            GROUP BY e.id, e.title, e.location, e.date, e.created_at, e.image_url, e.description, e.status
-            ORDER BY e.created_at DESC
+                id,
+                title,
+                location,
+                date,
+                created_at as \"createdAt\",
+                image_url as \"imageUrl\",
+                description,
+                status,
+                total_interested_users as \"interestCount\",
+                categories,
+                category_count
+            FROM v_event_statistics
+            ORDER BY created_at DESC
         ");
         
         $events = [];
@@ -33,23 +37,29 @@ class EventRepository extends BaseRepository
         return $events;
     }
 
+    /**
+     * Pobiera szczegóły wydarzenia używając WIDOKU v_event_statistics
+     */
     public function findById(string $id): ?Event
     {
         $stmt = $this->db->prepare("
             SELECT 
-                e.id,
-                e.title,
-                e.location,
-                e.date,
-                e.created_at as \"createdAt\",
-                e.image_url as \"imageUrl\",
-                e.description,
-                e.status,
-                COUNT(DISTINCT uei.id) as \"interestCount\"
-            FROM events e
-            LEFT JOIN user_event_interests uei ON e.id = uei.event_id
-            WHERE e.id = :id
-            GROUP BY e.id, e.title, e.location, e.date, e.created_at, e.image_url, e.description, e.status
+                id,
+                title,
+                location,
+                date,
+                created_at as \"createdAt\",
+                image_url as \"imageUrl\",
+                description,
+                status,
+                total_interested_users as \"interestCount\",
+                confirmed_participants,
+                interested_users,
+                maybe_users,
+                categories,
+                category_count
+            FROM v_event_statistics
+            WHERE id = :id
         ");
         $stmt->execute([':id' => $id]);
         
@@ -62,37 +72,35 @@ class EventRepository extends BaseRepository
         return Event::fromArray($row);
     }
 
-    public function save(Event $event): void
+    /**
+     * Pobiera wszystkie kategorie dla formularza
+     */
+    public function getAllCategories(): array
     {
-        $existing = $this->findById($event->id);
+        $stmt = $this->db->query("
+            SELECT id, name, description
+            FROM categories
+            ORDER BY name
+        ");
         
-        if ($existing) {
-            // UPDATE
-            $stmt = $this->db->prepare("
-                UPDATE events SET
-                    title = :title,
-                    location = :location,
-                    date = :date,
-                    image_url = :image_url,
-                    description = :description,
-                    status = :status
-                WHERE id = :id
-            ");
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Tworzy wydarzenie z kategoriami używając TRANSAKCJI READ COMMITTED
+     * Relacja N:M: events ↔ event_categories ↔ categories
+     */
+    public function createEventWithCategories(Event $event, array $categoryIds): bool
+    {
+        try {
+            // Ustawienie poziomu izolacji READ COMMITTED
+            $this->db->exec("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+            $this->db->beginTransaction();
             
-            $stmt->execute([
-                ':id' => $event->id,
-                ':title' => $event->title,
-                ':location' => $event->location,
-                ':date' => $event->date,
-                ':image_url' => $event->imageUrl,
-                ':description' => $event->description,
-                ':status' => $event->status
-            ]);
-        } else {
-            // INSERT
+            // 1. Wstawienie wydarzenia
             $stmt = $this->db->prepare("
-                INSERT INTO events (id, title, location, date, created_at, image_url, description, status)
-                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status)
+                INSERT INTO events (id, title, location, date, created_at, image_url, description, status, max_participants)
+                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status, :max_participants)
             ");
             
             $stmt->execute([
@@ -103,14 +111,107 @@ class EventRepository extends BaseRepository
                 ':created_at' => $event->createdAt,
                 ':image_url' => $event->imageUrl,
                 ':description' => $event->description,
-                ':status' => $event->status
+                ':status' => $event->status ?? 'active',
+                ':max_participants' => $event->maxParticipants ?? null
+            ]);
+            
+            // 2. Dodanie kategorii (relacja N:M)
+            if (!empty($categoryIds)) {
+                $stmt = $this->db->prepare("
+                    INSERT INTO event_categories (event_id, category_id)
+                    VALUES (:event_id, :category_id)
+                ");
+                
+                foreach ($categoryIds as $categoryId) {
+                    $stmt->execute([
+                        ':event_id' => $event->id,
+                        ':category_id' => $categoryId
+                    ]);
+                }
+            }
+            
+            $this->db->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Błąd podczas tworzenia wydarzenia: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function save(Event $event): void
+    {
+        $existing = $this->findById($event->id);
+        
+        if ($existing) {
+            // UPDATE - trigger automatycznie zaktualizuje updated_at
+            $stmt = $this->db->prepare("
+                UPDATE events SET
+                    title = :title,
+                    location = :location,
+                    date = :date,
+                    image_url = :image_url,
+                    description = :description,
+                    status = :status,
+                    max_participants = :max_participants
+                WHERE id = :id
+            ");
+            
+            $stmt->execute([
+                ':id' => $event->id,
+                ':title' => $event->title,
+                ':location' => $event->location,
+                ':date' => $event->date,
+                ':image_url' => $event->imageUrl,
+                ':description' => $event->description,
+                ':status' => $event->status,
+                ':max_participants' => $event->maxParticipants ?? null
+            ]);
+        } else {
+            // INSERT - dla pojedynczego wydarzenia bez kategorii
+            $stmt = $this->db->prepare("
+                INSERT INTO events (id, title, location, date, created_at, image_url, description, status, max_participants)
+                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status, :max_participants)
+            ");
+            
+            $stmt->execute([
+                ':id' => $event->id,
+                ':title' => $event->title,
+                ':location' => $event->location,
+                ':date' => $event->date,
+                ':created_at' => $event->createdAt,
+                ':image_url' => $event->imageUrl,
+                ':description' => $event->description,
+                ':status' => $event->status,
+                ':max_participants' => $event->maxParticipants ?? null
             ]);
         }
     }
 
+    /**
+     * Usuwa wydarzenie - CASCADE automatycznie usunie powiązania
+     */
     public function delete(string $id): void
     {
         $stmt = $this->db->prepare("DELETE FROM events WHERE id = :id");
         $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Pobiera kategorie wydarzenia
+     */
+    public function getEventCategories(string $eventId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT c.id, c.name, c.description
+            FROM categories c
+            INNER JOIN event_categories ec ON c.id = ec.category_id
+            WHERE ec.event_id = :event_id
+            ORDER BY c.name
+        ");
+        $stmt->execute([':event_id' => $eventId]);
+        
+        return $stmt->fetchAll();
     }
 }

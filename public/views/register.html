@@ -13,6 +13,16 @@
         .consents label { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; cursor: pointer; }
         .consents input { width: 20px; height: 20px; box-shadow: none; margin: 0; }
         .two-cols { display: flex; gap: 10px; }
+        textarea { 
+            width: 100%; 
+            padding: 10px; 
+            background: #000; 
+            border: 2px solid #fff; 
+            color: #fff; 
+            font-family: 'Jersey 10', sans-serif; 
+            font-size: 1.2rem;
+            resize: vertical;
+        }
     </style>
 </head>
 <body>
@@ -26,17 +36,19 @@
 
         <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
         <div class="two-cols">
-            <input name="name" type="text" placeholder="Imię">
-            <input name="surname" type="text" placeholder="Nazwisko">
+            <input name="name" type="text" placeholder="Imię" required>
+            <input name="surname" type="text" placeholder="Nazwisko" required>
         </div>
         
-        <input name="email" type="email" placeholder="E-mail">
-        <input name="password" type="password" placeholder="Hasło">
+        <input name="email" type="email" placeholder="E-mail" required>
+        <input name="password" type="password" placeholder="Hasło" required>
         
         <div class="two-cols">
-            <input name="city" type="text" placeholder="Miasto">
+            <input name="city" type="text" placeholder="Miasto" required>
             <input name="phone" type="tel" placeholder="Telefon">
         </div>
+
+        <textarea name="bio" rows="3" placeholder="O mnie (opcjonalne)"></textarea>
 
         <div class="consents">
             <label>

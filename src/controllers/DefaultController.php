@@ -18,7 +18,7 @@ class DefaultController extends BaseController {
         $eventRepository = EventRepository::getInstance();
         $interestRepository = UserEventInterestRepository::getInstance();
 
-        // Pobranie wszystkich wydarzeń
+        // Pobranie wszystkich wydarzeń (używa widoku v_event_statistics)
         $events = $eventRepository->findAll();
 
         // Aktualizacja liczby zainteresowań i statusu zainteresowania dla każdego wydarzenia
@@ -42,6 +42,7 @@ class DefaultController extends BaseController {
     }
 
     // Panel admina - pokazuje statystyki i ostatnie wydarzenia
+    // Używa WIDOKU v_event_statistics
     public function dashboard() {
         $this->requireAdmin();
 
@@ -56,11 +57,13 @@ class DefaultController extends BaseController {
         $interestRepository = UserEventInterestRepository::getInstance();
 
         // Obliczenie liczby użytkowników, wydarzeń i zainteresowań
+        // Używa widoku v_user_activity
         $userCount = count($userRepository->findAll());
         $eventCount = count($eventRepository->findAll());
         $interestCount = count($interestRepository->findAll());
 
         // Pobranie ostatnich 3 wydarzeń według daty utworzenia
+        // Używa widoku v_event_statistics z kategoriami
         $allEvents = $eventRepository->findAll();
         usort($allEvents, function($a, $b) {
             return strtotime($b->createdAt) <=> strtotime($a->createdAt);
@@ -85,6 +88,7 @@ class DefaultController extends BaseController {
     }
 
     // Metoda wyświetlająca wszystkie wydarzenia dla administratora
+    // Używa WIDOKU v_event_statistics
     public function events() {
         $this->requireAdmin();
 
@@ -96,6 +100,7 @@ class DefaultController extends BaseController {
         $eventRepository = EventRepository::getInstance();
 
         // Pobranie wszystkich wydarzeń posortowanych malejąco według daty utworzenia
+        // Używa widoku v_event_statistics z kategoriami i statystykami
         $allEvents = $eventRepository->findAll();
         usort($allEvents, function($a, $b) {
             return strtotime($b->createdAt) <=> strtotime($a->createdAt);
@@ -114,6 +119,7 @@ class DefaultController extends BaseController {
     }
 
     // Metoda wyświetlająca wszystkich użytkowników dla administratora
+    // Używa WIDOKU v_user_activity (JOIN 3 tabel)
     public function users() {
         $this->requireAdmin();
 
@@ -122,7 +128,8 @@ class DefaultController extends BaseController {
 
         // Pobranie instancji repozytorium użytkowników
         $userRepository = UserRepository::getInstance();
-        // Pobranie wszystkich użytkowników
+        // Pobranie wszystkich użytkowników z widoku v_user_activity
+        // Widok zawiera bio, login_count, total_events_interested, events_attending
         $users = $userRepository->findAll();
 
         // Renderowanie widoku administracyjnego użytkowników
@@ -130,8 +137,14 @@ class DefaultController extends BaseController {
     }
 
     // Metoda obsługująca dodawanie nowego wydarzenia
+    // Używa TRANSAKCJI READ COMMITTED
     public function addEvent() {
         $this->requireLogin();
+
+        // Pobranie kategorii dla formularza
+        require_once __DIR__ . '/../repository/EventRepository.php';
+        $eventRepository = EventRepository::getInstance();
+        $categories = $eventRepository->getAllCategories();
 
         // Sprawdzenie czy żądanie to POST (wysłanie formularza)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -141,6 +154,7 @@ class DefaultController extends BaseController {
             $date = trim($_POST['date'] ?? '');
             $imageUrl = trim($_POST['imageUrl'] ?? '');
             $description = trim($_POST['description'] ?? '');
+            $categoryIds = $_POST['categories'] ?? [];
 
             // Walidacja danych formularza
             $errors = [];
@@ -152,11 +166,11 @@ class DefaultController extends BaseController {
             }
             if (empty($date)) {
                 $errors[] = 'Data jest wymagana';
-            } elseif (!preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $date)) {
-                $errors[] = 'Data musi być w formacie DD.MM.YYYY';
+            } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                $errors[] = 'Data musi być w formacie YYYY-MM-DD';
             } else {
                 // Dodatkowa walidacja formatu daty i przyszłej daty
-                $dateObj = DateTime::createFromFormat('d.m.Y', $date);
+                $dateObj = DateTime::createFromFormat('Y-m-d', $date);
                 if (!$dateObj) {
                     $errors[] = 'Nieprawidłowy format daty';
                 } elseif ($dateObj < new DateTime()) {
@@ -171,91 +185,99 @@ class DefaultController extends BaseController {
 
             // Jeśli nie ma błędów, utwórz nowe wydarzenie
             if (empty($errors)) {
-                // Tworzenie nowego wydarzenia
-                require_once __DIR__ . '/../repository/EventRepository.php';
+                // Tworzenie nowego wydarzenia z TRANSAKCJĄ
                 require_once __DIR__ . '/../models/Event.php';
                 require_once __DIR__ . '/../models/EventStatus.php';
-
-                $eventRepository = EventRepository::getInstance();
 
                 // Generowanie nowego ID
                 $allEvents = $eventRepository->findAll();
                 $maxId = 0;
                 foreach ($allEvents as $event) {
-                    if (is_numeric($event->id) && $event->id > $maxId) {
-                        $maxId = $event->id;
+                    if (preg_match('/^event_(\d+)$/', $event->id, $matches)) {
+                        $num = (int)$matches[1];
+                        if ($num > $maxId) {
+                            $maxId = $num;
+                        }
                     }
                 }
-                $newId = $maxId + 1;
+                $newId = 'event_' . ($maxId + 1);
+
+                // Konwersja daty z YYYY-MM-DD na DD.MM.YYYY (dla kompatybilności)
+                $dateFormatted = DateTime::createFromFormat('Y-m-d', $date)->format('d.m.Y');
 
                 // Ustawienie statusu na podstawie roli użytkownika
                 $status = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? EventStatus::ACTIVE : EventStatus::PENDING;
 
                 $newEvent = new Event(
-                    (string)$newId,
+                    $newId,
                     $title,
                     $location,
-                    $date,
+                    $dateFormatted,
+                    date('Y-m-d H:i:s'),
                     $imageUrl,
                     $description,
-                    0, // interestCount
-                    false, // isInterested
-                    date('Y-m-d H:i:s'), // createdAt
                     $status
                 );
 
-                // Zapisanie nowego wydarzenia
-                $eventRepository->save($newEvent);
+                // Użycie TRANSAKCJI READ COMMITTED do utworzenia wydarzenia z kategoriami
+                // Relacja N:M: events ↔ event_categories ↔ categories
+                $success = $eventRepository->createEventWithCategories($newEvent, $categoryIds);
 
-                // Przekierowanie do dashboard dla admina, do głównej dla użytkownika
-                $url = "http://$_SERVER[HTTP_HOST]";
-                $redirectUrl = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? '/dashboard' : '/main';
-                header("Location: {$url}{$redirectUrl}");
-                return;
-            } else {
-                // Renderowanie formularza z błędami
-                $this->render('add-event', ['errors' => $errors, 'formData' => $_POST]);
-                return;
+                if ($success) {
+                    // Przekierowanie po pomyślnym utworzeniu
+                    $url = "http://$_SERVER[HTTP_HOST]";
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                        header("Location: {$url}/dashboard");
+                    } else {
+                        header("Location: {$url}/");
+                    }
+                    return;
+                } else {
+                    $errors[] = 'Wystąpił błąd podczas tworzenia wydarzenia';
+                }
             }
+
+            // Renderowanie formularza z błędami
+            $this->render('add-event', [
+                'errors' => $errors, 
+                'formData' => $_POST,
+                'categories' => $categories
+            ]);
+            return;
         }
 
         // Renderowanie formularza na podstawie roli użytkownika
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            $this->render('add-event');
+            $this->render('add-event', ['categories' => $categories]);
         } else {
-            $this->render('add-event-user');
+            $this->render('add-event-user', ['categories' => $categories]);
         }
     }
 
     // Metoda wyświetlająca profil użytkownika
+    // Używa WIDOKU v_user_activity i FUNKCJI get_user_interested_events()
     public function profile() {
         $this->requireLogin();
 
-        // Wczytanie repozytoriów wydarzeń, użytkowników i znajomych
+        // Wczytanie repozytoriów
         require_once __DIR__ . '/../repository/EventRepository.php';
         require_once __DIR__ . '/../repository/UserRepository.php';
         require_once __DIR__ . '/../repository/UserFriendRepository.php';
 
         // Pobranie ID użytkownika z sesji
         $userId = $_SESSION['user']['id'];
-        // Pobranie danych użytkownika
+        
+        // Pobranie danych użytkownika z WIDOKU v_user_activity
         $userRepo = UserRepository::getInstance();
         $user = $userRepo->findById($userId);
-
-        // Pobranie wydarzeń, które interesują użytkownika
-        $interestRepo = UserEventInterestRepository::getInstance();
-        $userInterests = $interestRepo->findByUserId($userId);
-        $interestedEventIds = array_map(fn($interest) => $interest->eventId, $userInterests);
-
-        // Pobranie szczegółów wydarzeń zainteresowań
-        $eventRepo = EventRepository::getInstance();
-        $interestedEvents = [];
-        foreach ($interestedEventIds as $eventId) {
-            $event = $eventRepo->findById($eventId);
-            if ($event) {
-                $interestedEvents[] = $event;
-            }
-        }
+        $userActivity = $userRepo->getUserActivity($userId);
+        
+        // Pobranie profilu użytkownika (relacja 1:1)
+        $userProfile = $userRepo->getUserProfile($userId);
+        
+        // Pobranie wydarzeń użytkownika używając FUNKCJI get_user_interested_events()
+        // Funkcja zwraca JOIN z events + user_event_interests + categories
+        $interestedEvents = $userRepo->getUserInterestedEvents($userId);
 
         // Pobranie znajomych użytkownika
         $friendRepo = UserFriendRepository::getInstance();
@@ -273,6 +295,8 @@ class DefaultController extends BaseController {
         // Renderowanie widoku profilu z danymi użytkownika
         $this->render('profile', [
             'user' => $user,
+            'userActivity' => $userActivity,
+            'userProfile' => $userProfile,
             'interestedEvents' => $interestedEvents,
             'friends' => $friendData
         ]);
@@ -292,6 +316,9 @@ class DefaultController extends BaseController {
 
         $eventRepository = EventRepository::getInstance();
         $event = $eventRepository->findById($eventId);
+        $categories = $eventRepository->getAllCategories();
+        $eventCategories = $eventRepository->getEventCategories($eventId);
+        $selectedCategoryIds = array_column($eventCategories, 'id');
 
         if (!$event) {
             http_response_code(404);
@@ -335,7 +362,7 @@ class DefaultController extends BaseController {
             }
 
             if (empty($errors)) {
-                // Update the event
+                // Update the event - trigger automatycznie zaktualizuje updated_at
                 $event->title = $title;
                 $event->location = $location;
                 $event->date = $date;
@@ -350,16 +377,26 @@ class DefaultController extends BaseController {
                 return;
             } else {
                 // Render form with errors
-                $this->render('edit-event', ['event' => $event, 'errors' => $errors]);
+                $this->render('edit-event', [
+                    'event' => $event, 
+                    'errors' => $errors,
+                    'categories' => $categories,
+                    'selectedCategoryIds' => $selectedCategoryIds
+                ]);
                 return;
             }
         }
 
         // Render form with current event data
-        $this->render('edit-event', ['event' => $event]);
+        $this->render('edit-event', [
+            'event' => $event,
+            'categories' => $categories,
+            'selectedCategoryIds' => $selectedCategoryIds
+        ]);
     }
 
     // Metoda wyświetlająca szczegóły pojedynczego wydarzenia
+    // Używa WIDOKU v_event_statistics
     public function eventDetails() {
         $this->requireLogin();
 
@@ -380,8 +417,10 @@ class DefaultController extends BaseController {
         $eventRepository = EventRepository::getInstance();
         $interestRepository = UserEventInterestRepository::getInstance();
 
-        // Pobranie wydarzenia po ID
+        // Pobranie wydarzenia po ID z widoku v_event_statistics
+        // Zawiera statystyki: total_interested_users, confirmed_participants, categories
         $event = $eventRepository->findById($eventId);
+        
         // Sprawdzenie czy wydarzenie istnieje
         if (!$event) {
             http_response_code(404);

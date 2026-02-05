@@ -7,9 +7,9 @@ class Database
 
     private string $host = 'db';
     private string $port = '5432';
-    private string $database = 'db';
-    private string $username = 'docker';
-    private string $password = 'docker';
+    private string $database = 'wdpai_db';
+    private string $username = 'postgres';
+    private string $password = 'postgres';
 
     private function __construct()
     {

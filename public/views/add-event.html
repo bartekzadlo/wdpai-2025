@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Zachowujemy importy stylów i skryptów -->
     <link rel="stylesheet" type="text/css" href="public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
-
-    <!-- Import czcionki Jersey 10 oraz ikon -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="public/scripts/main.js" defer></script>
-
     <title>Dodaj Wydarzenie | EVENT.IO</title>
 </head>
 <body>
@@ -84,9 +79,26 @@
 
                         <div class="form-group">
                             <label for="date">Data wydarzenia *</label>
-                            <input type="text" id="date" name="date" required
+                            <input type="date" id="date" name="date" required
                                    value="<?php echo htmlspecialchars($formData['date'] ?? ''); ?>"
-                                   placeholder="DD.MM.YYYY (np. 15.06.2025)">
+                                   min="<?php echo date('Y-m-d'); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categories">Kategorie * (Ctrl+klik dla wielu)</label>
+                            <select id="categories" name="categories[]" multiple size="5" style="width: 100%; padding: 8px; border: 2px solid #333; background: #000; color: #fff;">
+                                <?php if (isset($categories)): ?>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option value="<?php echo htmlspecialchars($category['id']); ?>"
+                                            <?php if (isset($formData['categories']) && in_array($category['id'], $formData['categories'])): ?>
+                                                selected
+                                            <?php endif; ?>>
+                                            <?php echo htmlspecialchars($category['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <small style="color: #888;">Przytrzymaj Ctrl/Cmd aby wybrać wiele kategorii</small>
                         </div>
 
                         <div class="form-group">

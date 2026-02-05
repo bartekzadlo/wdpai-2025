@@ -122,6 +122,7 @@ class SecurityController extends BaseController
     }
 
     // Metoda obsługująca rejestrację nowego użytkownika z kompleksową walidacją
+    // Używa TRANSAKCJI SERIALIZABLE z relacją 1:1 (users ↔ user_profiles)
     public function register()
     {
         // Jeśli to nie jest żądanie POST, wyświetl formularz rejestracji
@@ -136,6 +137,7 @@ class SecurityController extends BaseController
         $surname = trim($_POST['surname'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $city = trim($_POST['city'] ?? '');
+        $bio = trim($_POST['bio'] ?? ''); // Opcjonalne bio dla profilu (relacja 1:1)
         $terms = isset($_POST['terms']);
         $rodo = isset($_POST['rodo']);
 
@@ -184,16 +186,11 @@ class SecurityController extends BaseController
             return $this->render('register', ["messages" => "Niepoprawny email"]);
         }
 
-        // Sprawdzenie czy email już istnieje
-        if ($this->userRepository->emailExists($email)) {
-            return $this->render('register', ["messages" => "Email jest już zajęty"]);
-        }
-
         // Tworzenie nowego użytkownika z rozszerzonymi danymi
         $newUser = new User(
-            uniqid(), // Unikalne ID
+            'user_' . uniqid(), // Unikalne ID z prefiksem
             $email,
-            password_hash($password, PASSWORD_ARGON2ID), // Haszowanie hasła
+            password_hash($password, PASSWORD_DEFAULT), // Haszowanie hasła bcrypt
             'user', // Domyślna rola
             $name,
             $surname,
@@ -207,8 +204,20 @@ class SecurityController extends BaseController
             ]
         );
 
-        // Zapisanie nowego użytkownika w bazie danych
-        $this->userRepository->save($newUser);
+        // Dane profilu (relacja 1:1)
+        $profileData = [];
+        if (!empty($bio)) {
+            $profileData['bio'] = $bio;
+        }
+
+        // Zapisanie użytkownika z TRANSAKCJĄ SERIALIZABLE
+        // Tworzy użytkownika i profil w jednej transakcji (relacja 1:1)
+        // Trigger automatycznie utworzy bazowy profil
+        $success = $this->userRepository->registerUserWithProfile($newUser, $profileData);
+
+        if (!$success) {
+            return $this->render('register', ["messages" => "Email jest już zajęty lub wystąpił błąd"]);
+        }
 
         // Przekierowanie do strony logowania po rejestracji
         $url = "http://$_SERVER[HTTP_HOST]";

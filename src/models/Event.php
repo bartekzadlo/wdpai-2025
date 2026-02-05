@@ -25,18 +25,21 @@ class Event
     public bool $isInterested;
     // Status wydarzenia (aktywne, nieaktywne, oczekujące)
     public string $status;
+    // Maksymalna liczba uczestników
+    public ?int $maxParticipants;
 
     public function __construct(
         string $id,
         string $title,
         string $location,
         string $date,
-        string $imageUrl,
-        string $description = '',
-        int $interestCount = 0,
-        bool $isInterested = false,
         string $createdAt = null,
-        string $status = ''
+        string $imageUrl = '',
+        string $description = '',
+        string $status = '',
+        ?int $maxParticipants = null,
+        int $interestCount = 0,
+        bool $isInterested = false
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -45,9 +48,10 @@ class Event
         $this->createdAt = $createdAt ?? date('Y-m-d H:i:s');
         $this->imageUrl = $imageUrl;
         $this->description = $description;
+        $this->status = $status;
+        $this->maxParticipants = $maxParticipants;
         $this->interestCount = $interestCount;
         $this->isInterested = $isInterested;
-        $this->status = $status;
     }
 
     public static function fromArray(array $data): self
@@ -57,12 +61,13 @@ class Event
             $data['title'] ?? '',
             $data['location'] ?? '',
             $data['date'] ?? '',
+            $data['createdAt'] ?? null,
             $data['imageUrl'] ?? '',
             $data['description'] ?? '',
+            $data['status'] ?? '',
+            $data['max_participants'] ?? $data['maxParticipants'] ?? null,
             $data['interestCount'] ?? 0,
-            false,
-            $data['createdAt'] ?? null,
-            $data['status'] ?? ''
+            false
         );
     }
 
@@ -76,8 +81,9 @@ class Event
             'createdAt' => $this->createdAt,
             'imageUrl' => $this->imageUrl,
             'description' => $this->description,
-            'interestCount' => $this->interestCount,
             'status' => $this->status,
+            'maxParticipants' => $this->maxParticipants,
+            'interestCount' => $this->interestCount,
         ];
     }
 }
