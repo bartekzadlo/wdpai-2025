@@ -47,9 +47,9 @@ class UserEventInterestRepository
             ':user_id' => $userId,
             ':event_id' => $eventId
         ]);
-        
+
         $exists = $stmt->fetch();
-        
+
         if ($exists) {
             // Usuń zainteresowanie
             $stmt = $this->db->prepare("
@@ -60,7 +60,6 @@ class UserEventInterestRepository
                 ':user_id' => $userId,
                 ':event_id' => $eventId
             ]);
-            return false; // Zainteresowanie zostało usunięte
         } else {
             // Dodaj zainteresowanie
             $stmt = $this->db->prepare("
@@ -71,8 +70,10 @@ class UserEventInterestRepository
                 ':user_id' => $userId,
                 ':event_id' => $eventId
             ]);
-            return true; // Zainteresowanie zostało dodane
         }
+
+        // Zwróć aktualny stan zainteresowania
+        return $this->isInterested($userId, $eventId);
     }
 
     public function isInterested(string $userId, string $eventId): bool

@@ -25,19 +25,16 @@ class Event
     public bool $isInterested;
     // Status wydarzenia (aktywne, nieaktywne, oczekujące)
     public string $status;
-    // Maksymalna liczba uczestników
-    public ?int $maxParticipants;
 
     public function __construct(
         string $id,
         string $title,
         string $location,
         string $date,
-        string $createdAt = null,
+        ?string $createdAt = null,
         string $imageUrl = '',
         string $description = '',
         string $status = '',
-        ?int $maxParticipants = null,
         int $interestCount = 0,
         bool $isInterested = false
     ) {
@@ -49,7 +46,6 @@ class Event
         $this->imageUrl = $imageUrl;
         $this->description = $description;
         $this->status = $status;
-        $this->maxParticipants = $maxParticipants;
         $this->interestCount = $interestCount;
         $this->isInterested = $isInterested;
     }
@@ -65,7 +61,6 @@ class Event
             $data['imageUrl'] ?? '',
             $data['description'] ?? '',
             $data['status'] ?? '',
-            $data['max_participants'] ?? $data['maxParticipants'] ?? null,
             $data['interestCount'] ?? 0,
             false
         );
@@ -82,7 +77,6 @@ class Event
             'imageUrl' => $this->imageUrl,
             'description' => $this->description,
             'status' => $this->status,
-            'maxParticipants' => $this->maxParticipants,
             'interestCount' => $this->interestCount,
         ];
     }

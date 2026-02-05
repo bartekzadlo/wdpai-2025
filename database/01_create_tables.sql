@@ -60,7 +60,6 @@ CREATE TABLE events (
     description TEXT,
     image_url TEXT,
     status VARCHAR(50) DEFAULT 'active',
-    max_participants INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -128,7 +127,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- FUNKCJA 2: Walidacja i automatyczna zmiana statusu wydarzenia
+-- FUNKCJA 2: Walidacja daty wydarzenia
 CREATE OR REPLACE FUNCTION validate_event_date()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -136,22 +135,7 @@ BEGIN
     IF NEW.date < TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD') THEN
         RAISE EXCEPTION 'Data wydarzenia nie może być w przeszłości';
     END IF;
-    
-    -- Automatycznie zmień status na 'full' jeśli osiągnięto max uczestników
-    IF NEW.max_participants IS NOT NULL THEN
-        DECLARE
-            participant_count INTEGER;
-        BEGIN
-            SELECT COUNT(*) INTO participant_count
-            FROM user_event_interests
-            WHERE event_id = NEW.id AND interest_level = 'going';
-            
-            IF participant_count >= NEW.max_participants THEN
-                NEW.status := 'full';
-            END IF;
-        END;
-    END IF;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -245,7 +229,7 @@ EXECUTE FUNCTION update_updated_at_column();
 -- WIDOK 1: Statystyki wydarzeń (łączy 4 tabele)
 -- Używany w dashboardzie i szczegółach wydarzenia
 CREATE VIEW v_event_statistics AS
-SELECT 
+SELECT
     e.id,
     e.title,
     e.location,
@@ -253,21 +237,17 @@ SELECT
     e.description,
     e.image_url,
     e.status,
-    e.max_participants,
     e.created_at,
     e.updated_at,
     COUNT(DISTINCT uei.user_id) AS total_interested_users,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'going' THEN uei.user_id END) AS confirmed_participants,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'interested' THEN uei.user_id END) AS interested_users,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'maybe' THEN uei.user_id END) AS maybe_users,
     STRING_AGG(DISTINCT c.name, ', ') AS categories,
     COUNT(DISTINCT c.id) AS category_count
 FROM events e
 LEFT JOIN user_event_interests uei ON e.id = uei.event_id
 LEFT JOIN event_categories ec ON e.id = ec.event_id
 LEFT JOIN categories c ON ec.category_id = c.id
-GROUP BY e.id, e.title, e.location, e.date, e.description, e.image_url, 
-         e.status, e.max_participants, e.created_at, e.updated_at;
+GROUP BY e.id, e.title, e.location, e.date, e.description, e.image_url,
+         e.status, e.created_at, e.updated_at;
 
 -- WIDOK 2: Statystyki kategorii (łączy 4 tabele)
 -- Używany w dashboardzie administratora
@@ -323,12 +303,12 @@ UPDATE user_profiles SET bio = 'Miłośniczka sztuki współczesnej' WHERE user_
 UPDATE user_profiles SET bio = 'Organizator wydarzeń sportowych' WHERE user_id = 'user_3';
 
 -- Wydarzenia
-INSERT INTO events (id, title, location, date, description, status, max_participants) VALUES
-('event_1', 'Koncert Rockowy', 'Warszawa, Torwar', '2025-03-15', 'Wielki koncert legend rocka', 'active', 5000),
-('event_2', 'Wystawa Sztuki Nowoczesnej', 'Kraków, Muzeum Sztuki', '2025-03-20', 'Prezentacja najnowszych dzieł', 'active', NULL),
-('event_3', 'Maraton Warszawski', 'Warszawa, Centrum', '2025-04-10', '42km przez stolicę', 'active', 10000),
-('event_4', 'Konferencja IT 2025', 'Gdańsk, Centrum Kongresowe', '2025-05-05', 'Najnowsze trendy w technologii', 'active', 500),
-('event_5', 'Festiwal Jazzowy', 'Wrocław, Rynek', '2025-06-01', 'Trzydniowy festiwal jazzu', 'active', NULL)
+INSERT INTO events (id, title, location, date, description, status) VALUES
+('event_1', 'Koncert Rockowy', 'Warszawa, Torwar', '2025-03-15', 'Wielki koncert legend rocka', 'active'),
+('event_2', 'Wystawa Sztuki Nowoczesnej', 'Kraków, Muzeum Sztuki', '2025-03-20', 'Prezentacja najnowszych dzieł', 'active'),
+('event_3', 'Maraton Warszawski', 'Warszawa, Centrum', '2025-04-10', '42km przez stolicę', 'active'),
+('event_4', 'Konferencja IT 2025', 'Gdańsk, Centrum Kongresowe', '2025-05-05', 'Najnowsze trendy w technologii', 'active'),
+('event_5', 'Festiwal Jazzowy', 'Wrocław, Rynek', '2025-06-01', 'Trzydniowy festiwal jazzu', 'active')
 ON CONFLICT (id) DO NOTHING;
 
 -- Przypisanie kategorii do wydarzeń (relacja N:M)
@@ -345,17 +325,17 @@ INSERT INTO event_categories (event_id, category_id) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Zainteresowania użytkowników (relacja N:M)
-INSERT INTO user_event_interests (user_id, event_id, interest_level) VALUES
-('user_1', 'event_1', 'going'),
-('user_1', 'event_2', 'interested'),
-('user_1', 'event_5', 'going'),
-('user_2', 'event_2', 'going'),
-('user_2', 'event_3', 'maybe'),
-('user_2', 'event_5', 'interested'),
-('user_3', 'event_3', 'going'),
-('user_3', 'event_4', 'going'),
-('admin_1', 'event_1', 'interested'),
-('admin_1', 'event_4', 'going')
+INSERT INTO user_event_interests (user_id, event_id) VALUES
+('user_1', 'event_1'),
+('user_1', 'event_2'),
+('user_1', 'event_5'),
+('user_2', 'event_2'),
+('user_2', 'event_3'),
+('user_2', 'event_5'),
+('user_3', 'event_3'),
+('user_3', 'event_4'),
+('admin_1', 'event_1'),
+('admin_1', 'event_4')
 ON CONFLICT (user_id, event_id) DO NOTHING;
 
 -- ============================================================================

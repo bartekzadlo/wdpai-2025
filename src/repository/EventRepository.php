@@ -99,10 +99,10 @@ class EventRepository extends BaseRepository
             
             // 1. Wstawienie wydarzenia
             $stmt = $this->db->prepare("
-                INSERT INTO events (id, title, location, date, created_at, image_url, description, status, max_participants)
-                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status, :max_participants)
+                INSERT INTO events (id, title, location, date, created_at, image_url, description, status)
+                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status)
             ");
-            
+
             $stmt->execute([
                 ':id' => $event->id,
                 ':title' => $event->title,
@@ -111,8 +111,7 @@ class EventRepository extends BaseRepository
                 ':created_at' => $event->createdAt,
                 ':image_url' => $event->imageUrl,
                 ':description' => $event->description,
-                ':status' => $event->status ?? 'active',
-                ':max_participants' => $event->maxParticipants ?? null
+                ':status' => $event->status ?? 'active'
             ]);
             
             // 2. Dodanie kategorii (relacja N:M)
@@ -153,11 +152,10 @@ class EventRepository extends BaseRepository
                     date = :date,
                     image_url = :image_url,
                     description = :description,
-                    status = :status,
-                    max_participants = :max_participants
+                    status = :status
                 WHERE id = :id
             ");
-            
+
             $stmt->execute([
                 ':id' => $event->id,
                 ':title' => $event->title,
@@ -165,16 +163,15 @@ class EventRepository extends BaseRepository
                 ':date' => $event->date,
                 ':image_url' => $event->imageUrl,
                 ':description' => $event->description,
-                ':status' => $event->status,
-                ':max_participants' => $event->maxParticipants ?? null
+                ':status' => $event->status
             ]);
         } else {
             // INSERT - dla pojedynczego wydarzenia bez kategorii
             $stmt = $this->db->prepare("
-                INSERT INTO events (id, title, location, date, created_at, image_url, description, status, max_participants)
-                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status, :max_participants)
+                INSERT INTO events (id, title, location, date, created_at, image_url, description, status)
+                VALUES (:id, :title, :location, :date, :created_at, :image_url, :description, :status)
             ");
-            
+
             $stmt->execute([
                 ':id' => $event->id,
                 ':title' => $event->title,
@@ -183,8 +180,7 @@ class EventRepository extends BaseRepository
                 ':created_at' => $event->createdAt,
                 ':image_url' => $event->imageUrl,
                 ':description' => $event->description,
-                ':status' => $event->status,
-                ':max_participants' => $event->maxParticipants ?? null
+                ':status' => $event->status
             ]);
         }
     }

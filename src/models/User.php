@@ -12,6 +12,7 @@ class User
     public string $city;
     public string $profilePicture;
     public array $consents;
+    public ?string $bio;
 
     public function __construct(
         string $id,
