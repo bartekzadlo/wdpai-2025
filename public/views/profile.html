@@ -2,6 +2,10 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+
+    <!-- 🔴 KLUCZOWE – BEZ TEGO MOBILE NIE DZIAŁA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Profil użytkownika | EVENT.IO</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,18 +90,75 @@
             box-shadow: 4px 4px 0px black;
         }
 
-        .friends-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
+        /* ========================= */
+        /* ===== MOBILE VIEW ======= */
+        /* ========================= */
 
-        .friend-card {
-            background: #333;
-            border: 2px solid white;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.3rem;
+        @media screen and (max-width: 480px) {
+
+            .fixed-header-container .main-logo {
+                font-size: 4.5rem;
+            }
+
+            .profile-container {
+    margin: 90px auto 0;
+    padding: 25px 16px 40px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - 90px);
+    border: none;
+    box-shadow: none;
+    background: #1a1a1a;
+}
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 20px;
+                border-bottom: none;
+                margin-bottom: 35px;
+            }
+
+            .profile-avatar {
+                width: 200px;
+                height: 200px;
+                font-size: 7rem;
+                margin-top: 10px;
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .profile-info h2 {
+                font-size: 3.2rem;
+                margin: 10px 0 0;
+            }
+
+            .profile-info p {
+                font-size: 1.6rem;
+                line-height: 1.4;
+                margin: 0;
+                max-width: 90%;
+            }
+
+            .profile-section h3 {
+                font-size: 2.3rem;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .event-item {
+                font-size: 1.6rem;
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 3px 3px 0 black;
+            }
         }
     </style>
 </head>
@@ -120,11 +181,10 @@
         </div>
     </header>
 
-    <!-- TREŚĆ -->
+    <!-- CONTENT -->
     <main class="scrollable-content">
         <div class="profile-container">
 
-            <!-- HEADER PROFILU -->
             <div class="profile-header">
                 <div class="profile-avatar">
                     <?php if (!empty($user->profilePicture)): ?>
@@ -138,11 +198,7 @@
                     <h2>
                         <?php
                         $displayName = trim($user->name . ' ' . $user->surname);
-                        if (empty($displayName)) {
-                            echo htmlspecialchars($user->email ?? 'Użytkownik');
-                        } else {
-                            echo htmlspecialchars($displayName);
-                        }
+                        echo htmlspecialchars($displayName ?: ($user->email ?? 'Użytkownik'));
                         ?>
                     </h2>
                     <p>MIASTO: <?= htmlspecialchars($user->city ?: 'KRAKÓW') ?></p>
@@ -150,21 +206,24 @@
                 </div>
             </div>
 
-            <!-- WYDARZENIA -->
             <div class="profile-section">
                 <h3><i class="fa-regular fa-calendar-check"></i> IDĘ NA WYDARZENIA</h3>
+
                 <div class="event-list">
                     <?php if (empty($interestedEvents)): ?>
-                        <p style="color: #ccc; font-style: italic;">Brak wydarzeń, które Cię interesują</p>
+                        <p style="color:#ccc;font-style:italic;text-align:center;">
+                            Brak wydarzeń, które Cię interesują
+                        </p>
                     <?php else: ?>
                         <?php foreach ($interestedEvents as $event): ?>
-                            <div class="event-item"><?= htmlspecialchars($event['event_title']) ?> – <?= htmlspecialchars($event['event_location']) ?></div>
+                            <div class="event-item">
+                                <?= htmlspecialchars($event['event_title']) ?>
+                                – <?= htmlspecialchars($event['event_location']) ?>
+                            </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
-
-
 
         </div>
     </main>
