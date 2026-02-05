@@ -141,8 +141,6 @@
                                 <th>OPIS</th>
                                 <th>ŁĄCZNA LICZBA WYDARZEŃ</th>
                                 <th>ZAINTERESOWANI UŻYTKOWNICY</th>
-                                <th>POTWIERDZENI UCZESTNICY</th>
-                                <th>ŚREDNIA POJEMNOŚĆ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -158,8 +156,6 @@
                                 <td><?php echo htmlspecialchars($stat['description'] ?? ''); ?></td>
                                 <td><?php echo htmlspecialchars($stat['total_events']); ?></td>
                                 <td><?php echo htmlspecialchars($stat['total_interested_users']); ?></td>
-                                <td><?php echo htmlspecialchars($stat['confirmed_participants']); ?></td>
-                                <td><?php echo htmlspecialchars($stat['avg_max_participants'] ?? 0); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

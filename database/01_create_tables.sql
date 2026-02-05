@@ -277,9 +277,7 @@ SELECT
     c.name,
     c.description,
     COUNT(DISTINCT ec.event_id) AS total_events,
-    COUNT(DISTINCT uei.user_id) AS total_interested_users,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'going' THEN uei.user_id END) AS confirmed_participants,
-    ROUND(AVG(e.max_participants), 0) AS avg_max_participants
+    COUNT(DISTINCT uei.user_id) AS total_interested_users
 FROM categories c
 LEFT JOIN event_categories ec ON c.id = ec.category_id
 LEFT JOIN events e ON ec.event_id = e.id
