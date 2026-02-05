@@ -1,24 +1,17 @@
 <?php
 
 // Kontroler API - obsługuje żądania AJAX dla funkcjonalności aplikacji
-require_once 'AppController.php';
+require_once 'BaseController.php';
 require_once __DIR__ . '/../repository/UserEventInterestRepository.php';
 require_once __DIR__ . '/../repository/EventRepository.php';
 require_once __DIR__ . '/../models/EventStatus.php';
 
-class ApiController extends AppController
+class ApiController extends BaseController
 {
     // Metoda przełączająca zainteresowanie użytkownika wydarzeniem (dodaje lub usuwa)
     public function toggleInterest()
     {
-        // Rozpoczęcie sesji
-        session_start();
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
-            return;
-        }
+        $this->requireLogin();
 
         // Pobranie ID użytkownika z sesji
         $userId = $_SESSION['user']['id'];
@@ -49,14 +42,7 @@ class ApiController extends AppController
     // Metoda pobierająca status zainteresowania użytkownika dla danego wydarzenia
     public function getInterestStatus()
     {
-        // Rozpoczęcie sesji
-        session_start();
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
-            return;
-        }
+        $this->requireLogin();
 
         // Pobranie ID użytkownika z sesji
         $userId = $_SESSION['user']['id'];
@@ -118,14 +104,7 @@ class ApiController extends AppController
     // Metoda akceptująca oczekujące wydarzenie (tylko dla administratorów)
     public function acceptEvent()
     {
-        // Rozpoczęcie sesji
-        session_start();
-        // Sprawdzenie czy użytkownik jest administratorem
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            http_response_code(403);
-            echo json_encode(['error' => 'Forbidden']);
-            return;
-        }
+        $this->requireAdmin();
 
         // Pobranie ID wydarzenia z POST
         $eventId = $_POST['eventId'] ?? '';

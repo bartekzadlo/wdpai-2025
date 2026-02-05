@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+
 });
 
 // Event edit and delete functions for dashboard

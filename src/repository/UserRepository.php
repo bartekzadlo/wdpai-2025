@@ -1,25 +1,10 @@
 <?php
 
+require_once 'BaseRepository.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../database/Database.php';
 
-class UserRepository
+class UserRepository extends BaseRepository
 {
-    private PDO $db;
-    private static ?UserRepository $instance = null;
-
-    private function __construct()
-    {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    public static function getInstance(): UserRepository
-    {
-        if (self::$instance === null) {
-            self::$instance = new UserRepository();
-        }
-        return self::$instance;
-    }
 
     public function findAll(): array
     {

@@ -1,25 +1,10 @@
 <?php
 
+require_once 'BaseRepository.php';
 require_once __DIR__ . '/../models/Event.php';
-require_once __DIR__ . '/../database/Database.php';
 
-class EventRepository
+class EventRepository extends BaseRepository
 {
-    private PDO $db;
-    private static ?EventRepository $instance = null;
-
-    private function __construct()
-    {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    public static function getInstance(): EventRepository
-    {
-        if (self::$instance === null) {
-            self::$instance = new EventRepository();
-        }
-        return self::$instance;
-    }
 
     public function findAll(): array
     {

@@ -1,20 +1,14 @@
 <?php
 
-require_once 'AppController.php';
+require_once 'BaseController.php';
+require_once __DIR__ . '/../services/ValidationHelper.php';
 
 // Główny kontroler aplikacji - obsługuje większość stron
-class DefaultController extends AppController {
+class DefaultController extends BaseController {
 
     // Główna strona - pokazuje listę wydarzeń użytkownikowi
     public function index() {
-        // Rozpoczęcie sesji
-        session_start();
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireLogin();
 
         // Wczytanie repozytoriów wydarzeń i zainteresowań
         require_once __DIR__ . '/../repository/EventRepository.php';
@@ -35,11 +29,7 @@ class DefaultController extends AppController {
             } else {
                 $event->isInterested = false;
             }
-            // Ustawienie statusu dla każdego wydarzenia, ale pozostawienie PENDING bez zmian
-            if ($event->status !== EventStatus::PENDING) {
-                $currentDate = date('d.m.Y');
-                $event->status = (strtotime($event->date) >= strtotime($currentDate)) ? EventStatus::ACTIVE : EventStatus::INACTIVE;
-            }
+            $event->status = ValidationHelper::setEventStatus($event->date, $event->status);
         }
 
         // Filtrowanie wydarzeń - pokazanie tylko aktywnych, ale admin zobaczy też pending
@@ -53,15 +43,7 @@ class DefaultController extends AppController {
 
     // Panel admina - pokazuje statystyki i ostatnie wydarzenia
     public function dashboard() {
-        // Rozpoczęcie sesji
-        session_start();
-
-        // Sprawdzenie czy użytkownik jest administratorem
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireAdmin();
 
         // Wczytanie repozytoriów użytkowników, wydarzeń i zainteresowań
         require_once __DIR__ . '/../repository/UserRepository.php';
@@ -104,15 +86,7 @@ class DefaultController extends AppController {
 
     // Metoda wyświetlająca wszystkie wydarzenia dla administratora
     public function events() {
-        // Rozpoczęcie sesji
-        session_start();
-
-        // Sprawdzenie czy użytkownik jest administratorem
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireAdmin();
 
         // Wczytanie repozytorium wydarzeń i modelu statusu wydarzeń
         require_once __DIR__ . '/../repository/EventRepository.php';
@@ -141,15 +115,7 @@ class DefaultController extends AppController {
 
     // Metoda wyświetlająca wszystkich użytkowników dla administratora
     public function users() {
-        // Rozpoczęcie sesji
-        session_start();
-
-        // Sprawdzenie czy użytkownik jest administratorem
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireAdmin();
 
         // Wczytanie repozytorium użytkowników
         require_once __DIR__ . '/../repository/UserRepository.php';
@@ -165,15 +131,7 @@ class DefaultController extends AppController {
 
     // Metoda obsługująca dodawanie nowego wydarzenia
     public function addEvent() {
-        // Rozpoczęcie sesji
-        session_start();
-
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireLogin();
 
         // Sprawdzenie czy żądanie to POST (wysłanie formularza)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -271,15 +229,7 @@ class DefaultController extends AppController {
 
     // Metoda wyświetlająca profil użytkownika
     public function profile() {
-        // Rozpoczęcie sesji
-        session_start();
-
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireLogin();
 
         // Wczytanie repozytoriów wydarzeń, użytkowników i znajomych
         require_once __DIR__ . '/../repository/EventRepository.php';
@@ -329,13 +279,7 @@ class DefaultController extends AppController {
     }
 
     public function editEvent() {
-        session_start();
-
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireAdmin();
 
         $eventId = $_GET['id'] ?? '';
         if (empty($eventId)) {
@@ -417,14 +361,7 @@ class DefaultController extends AppController {
 
     // Metoda wyświetlająca szczegóły pojedynczego wydarzenia
     public function eventDetails() {
-        // Rozpoczęcie sesji
-        session_start();
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireLogin();
 
         // Pobranie ID wydarzenia z parametrów GET
         $eventId = $_GET['id'] ?? '';

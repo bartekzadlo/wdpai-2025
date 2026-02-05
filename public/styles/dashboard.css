@@ -1,40 +1,61 @@
-/* RESET i zmienne (jeśli nie zostały zdefiniowane w main.css globalnie) */
+/* RESET i zmienne */
 :root {
     --main-purple: #b000b0;
-    --card-gray: #dcdcdc; /* Kolor inputów z logowania */
+    --card-gray: #dcdcdc;
     --bg-black: #050505;
     --text-white: #ffffff;
     --font-pixel: "Jersey 10", sans-serif;
+}
+
+/* Globalny box-sizing - kluczowe dla wymiarów */
+* {
+    box-sizing: border-box;
 }
 
 body {
     background-color: var(--bg-black);
     font-family: var(--font-pixel);
     color: var(--text-white);
-    overflow: auto; /* Allow scrolling on mobile */
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+/* Prevent horizontal scrolling on phones */
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
 }
 
 /* UKŁAD GŁÓWNY */
 .admin-container {
-    display: flex;
     width: 100vw;
     height: 100vh;
 }
 
 /* --- SIDEBAR (LEWY PASEK) --- */
 .sidebar {
-    width: 250px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px; /* Poszerzone z 250px */
+    height: 100vh;
     background-color: #111;
     border-right: 2px solid var(--main-purple);
     display: flex;
     flex-direction: column;
-    padding: 30px 20px;
-    flex-shrink: 0;
+    padding: 25px 20px; /* Trochę więcej miejsca góra/dół */
+    z-index: 10;
+    /* Brak scrolla, wszystko ma się mieścić */
+    overflow: hidden;
 }
 
 .sidebar-header {
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     text-align: center;
+    flex-shrink: 0; /* Logo się nie zgniata */
 }
 
 .logo-text {
@@ -52,22 +73,31 @@ body {
     text-transform: uppercase;
 }
 
+/* LISTA MENU */
 .menu-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px; /* Mniejszy odstęp dla bezpieczeństwa pionowego */
+    
+    /* To wypycha Logout na sam dół */
+    flex-grow: 1; 
+    
+    margin: 0;
+    padding: 0;
+    margin-top: 10px;
 }
 
 .menu-list li a {
     text-decoration: none;
     color: #888;
-    font-size: 1.8rem;
+    font-size: 1.7rem; /* Czytelna czcionka */
     display: flex;
     align-items: center;
     gap: 15px;
     transition: all 0.2s;
     text-transform: uppercase;
+    padding: 5px 0; /* Margines klikalności */
 }
 
 .menu-list li a:hover, 
@@ -77,8 +107,12 @@ body {
     text-shadow: 2px 2px 0px var(--main-purple);
 }
 
+/* SEKCJA WYLOGOWANIA */
 .logout-section {
-    margin-top: auto;
+    flex-shrink: 0; /* Nie pozwala zgnieść przycisku */
+    margin-top: auto; /* Dopycha przycisk do dolnej krawędzi containera */
+    padding-top: 20px;
+    border-top: 1px solid #333;
 }
 
 .btn-logout {
@@ -87,11 +121,12 @@ body {
     background-color: #333;
     color: white;
     text-decoration: none;
-    padding: 10px;
+    padding: 12px;
     font-size: 1.5rem;
     text-transform: uppercase;
     border: 1px solid #555;
     transition: 0.2s;
+    width: 100%;
 }
 
 .btn-logout:hover {
@@ -99,11 +134,27 @@ body {
     border-color: red;
 }
 
+/* --- RESPANSYWNOŚĆ PIONOWA (DLA LAPTOPÓW) --- */
+/* To zapobiega ucinaniu przycisku wylogowania na niskich ekranach bez użycia scrolla */
+@media screen and (max-height: 800px) and (min-width: 901px) {
+    .sidebar { padding: 15px; }
+    .logo-text { font-size: 2.5rem; }
+    .badge { font-size: 1rem; }
+    .sidebar-header { margin-bottom: 15px; }
+    
+    .menu-list { gap: 5px; }
+    .menu-list li a { font-size: 1.5rem; padding: 3px 0; }
+    
+    .logout-section { padding-top: 15px; }
+    .btn-logout { padding: 8px; font-size: 1.3rem; }
+}
+
 /* --- GŁÓWNA ZAWARTOŚĆ (PRAWA STRONA) --- */
 .main-content {
-    flex-grow: 1;
+    margin-left: 280px; /* Musi być równe width sidebara */
     padding: 40px;
-    overflow-y: auto;
+    min-height: 100vh;
+    overflow: visible;
     background-image: radial-gradient(circle at top right, rgba(176, 0, 176, 0.1), transparent 40%);
 }
 
@@ -216,7 +267,7 @@ body {
 
 /* TABELA */
 .table-wrapper {
-    overflow-x: auto;
+    overflow: visible;
 }
 
 .pixel-table {
@@ -367,13 +418,32 @@ body {
     margin-bottom: 5px;
 }
 
-/* RESPANSYWNOŚĆ */
+/* RESPANSYWNOŚĆ (MOBILE) */
 @media screen and (max-width: 900px) {
     .admin-container { flex-direction: column; overflow-y: auto; height: auto;}
-    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-right: none; border-bottom: 2px solid var(--main-purple); }
-    .menu-list { display: none; } /* Uproszczenie na mobile */
+    
+    .sidebar { 
+        width: 100%; 
+        height: auto; 
+        position: relative; /* Na mobile pasek nie jest fixed */
+        flex-direction: row; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 15px; 
+        border-right: none; 
+        border-bottom: 2px solid var(--main-purple); 
+        overflow: visible;
+    }
+
+    .menu-list { display: none; } /* Lista znika na mobile (obsługa przez bottom nav) */
+    .sidebar-header { margin-bottom: 0; }
     .stat-card { margin-bottom: 0; }
     .logout-section { display: none; }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
 }
 
 /* Mobile menu toggle */
@@ -436,7 +506,7 @@ body {
     font-size: 0.8rem;
 }
 
-/* Mobile adjustments for small screens */
+/* Mobile adjustments for small screens (Phone) */
 @media screen and (max-width: 480px) {
     .sidebar {
         padding: 10px;
@@ -448,17 +518,14 @@ body {
     .badge {
         font-size: 0.9rem;
     }
+    /* Menu desktopowe ukryte */
     .menu-list {
         display: none;
-        width: 100%;
-        margin-top: 20px;
     }
-    .menu-list.mobile-visible {
-        display: flex;
-    }
+    
     .main-content {
         padding: 20px;
-        padding-bottom: 80px; /* Space for bottom nav */
+        padding-bottom: 80px; /* Miejsce na bottom nav */
         overflow-y: auto;
         max-height: 100vh;
     }
@@ -476,7 +543,7 @@ body {
     }
     .stat-card {
         padding: 15px;
-        flex-direction: row; /* Long rectangles instead of column */
+        flex-direction: row; 
         justify-content: space-between;
         align-items: center;
         text-align: left;
@@ -498,6 +565,9 @@ body {
         font-size: 1.2rem;
         padding: 8px 15px;
     }
+    .table-wrapper {
+        overflow-x: auto;
+    }
     .pixel-table th, .pixel-table td {
         padding: 10px;
         font-size: 1rem;
@@ -505,7 +575,7 @@ body {
     .form-section {
         padding: 20px;
         overflow-y: auto;
-        max-height: calc(100vh - 180px); /* Account for bottom nav */
+        max-height: calc(100vh - 180px);
     }
     .form-container {
         max-width: 100%;

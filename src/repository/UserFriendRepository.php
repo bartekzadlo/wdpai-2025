@@ -1,25 +1,10 @@
 <?php
 
+require_once 'BaseRepository.php';
 require_once __DIR__ . '/../models/UserFriend.php';
-require_once __DIR__ . '/../database/Database.php';
 
-class UserFriendRepository
+class UserFriendRepository extends BaseRepository
 {
-    private PDO $db;
-    private static ?UserFriendRepository $instance = null;
-
-    private function __construct()
-    {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    public static function getInstance(): UserFriendRepository
-    {
-        if (self::$instance === null) {
-            self::$instance = new UserFriendRepository();
-        }
-        return self::$instance;
-    }
 
     public function findAll(): array
     {

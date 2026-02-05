@@ -26,35 +26,16 @@ class SettingsController extends AppController {
         $profilePicture = trim($data['profile_picture'] ?? '');
 
         // Walidacja - identyczna jak przy rejestracji
-        if (empty($email) || empty($name) || empty($surname) || empty($city)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Wypełnij wszystkie pola'], 400);
-            return;
-        }
+        $errors = ValidationHelper::validateUserData([
+            'email' => $email,
+            'name' => $name,
+            'surname' => $surname,
+            'phone' => $phone,
+            'city' => $city
+        ], true);
 
-        // Input length validation - identyczna jak przy rejestracji
-        if (strlen($email) > 255) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Email too long'], 400);
-            return;
-        }
-        if (strlen($name) > 50) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Name too long'], 400);
-            return;
-        }
-        if (strlen($surname) > 50) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Surname too long'], 400);
-            return;
-        }
-        if (strlen($phone) > 20) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Phone too long'], 400);
-            return;
-        }
-        if (strlen($city) > 100) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'City too long'], 400);
-            return;
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Niepoprawny email'], 400);
+        if (!empty($errors)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => implode(', ', $errors)], 400);
             return;
         }
 
@@ -99,21 +80,9 @@ class SettingsController extends AppController {
             return;
         }
 
-        // Password validation same as registration
-        if (strlen($newPass) < 8) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło zbyt krótkie'], 400);
-            return;
-        }
-        if (strlen($newPass) > 128) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło zbyt długie'], 400);
-            return;
-        }
-        if (!preg_match('/[A-Z]/', $newPass)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło musi zawierać przynajmniej jedną wielką literę'], 400);
-            return;
-        }
-        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $newPass)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Hasło musi zawierać przynajmniej jeden znak specjalny'], 400);
+        $passwordErrors = ValidationHelper::validatePassword($newPass);
+        if (!empty($passwordErrors)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => implode(', ', $passwordErrors)], 400);
             return;
         }
 
@@ -155,61 +124,13 @@ class SettingsController extends AppController {
     }
 
     public function settings() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            return;
-        }
+        $this->requireLogin();
 
         $currentUser = $this->userRepository->findByEmail($_SESSION['user']['email']);
 
         $this->render('settings', ['user' => $currentUser ? $currentUser->toArray() : null]);
     }
 
-    // --- Metody pomocnicze ---
-
-    // Prywatna metoda sprawdzająca autoryzację użytkownika
-    private function checkAuth() {
-        // Rozpoczęcie sesji jeśli nie jest już rozpoczęta
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        // Sprawdzenie czy użytkownik jest zalogowany
-        if (!isset($_SESSION['user'])) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Unauthorized'], 401);
-            exit;
-        }
-    }
-
-    // Prywatna metoda pobierająca dane JSON z ciała żądania
-    private function getJsonInput() {
-        // Pobranie danych z wejścia php://input
-        $input = file_get_contents('php://input');
-        // Dekodowanie JSON na tablicę asocjacyjną
-        return json_decode($input, true) ?? [];
-    }
-
-    // Prywatna metoda wysyłająca odpowiedź JSON
-    private function sendJsonResponse($data, $code = 200) {
-        // Sprawdzenie czy bufor wyjścia istnieje przed jego wyczyszczeniem
-        if (ob_get_length()) {
-            ob_clean();
-        }
-
-        // Ustawienie nagłówka Content-Type na application/json
-        header('Content-Type: application/json');
-        // Ustawienie kodu odpowiedzi HTTP
-        http_response_code($code);
-        // Wysłanie danych JSON
-        echo json_encode($data);
-        // Zakończenie wykonania skryptu
-        exit;
-    }
 
 
 }
