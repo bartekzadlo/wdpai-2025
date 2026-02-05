@@ -96,9 +96,9 @@ CREATE TABLE user_event_interests (
     event_id VARCHAR(50) NOT NULL,
     interest_level VARCHAR(20) DEFAULT 'interested' NOT NULL, -- 'interested', 'going', 'maybe'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) 
+    FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES events(id) 
+    FOREIGN KEY (event_id) REFERENCES events(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE(user_id, event_id)
 );

@@ -233,6 +233,9 @@
                     <div class="input-group">
                         <input type="text" id="user_profile_picture" class="input-retro" placeholder="ZDZIĘCIE PROFILOWE (URL)" value="<?= htmlspecialchars($user['profilePicture'] ?? '') ?>">
                     </div>
+                    <div class="input-group">
+                        <textarea id="user_bio" class="input-retro" placeholder="BIO" rows="3" style="resize: vertical; min-height: 60px;"><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
+                    </div>
 
                     <button type="button" onclick="updateUserInfo()" class="btn-retro">ZAKTUALIZUJ DANE</button>
                 </div>
@@ -303,6 +306,7 @@
         const phone = document.getElementById('user_phone').value;
         const city = document.getElementById('user_city').value;
         const profilePicture = document.getElementById('user_profile_picture').value;
+        const bio = document.getElementById('user_bio').value;
 
         if(!email || !name || !surname || !city) {
             alert("Wypełnij wszystkie wymagane pola.");
@@ -315,7 +319,8 @@
             surname: surname,
             phone: phone,
             city: city,
-            profile_picture: profilePicture
+            profile_picture: profilePicture,
+            bio: bio
         });
 
         alert(res.message);

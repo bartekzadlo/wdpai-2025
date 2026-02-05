@@ -23,7 +23,8 @@ class User
         string $phone,
         string $city,
         string $profilePicture = '',
-        array $consents = []
+        array $consents = [],
+        ?string $bio = null
     ) {
         $this->id = $id;
         $this->email = $email;
@@ -35,6 +36,7 @@ class User
         $this->city = $city;
         $this->profilePicture = $profilePicture;
         $this->consents = $consents;
+        $this->bio = $bio;
     }
 
     public static function fromArray(array $data): self
@@ -50,7 +52,7 @@ class User
             $data['city'] ?? '',
             $data['profilePicture'] ?? '',
             $data['consents'] ?? [],
-            $data['settings'] ?? []
+            $data['bio'] ?? null
         );
     }
 
@@ -67,6 +69,7 @@ class User
             'city' => $this->city,
             'profilePicture' => $this->profilePicture,
             'consents' => $this->consents,
+            'bio' => $this->bio,
         ];
     }
 }

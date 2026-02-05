@@ -262,7 +262,6 @@ class DefaultController extends BaseController {
         // Wczytanie repozytoriów
         require_once __DIR__ . '/../repository/EventRepository.php';
         require_once __DIR__ . '/../repository/UserRepository.php';
-        require_once __DIR__ . '/../repository/UserFriendRepository.php';
 
         // Pobranie ID użytkownika z sesji
         $userId = $_SESSION['user']['id'];
@@ -279,26 +278,12 @@ class DefaultController extends BaseController {
         // Funkcja zwraca JOIN z events + user_event_interests + categories
         $interestedEvents = $userRepo->getUserInterestedEvents($userId);
 
-        // Pobranie znajomych użytkownika
-        $friendRepo = UserFriendRepository::getInstance();
-        $friends = $friendRepo->findByUserId($userId);
-        $friendData = [];
-        foreach ($friends as $friend) {
-            $friendId = $friend->userId === $userId ? $friend->friendId : $friend->userId;
-            $friendUser = $userRepo->findById($friendId);
-            if ($friendUser) {
-                $friendData[] = $friendUser;
-            }
-        }
-        $friendData = array_filter($friendData, fn($f) => $f !== null);
-
         // Renderowanie widoku profilu z danymi użytkownika
         $this->render('profile', [
             'user' => $user,
             'userActivity' => $userActivity,
             'userProfile' => $userProfile,
-            'interestedEvents' => $interestedEvents,
-            'friends' => $friendData
+            'interestedEvents' => $interestedEvents
         ]);
     }
 

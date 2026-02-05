@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/AppController.php';
+require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../repository/UserRepository.php';
 
-class SettingsController extends AppController {
+class SettingsController extends BaseController {
 
     private UserRepository $userRepository;
 
@@ -24,6 +24,7 @@ class SettingsController extends AppController {
         $phone = trim($data['phone'] ?? '');
         $city = trim($data['city'] ?? '');
         $profilePicture = trim($data['profile_picture'] ?? '');
+        $bio = trim($data['bio'] ?? '');
 
         // Walidacja - identyczna jak przy rejestracji
         $errors = ValidationHelper::validateUserData([
@@ -59,6 +60,11 @@ class SettingsController extends AppController {
         $user->profilePicture = $profilePicture;
 
         $this->userRepository->save($user);
+
+        // Update bio in user_profiles table
+        if (!empty($bio)) {
+            $this->userRepository->updateUserProfile($user->id, ['bio' => $bio]);
+        }
 
         // Update session if email changed
         if ($email !== $_SESSION['user']['email']) {

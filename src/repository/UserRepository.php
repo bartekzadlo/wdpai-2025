@@ -35,18 +35,19 @@ class UserRepository extends BaseRepository
     public function findByEmail(string $email): ?User
     {
         $stmt = $this->db->prepare("
-            SELECT id, email, password, role, name, surname, phone, city, 
-                   profile_picture as \"profilePicture\", consents
-            FROM users
-            WHERE LOWER(email) = LOWER(:email)
+            SELECT u.id, u.email, u.password, u.role, u.name, u.surname, u.phone, u.city,
+                   u.profile_picture as \"profilePicture\", u.consents, up.bio
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE LOWER(u.email) = LOWER(:email)
         ");
         $stmt->execute([':email' => $email]);
-        
+
         $row = $stmt->fetch();
         if (!$row) {
             return null;
         }
-        
+
         $row['consents'] = json_decode($row['consents'], true) ?? [];
         return User::fromArray($row);
     }
@@ -54,18 +55,19 @@ class UserRepository extends BaseRepository
     public function findById(string $id): ?User
     {
         $stmt = $this->db->prepare("
-            SELECT id, email, password, role, name, surname, phone, city, 
-                   profile_picture as \"profilePicture\", consents
-            FROM users
-            WHERE id = :id
+            SELECT u.id, u.email, u.password, u.role, u.name, u.surname, u.phone, u.city,
+                   u.profile_picture as \"profilePicture\", u.consents, up.bio
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE u.id = :id
         ");
         $stmt->execute([':id' => $id]);
-        
+
         $row = $stmt->fetch();
         if (!$row) {
             return null;
         }
-        
+
         $row['consents'] = json_decode($row['consents'], true) ?? [];
         return User::fromArray($row);
     }
