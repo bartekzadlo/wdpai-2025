@@ -1,6 +1,5 @@
 -- Usuń istniejące tabele jeśli istnieją (w odwrotnej kolejności ze względu na klucze obce)
 DROP TABLE IF EXISTS user_event_interests CASCADE;
-DROP TABLE IF EXISTS user_friends CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
@@ -44,27 +43,11 @@ CREATE TABLE user_event_interests (
     UNIQUE(user_id, event_id)
 );
 
--- Tabela przyjaźni między użytkownikami
-CREATE TABLE user_friends (
-    id VARCHAR(50) PRIMARY KEY,
-    user_id VARCHAR(50) NOT NULL,
-    friend_id VARCHAR(50) NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending' NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
-    CHECK (user_id != friend_id)
-);
-
 -- Indeksy dla lepszej wydajności
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_events_date ON events(date);
 CREATE INDEX idx_user_event_interests_user ON user_event_interests(user_id);
 CREATE INDEX idx_user_event_interests_event ON user_event_interests(event_id);
-CREATE INDEX idx_user_friends_user ON user_friends(user_id);
-CREATE INDEX idx_user_friends_friend ON user_friends(friend_id);
-CREATE INDEX idx_user_friends_status ON user_friends(status);
 
 -- Funkcja do automatycznej aktualizacji updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -80,7 +63,4 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_events_updated_at BEFORE UPDATE ON events
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_user_friends_updated_at BEFORE UPDATE ON user_friends
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
