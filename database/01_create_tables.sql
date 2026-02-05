@@ -269,32 +269,22 @@ LEFT JOIN categories c ON ec.category_id = c.id
 GROUP BY e.id, e.title, e.location, e.date, e.description, e.image_url, 
          e.status, e.max_participants, e.created_at, e.updated_at;
 
--- WIDOK 2: Aktywność użytkowników (łączy 3 tabele)
--- Używany w panelu użytkowników i profilu
-CREATE VIEW v_user_activity AS
-SELECT 
-    u.id,
-    u.email,
-    u.name,
-    u.surname,
-    u.city,
-    u.role,
-    u.phone,
-    u.profile_picture,
-    u.created_at,
-    up.bio,
-    up.last_login,
-    up.login_count,
-    COUNT(DISTINCT uei.event_id) AS total_events_interested,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'going' THEN uei.event_id END) AS events_attending,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'interested' THEN uei.event_id END) AS events_interested,
-    COUNT(DISTINCT CASE WHEN uei.interest_level = 'maybe' THEN uei.event_id END) AS events_maybe,
-    MAX(uei.created_at) AS last_interest_date
-FROM users u
-LEFT JOIN user_profiles up ON u.id = up.user_id
-LEFT JOIN user_event_interests uei ON u.id = uei.user_id
-GROUP BY u.id, u.email, u.name, u.surname, u.city, u.role, u.phone, 
-         u.profile_picture, u.created_at, up.bio, up.last_login, up.login_count;
+-- WIDOK 2: Statystyki kategorii (łączy 4 tabele)
+-- Używany w dashboardzie administratora
+CREATE VIEW v_category_statistics AS
+SELECT
+    c.id,
+    c.name,
+    c.description,
+    COUNT(DISTINCT ec.event_id) AS total_events,
+    COUNT(DISTINCT uei.user_id) AS total_interested_users,
+    COUNT(DISTINCT CASE WHEN uei.interest_level = 'going' THEN uei.user_id END) AS confirmed_participants,
+    ROUND(AVG(e.max_participants), 0) AS avg_max_participants
+FROM categories c
+LEFT JOIN event_categories ec ON c.id = ec.category_id
+LEFT JOIN events e ON ec.event_id = e.id
+LEFT JOIN user_event_interests uei ON e.id = uei.event_id
+GROUP BY c.id, c.name, c.description;
 
 -- ============================================================================
 -- DANE INICJALNE

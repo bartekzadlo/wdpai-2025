@@ -84,6 +84,20 @@
                                       placeholder="Dodaj opis wydarzenia..."><?php echo htmlspecialchars($formData['description'] ?? ''); ?></textarea>
                         </div>
 
+                        <div class="form-group">
+                            <label>Kategorie wydarzenia</label>
+                            <div class="categories-grid">
+                                <?php foreach ($categories as $category): ?>
+                                <label class="category-checkbox">
+                                    <input type="checkbox" name="categories[]" value="<?php echo htmlspecialchars($category['id']); ?>"
+                                           <?php echo (isset($formData['categories']) && in_array($category['id'], $formData['categories'])) ? 'checked' : ''; ?>>
+                                    <span class="checkmark"></span>
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <a href="/main" class="btn-cancel">ANULUJ</a>
                             <button type="submit" class="btn-submit">

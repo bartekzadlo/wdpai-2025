@@ -246,6 +246,72 @@ body {
     color: var(--main-purple);
 }
 
+.view-info {
+    font-size: 1.2rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 5px;
+    display: block;
+}
+
+/* CATEGORY CHECKBOXES */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.category-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.4rem;
+    padding: 8px 12px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.category-checkbox:hover {
+    border-color: var(--main-purple);
+    background-color: #222;
+}
+
+.category-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #666;
+    border-radius: 4px;
+    margin-right: 12px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.category-checkbox input[type="checkbox"]:checked ~ .checkmark {
+    background-color: var(--main-purple);
+    border-color: var(--main-purple);
+}
+
+.category-checkbox input[type="checkbox"]:checked ~ .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .btn-add-event {
     background-color: var(--main-purple);
     color: white;

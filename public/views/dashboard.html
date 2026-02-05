@@ -125,6 +125,48 @@
                 </div>
             </section>
 
+            <!-- SEKCJA STATYSTYK KATEGORII Z WIDOKU v_category_statistics -->
+            <section class="action-panel">
+                <div class="panel-header">
+                    <h2>STATYSTYKI KATEGORII (WIDOK v_category_statistics)</h2>
+                    <span class="view-info">Zintegrowane dane z 4 tabel: categories + event_categories + events + user_event_interests</span>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="pixel-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>NAZWA KATEGORII</th>
+                                <th>OPIS</th>
+                                <th>ŁĄCZNA LICZBA WYDARZEŃ</th>
+                                <th>ZAINTERESOWANI UŻYTKOWNICY</th>
+                                <th>POTWIERDZENI UCZESTNICY</th>
+                                <th>ŚREDNIA POJEMNOŚĆ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Pobierz dane z widoku v_category_statistics
+                            require_once __DIR__ . '/../../src/repository/EventRepository.php';
+                            $eventRepository = EventRepository::getInstance();
+                            $categoryStats = $eventRepository->getCategoryStatistics();
+                            foreach ($categoryStats as $stat): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($stat['id']); ?></td>
+                                <td><?php echo htmlspecialchars($stat['name']); ?></td>
+                                <td><?php echo htmlspecialchars($stat['description'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($stat['total_events']); ?></td>
+                                <td><?php echo htmlspecialchars($stat['total_interested_users']); ?></td>
+                                <td><?php echo htmlspecialchars($stat['confirmed_participants']); ?></td>
+                                <td><?php echo htmlspecialchars($stat['avg_max_participants'] ?? 0); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
         </main>
 
         <!-- BOTTOM NAVIGATION FOR MOBILE -->

@@ -211,7 +211,50 @@ class EventRepository extends BaseRepository
             ORDER BY c.name
         ");
         $stmt->execute([':event_id' => $eventId]);
-        
+
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Pobiera statystyki kategorii - najpierw próbuje użyć widoku, jeśli nie istnieje używa bezpośredniego zapytania
+     * Łączy: categories + event_categories + events + user_event_interests
+     */
+    public function getCategoryStatistics(): array
+    {
+        try {
+            // Próba użycia widoku v_category_statistics
+            $stmt = $this->db->query("
+                SELECT
+                    id,
+                    name,
+                    description,
+                    total_events,
+                    total_interested_users,
+                    confirmed_participants,
+                    avg_max_participants
+                FROM v_category_statistics
+                ORDER BY total_events DESC
+            ");
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            // Fallback - bezpośrednie zapytanie jeśli widok nie istnieje
+            $stmt = $this->db->query("
+                SELECT
+                    c.id,
+                    c.name,
+                    c.description,
+                    COUNT(DISTINCT ec.event_id) AS total_events,
+                    COUNT(DISTINCT uei.user_id) AS total_interested_users,
+                    COUNT(DISTINCT CASE WHEN uei.interest_level = 'going' THEN uei.user_id END) AS confirmed_participants,
+                    ROUND(AVG(e.max_participants), 0) AS avg_max_participants
+                FROM categories c
+                LEFT JOIN event_categories ec ON c.id = ec.category_id
+                LEFT JOIN events e ON ec.event_id = e.id
+                LEFT JOIN user_event_interests uei ON e.id = uei.event_id
+                GROUP BY c.id, c.name, c.description
+                ORDER BY total_events DESC
+            ");
+            return $stmt->fetchAll();
+        }
     }
 }

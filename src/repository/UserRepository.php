@@ -7,26 +7,28 @@ class UserRepository extends BaseRepository
 {
 
     /**
-     * Pobiera wszystkich użytkowników używając WIDOKU v_user_activity (JOIN 3 tabel)
-     * Widok łączy: users + user_profiles + user_event_interests
+     * Pobiera wszystkich użytkowników z ich profilami i statystykami zainteresowań
+     * JOIN: users + user_profiles + user_event_interests
      */
     public function findAll(): array
     {
         $stmt = $this->db->query("
-            SELECT 
-                id, email, name, surname, phone, city, role,
-                profile_picture as \"profilePicture\",
-                bio,
-                login_count,
-                total_events_interested,
-                events_attending
-            FROM v_user_activity
-            ORDER BY created_at DESC
+            SELECT
+                u.id, u.email, u.name, u.surname, u.phone, u.city, u.role,
+                u.profile_picture as \"profilePicture\", u.consents,
+                up.bio, up.login_count,
+                COUNT(DISTINCT uei.event_id) as events_interested
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            LEFT JOIN user_event_interests uei ON u.id = uei.user_id
+            GROUP BY u.id, u.email, u.name, u.surname, u.phone, u.city, u.role,
+                     u.profile_picture, u.consents, up.bio, up.login_count
+            ORDER BY u.created_at DESC
         ");
-        
+
         $users = [];
         while ($row = $stmt->fetch()) {
-            $row['consents'] = [];
+            $row['consents'] = json_decode($row['consents'], true) ?? [];
             $users[] = User::fromArray($row);
         }
         return $users;
@@ -130,17 +132,25 @@ class UserRepository extends BaseRepository
     }
 
     /**
-     * Pobiera aktywność użytkownika z WIDOKU v_user_activity
+     * Pobiera aktywność użytkownika z bezpośredniego zapytania
      */
     public function getUserActivity(string $userId): ?array
     {
         $stmt = $this->db->prepare("
-            SELECT *
-            FROM v_user_activity
-            WHERE id = :id
+            SELECT
+                u.id, u.email, u.name, u.surname, u.city, u.role,
+                up.bio, up.last_login, up.login_count,
+                COUNT(DISTINCT uei.event_id) as events_interested,
+                MAX(uei.created_at) as last_interest_date
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            LEFT JOIN user_event_interests uei ON u.id = uei.user_id
+            WHERE u.id = :id
+            GROUP BY u.id, u.email, u.name, u.surname, u.city, u.role,
+                     up.bio, up.last_login, up.login_count
         ");
         $stmt->execute([':id' => $userId]);
-        
+
         return $stmt->fetch();
     }
 

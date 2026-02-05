@@ -62,7 +62,7 @@ class DefaultController extends BaseController {
         $eventCount = count($eventRepository->findAll());
         $interestCount = count($interestRepository->findAll());
 
-        // Pobranie ostatnich 3 wydarzeń według daty utworzenia
+        // Pobranie ostatnich wydarzeń dla sekcji "ostatnie wydarzenia"
         // Używa widoku v_event_statistics z kategoriami
         $allEvents = $eventRepository->findAll();
         usort($allEvents, function($a, $b) {
@@ -129,7 +129,7 @@ class DefaultController extends BaseController {
         // Pobranie instancji repozytorium użytkowników
         $userRepository = UserRepository::getInstance();
         // Pobranie wszystkich użytkowników z widoku v_user_activity
-        // Widok zawiera bio, login_count, total_events_interested, events_attending
+        // Widok zawiera bio, login_count, total_events_interested, events_interested
         $users = $userRepository->findAll();
 
         // Renderowanie widoku administracyjnego użytkowników
