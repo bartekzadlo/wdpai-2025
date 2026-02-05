@@ -127,6 +127,7 @@
             font-size: 1.2rem;
             outline: none;
             transition: border-color 0.2s;
+            box-sizing: border-box;
         }
         
         .input-retro:focus {
@@ -149,6 +150,7 @@
             text-transform: uppercase;
             transition: all 0.2s;
             margin-top: 10px;
+            box-sizing: border-box;
         }
 
         .btn-retro:hover {
@@ -179,6 +181,38 @@
             color: white;
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
+
+        /* ========================= */
+        /* ===== MOBILE VIEW ======= */
+        /* ========================= */
+        @media screen and (max-width: 480px) {
+
+            .settings-container {
+                width: 95%;
+                max-width: 100%;
+                margin: 80px auto 20px;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            .settings-header h2 {
+                font-size: 2.2rem;
+            }
+
+            .settings-section h3 {
+                font-size: 1.4rem;
+            }
+
+            .input-retro {
+                font-size: 1.3rem;
+                padding: 14px;
+            }
+
+            .btn-retro {
+                font-size: 1.4rem;
+                padding: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -208,7 +242,6 @@
                 <h2><i class="fa-solid fa-gear"></i> USTAWIENIA</h2>
             </div>
 
-            <!-- Bez taga <form>, używamy JS do obsługi -->
             <div id="settings-form">
 
                 <!-- 1. DANE UŻYTKOWNIKA -->
@@ -267,9 +300,7 @@
 
 </div>
 
-<!-- SKRYPTY OBSŁUGI API -->
 <script>
-    // Pomocnicza funkcja do wysyłania żądań z lepszą obsługą błędów JSON
     async function sendRequest(url, data) {
         try {
             const response = await fetch(url, {
@@ -277,89 +308,45 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
-            // Zamiast od razu response.json(), pobieramy tekst, aby sprawdzić czy nie ma błędów PHP
             const text = await response.text();
-            
-            try {
-                // Próbujemy sparsować JSON
-                return JSON.parse(text);
-            } catch (e) {
-                // Jeśli się nie uda, wypisujemy błąd w konsoli (F12)
-                console.error("Serwer zwrócił niepoprawny JSON:", text);
-                return { status: 'error', message: 'Wystąpił błąd serwera. Sprawdź konsolę (F12).' };
-            }
-
-        } catch (error) {
-            console.error('Błąd sieci:', error);
-            return { status: 'error', message: 'Błąd połączenia z serwerem' };
+            try { return JSON.parse(text); } 
+            catch (e) { console.error("Niepoprawny JSON:", text); return { status:'error', message:'Błąd serwera'}; }
+        } catch (err) {
+            console.error('Błąd sieci:', err);
+            return { status:'error', message:'Błąd połączenia'};
         }
     }
 
-
-
-    // Aktualizacja danych użytkownika
     async function updateUserInfo() {
-        const email = document.getElementById('user_email').value;
-        const name = document.getElementById('user_name').value;
-        const surname = document.getElementById('user_surname').value;
-        const phone = document.getElementById('user_phone').value;
-        const city = document.getElementById('user_city').value;
-        const profilePicture = document.getElementById('user_profile_picture').value;
-        const bio = document.getElementById('user_bio').value;
-
-        if(!email || !name || !surname || !city) {
-            alert("Wypełnij wszystkie wymagane pola.");
-            return;
-        }
-
         const res = await sendRequest('/api/settings/userinfo', {
-            email: email,
-            name: name,
-            surname: surname,
-            phone: phone,
-            city: city,
-            profile_picture: profilePicture,
-            bio: bio
+            email: document.getElementById('user_email').value,
+            name: document.getElementById('user_name').value,
+            surname: document.getElementById('user_surname').value,
+            phone: document.getElementById('user_phone').value,
+            city: document.getElementById('user_city').value,
+            profile_picture: document.getElementById('user_profile_picture').value,
+            bio: document.getElementById('user_bio').value
         });
-
         alert(res.message);
     }
 
-    // Zmiana hasła
     async function changePassword() {
-        const oldPass = document.getElementById('old_password').value;
-        const newPass = document.getElementById('new_password').value;
-
-        if(!oldPass || !newPass) {
-            alert("Wprowadź stare i nowe hasło.");
-            return;
-        }
-
         const res = await sendRequest('/api/settings/password', {
-            old_password: oldPass,
-            new_password: newPass
+            old_password: document.getElementById('old_password').value,
+            new_password: document.getElementById('new_password').value
         });
-        
         alert(res.message);
-        
-        if(res.status === 'success') {
+        if(res.status === 'success'){
             document.getElementById('old_password').value = '';
             document.getElementById('new_password').value = '';
         }
     }
 
-    // Usuwanie konta
     async function deleteAccount() {
-        if(confirm("JESTEŚ PEWIEN? TEJ OPERACJI NIE MOŻNA COFNĄĆ!")) {
+        if(confirm("JESTEŚ PEWIEN? TEJ OPERACJI NIE MOŻNA COFNĄĆ!")){
             const res = await sendRequest('/api/settings/delete', {});
-            
-            if(res.status === 'success') {
-                alert("Konto zostało usunięte. Do widzenia!");
-                window.location.href = "/login";
-            } else {
-                alert("Wystąpił błąd: " + res.message);
-            }
+            if(res.status==='success'){ alert("Konto usunięte."); window.location.href="/login"; } 
+            else { alert("Błąd: "+res.message); }
         }
     }
 </script>
