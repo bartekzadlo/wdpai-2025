@@ -111,6 +111,10 @@
                         <span class="interest-count">LICZBA ZAINTERESOWANYCH: <?php echo htmlspecialchars($event->interestCount); ?></span>
                         <?php endif; ?>
                         <div class="card-icons">
+                            <button class="location-btn" data-location="<?php echo htmlspecialchars($event->location); ?>">
+                                <i class="fa-solid fa-location-dot"></i>
+                                JAK DOJECHAĆ
+                            </button>
                             <i class="fa-solid fa-share-nodes share-btn" data-url="<?php echo htmlspecialchars('http://' . $_SERVER['HTTP_HOST'] . '/event-details?id=' . $event->id); ?>"></i>
                         </div>
                     </div>

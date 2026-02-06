@@ -341,6 +341,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 fallbackCopyTextToClipboard(url);
             }
         }
+
+        // Handle location button clicks
+        if (e.target.classList.contains('location-btn') || e.target.closest('.location-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const location = e.target.getAttribute('data-location') || e.target.closest('.location-btn').getAttribute('data-location');
+            if (location) {
+                const url = `https://www.google.com/maps?q=${encodeURIComponent(location)}`;
+                window.open(url, '_blank');
+            }
+        }
     });
 
 // Fallback function to copy text to clipboard
