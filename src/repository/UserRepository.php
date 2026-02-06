@@ -167,12 +167,13 @@ class UserRepository extends BaseRepository
             
             // 1. Sprawdzenie unikalności emaila (z blokowaniem)
             $checkStmt = $this->db->prepare("
-                SELECT COUNT(*) FROM users 
+                SELECT 1 FROM users
                 WHERE LOWER(email) = LOWER(:email) FOR UPDATE
+                LIMIT 1
             ");
             $checkStmt->execute([':email' => $user->email]);
-            
-            if ($checkStmt->fetchColumn() > 0) {
+
+            if ($checkStmt->fetch()) {
                 $this->db->rollBack();
                 return false;
             }
