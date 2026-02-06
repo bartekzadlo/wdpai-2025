@@ -237,12 +237,20 @@ class DefaultController extends BaseController {
                 }
             }
 
-            // Renderowanie formularza z błędami
-            $this->render('add-event', [
-                'errors' => $errors, 
-                'formData' => $_POST,
-                'categories' => $categories
-            ]);
+            // Renderowanie formularza z błędami na podstawie roli użytkownika
+            if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                $this->render('add-event', [
+                    'errors' => $errors,
+                    'formData' => $_POST,
+                    'categories' => $categories
+                ]);
+            } else {
+                $this->render('add-event-user', [
+                    'errors' => $errors,
+                    'formData' => $_POST,
+                    'categories' => $categories
+                ]);
+            }
             return;
         }
 
