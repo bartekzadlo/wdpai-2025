@@ -32,9 +32,9 @@ class DefaultController extends BaseController {
             $event->status = ValidationHelper::setEventStatus($event->date, $event->status);
         }
 
-        // Filtrowanie wydarzeń - pokazanie tylko aktywnych, ale admin zobaczy też pending
+        // Filtrowanie wydarzeń - pokazanie tylko aktywnych wydarzeń
         $events = array_filter($events, function($event) {
-            return $event->status === EventStatus::ACTIVE || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && $event->status === EventStatus::PENDING);
+            return $event->status === EventStatus::ACTIVE;
         });
 
         // Renderowanie widoku głównego z listą wydarzeń
@@ -157,31 +157,7 @@ class DefaultController extends BaseController {
             $categoryIds = $_POST['categories'] ?? [];
 
             // Walidacja danych formularza
-            $errors = [];
-            if (empty($title)) {
-                $errors[] = 'Nazwa wydarzenia jest wymagana';
-            }
-            if (empty($location)) {
-                $errors[] = 'Lokalizacja jest wymagana';
-            }
-            if (empty($date)) {
-                $errors[] = 'Data jest wymagana';
-            } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-                $errors[] = 'Data musi być w formacie YYYY-MM-DD';
-            } else {
-                // Dodatkowa walidacja formatu daty i przyszłej daty
-                $dateObj = DateTime::createFromFormat('Y-m-d', $date);
-                if (!$dateObj) {
-                    $errors[] = 'Nieprawidłowy format daty';
-                } elseif ($dateObj < new DateTime()) {
-                    $errors[] = 'Data musi być w przyszłości';
-                }
-            }
-            if (empty($imageUrl)) {
-                $errors[] = 'URL obrazka jest wymagany';
-            } elseif (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                $errors[] = 'Nieprawidłowy URL obrazka';
-            }
+            $errors = ValidationHelper::validateEventData($_POST);
 
             // Jeśli nie ma błędów, utwórz nowe wydarzenie
             if (empty($errors)) {
@@ -202,8 +178,8 @@ class DefaultController extends BaseController {
                 }
                 $newId = 'event_' . ($maxId + 1);
 
-                // Konwersja daty z YYYY-MM-DD na DD.MM.YYYY (dla kompatybilności)
-                $dateFormatted = DateTime::createFromFormat('Y-m-d', $date)->format('d.m.Y');
+                // Data już w formacie DD.MM.YYYY
+                $dateFormatted = $date;
 
                 // Ustawienie statusu na podstawie roli użytkownika
                 $status = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? EventStatus::ACTIVE : EventStatus::PENDING;
@@ -328,31 +304,7 @@ class DefaultController extends BaseController {
             $description = trim($_POST['description'] ?? '');
 
             // Validation
-            $errors = [];
-            if (empty($title)) {
-                $errors[] = 'Nazwa wydarzenia jest wymagana';
-            }
-            if (empty($location)) {
-                $errors[] = 'Lokalizacja jest wymagana';
-            }
-            if (empty($date)) {
-                $errors[] = 'Data jest wymagana';
-            } elseif (!preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $date)) {
-                $errors[] = 'Data musi być w formacie DD.MM.YYYY';
-            } else {
-                // Validate date format and future date
-                $dateObj = DateTime::createFromFormat('d.m.Y', $date);
-                if (!$dateObj) {
-                    $errors[] = 'Nieprawidłowy format daty';
-                } elseif ($dateObj < new DateTime()) {
-                    $errors[] = 'Data musi być w przyszłości';
-                }
-            }
-            if (empty($imageUrl)) {
-                $errors[] = 'URL obrazka jest wymagany';
-            } elseif (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                $errors[] = 'Nieprawidłowy URL obrazka';
-            }
+            $errors = ValidationHelper::validateEventData($_POST);
 
             if (empty($errors)) {
                 // Update the event - trigger automatycznie zaktualizuje updated_at

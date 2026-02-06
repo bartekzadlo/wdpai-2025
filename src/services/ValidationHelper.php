@@ -86,6 +86,8 @@ class ValidationHelper
                 $errors[] = 'Nieprawidłowy format daty';
             } elseif ($dateObj < new DateTime()) {
                 $errors[] = 'Data musi być w przyszłości';
+            } elseif ($dateObj->format('Y') > date('Y') + 10) {
+                $errors[] = 'Rok nie może być więcej niż 10 lat w przyszłości';
             }
         }
         if (empty($imageUrl)) {

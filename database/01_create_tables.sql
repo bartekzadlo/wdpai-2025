@@ -130,9 +130,22 @@ $$ LANGUAGE plpgsql;
 -- FUNKCJA 2: Walidacja daty wydarzenia
 CREATE OR REPLACE FUNCTION validate_event_date()
 RETURNS TRIGGER AS $$
+DECLARE
+    event_date DATE;
 BEGIN
+    -- Parsuj datę - najpierw spróbuj DD.MM.YYYY, potem YYYY-MM-DD dla kompatybilności
+    BEGIN
+        event_date := TO_DATE(NEW.date, 'DD.MM.YYYY');
+    EXCEPTION WHEN OTHERS THEN
+        BEGIN
+            event_date := TO_DATE(NEW.date, 'YYYY-MM-DD');
+        EXCEPTION WHEN OTHERS THEN
+            RAISE EXCEPTION 'Nieprawidłowy format daty. Wymagany format: DD.MM.YYYY';
+        END;
+    END;
+
     -- Sprawdź czy data nie jest w przeszłości
-    IF NEW.date < TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD') THEN
+    IF event_date < CURRENT_DATE THEN
         RAISE EXCEPTION 'Data wydarzenia nie może być w przeszłości';
     END IF;
 
