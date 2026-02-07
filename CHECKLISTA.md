@@ -164,18 +164,3 @@
 - [ ] Testy integracyjne - opcjonalne
 
 ---
-
-## ⚠️ DO UZUPEŁNIENIA
-
-### Priorytet WYSOKI:
-- [ ] **Screenshoty aplikacji** (8 sztuk)
-  - login.png
-  - user-dashboard.png
-  - admin-events.png
-  - admin-users.png
-  - user-profile.png
-  - event-details.png
-  - add-event.png
-  - mobile-view.png
-
----
