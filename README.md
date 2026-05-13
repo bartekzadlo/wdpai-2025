@@ -17,7 +17,7 @@
 
 ## 📖 Opis projektu
 
-**EventHub** to system zarządzania wydarzeniami kulturalnymi umożliwiający użytkownikom przeglądanie, tworzenie i zarządzanie wydarzeniami. Aplikacja wspiera różne role użytkowników (admin/user) z odpowiednimi uprawnieniami oraz oferuje kompleksowy system zainteresowań wydarzeniami.
+**Event.io** to system zarządzania wydarzeniami kulturalnymi umożliwiający użytkownikom przeglądanie, tworzenie i zarządzanie wydarzeniami. Aplikacja wspiera różne role użytkowników (admin/user) z odpowiednimi uprawnieniami oraz oferuje kompleksowy system zainteresowań wydarzeniami.
 
 ### Główne funkcjonalności:
 - 🔐 System autoryzacji i autentykacji z rolami (admin, user)
